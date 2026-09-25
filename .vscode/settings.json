@@ -1,0 +1,38 @@
+{
+    "latex-workshop.latex.autoBuild.run": "onSave",
+
+    "latex-workshop.view.pdf.viewer": "tab",
+
+    "latex-workshop.latex.recipe.default": "latexmk",
+
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk",
+            "tools": [
+                "latexmk"
+            ]
+        }
+    ],
+
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ]
+        }
+    ],
+
+    "latex-workshop.latex.outDir": "%DIR%/build",
+
+    "latex-workshop.synctex.afterBuild.enabled": true,
+
+    "latex-workshop.message.error.show": true,
+    "latex-workshop.message.warning.show": false
+}
