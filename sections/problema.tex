@@ -1,11 +1,34 @@
-Em sistemas autónomos e sistemas embebidos é comum coexistirem
-dispositivos que utilizam diferentes interfaces e protocolos de
+Os sistemas autónomos e os sistemas embebidos integram funções de
+perceção, processamento, controlo e atuação que dependem da troca de
+informação entre os seus elementos. A aquisição de dados de sensores,
+o envio de comandos a atuadores e a comunicação com controladores ou
+equipamentos de supervisão podem envolver tecnologias de comunicação
+distintas numa mesma instalação. Esta coexistência resulta das
+características dos dispositivos e das funções que desempenham, bem
+como da necessidade de integrar equipamentos desenvolvidos em momentos
+ou contextos diferentes.
+
+Neste contexto, sensores, atuadores, controladores e outros equipamentos
+podem disponibilizar interfaces como I2C, RS232, RS485, CAN e Ethernet.
+Estas tecnologias apresentam diferenças nas características elétricas,
+na organização das ligações e nos mecanismos de comunicação que
+suportam. Por conseguinte, a ligação de um novo equipamento exige a
+análise da compatibilidade da interface e da forma como os dados são
+transmitidos e recebidos, além da compreensão do seu significado para
+a aplicação.
+
+O problema central reside na heterogeneidade destas interfaces e na
+dificuldade de integrar operações de leitura e escrita sobre equipamentos
+com formas de acesso distintas. O suporte de cada tecnologia pode exigir
+configurações, procedimentos de comunicação e mecanismos de tratamento
+de erros específicos. Quando estas particularidades são tratadas de
+forma dispersa na aplicação, a inclusão ou substituição de equipamentos
+pode implicar alterações em várias partes do sistema, dificultando a
+manutenção e a reutilização das funções de comunicação. Além disso, a
+disponibilidade de uma ligação compatível não assegura, por si só, a
+interpretação correta dos dados trocados.
+
+A relevância do trabalho reside, assim, na possibilidade de organizar de
+forma coerente os mecanismos de acesso aos equipamentos, facilitando a
+integração e a evolução de sistemas com diferentes tecnologias de
 comunicação.
-
-Sensores, atuadores, controladores e sistemas de supervisão podem
-utilizar tecnologias distintas, apresentando diferentes
-características ao nível da velocidade, alcance, robustez,
-topologia e método de comunicação.
-
-Esta heterogeneidade pode dificultar a integração dos diferentes
-dispositivos num único sistema.

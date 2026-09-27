@@ -1,9 +1,111 @@
 \subsection{Requisitos Funcionais}
 
-Os requisitos funcionais do sistema serão definidos após a análise
-do problema e do estado da arte.
+Os requisitos funcionais seguintes decorrem do título do trabalho e
+delimitam as capacidades de comunicação a desenvolver.
+
+\begin{description}
+    \item[RF01 --- Suporte para I2C:]
+    O sistema deve suportar comunicação através de uma interface I2C.
+
+    \item[RF02 --- Suporte para RS232:]
+    O sistema deve suportar comunicação através de uma interface RS232.
+
+    \item[RF03 --- Suporte para RS485:]
+    O sistema deve suportar comunicação através de uma interface RS485.
+
+    \item[RF04 --- Suporte para CAN:]
+    O sistema deve suportar comunicação através de uma interface CAN.
+
+    \item[RF05 --- Suporte para Ethernet:]
+    O sistema deve suportar comunicação através de uma interface Ethernet.
+
+    \item[RF06 --- Escrita e transmissão:]
+    O sistema deve permitir operações de escrita ou transmissão de dados
+    através de cada uma das cinco interfaces previstas, de acordo com as
+    características da respetiva tecnologia.
+
+    \item[RF07 --- Leitura e receção:]
+    O sistema deve permitir operações de leitura ou receção de dados
+    através de cada uma das cinco interfaces previstas, de acordo com as
+    características da respetiva tecnologia.
+\end{description}
 
 \subsection{Requisitos Não Funcionais}
 
-Serão considerados requisitos relacionados com modularidade,
-fiabilidade, manutenção e facilidade de utilização.
+Os requisitos não funcionais seguintes constituem propostas preliminares,
+a validar com os docentes. Os respetivos critérios de aceitação serão
+definidos após a consolidação dos requisitos.
+
+\begin{description}
+    \item[RNF01 --- Modularidade:]
+    A organização do sistema deverá permitir separar as funções associadas
+    às diferentes interfaces de comunicação.
+
+    \item[RNF02 --- Facilidade de manutenção:]
+    A implementação deverá ser organizada e documentada de forma a
+    facilitar a compreensão, a correção e a alteração das suas funções.
+
+    \item[RNF03 --- Extensibilidade:]
+    A arquitetura deverá facilitar a introdução futura de novas
+    funcionalidades de comunicação, sem exigir a reformulação integral
+    do sistema.
+
+    \item[RNF04 --- Fiabilidade:]
+    O sistema deverá executar as operações de comunicação de forma
+    consistente nas condições de funcionamento que vierem a ser definidas.
+
+    \item[RNF05 --- Facilidade de teste e diagnóstico:]
+    A organização do sistema deverá facilitar a verificação das operações
+    de comunicação e a identificação de falhas.
+\end{description}
+
+\subsection{Restrições do Projeto}
+
+O âmbito conhecido do projeto abrange operações de leitura e escrita
+através de I2C, RS232, RS485, CAN e Ethernet. Não estão ainda confirmadas
+restrições técnicas específicas relativas à implementação.
+
+A plataforma de execução, a organização concreta das interfaces e as
+eventuais funções de interação entre tecnologias permanecem por definir.
+Esta ausência de definição corresponde ao estado preliminar do projeto
+e não constitui, por si só, uma restrição técnica. As restrições
+adicionais deverão ser registadas após confirmação com os docentes.
+
+\subsection{Requisitos a Validar com os Docentes}
+
+As questões seguintes destinam-se a esclarecer o âmbito do sistema e
+a estabelecer requisitos verificáveis, sem antecipar decisões de
+implementação.
+
+\begin{description}
+    \item[QV01 --- Interação entre tecnologias:]
+    É necessária conversão ou encaminhamento de dados entre protocolos,
+    ou apenas a realização de operações de leitura e escrita através
+    de cada interface?
+
+    \item[QV02 --- Protocolos normalizados:]
+    É obrigatória a utilização de protocolos normalizados, como Modbus?
+    Em caso afirmativo, quais?
+
+    \item[QV03 --- Plataforma de execução:]
+    Existe um requisito de utilização de microcontrolador ou é permitida
+    uma plataforma com Linux?
+
+    \item[QV04 --- Variante de CAN:]
+    O suporte para CAN deve abranger Classical CAN, CAN FD ou ambas
+    as variantes?
+
+    \item[QV05 --- Âmbito de Ethernet:]
+    O que se entende por suporte para Ethernet neste projeto:
+    apenas a camada física ou também comunicação através de TCP,
+    UDP ou protocolos de aplicação?
+
+    \item[QV06 --- Placa de circuito impresso:]
+    É necessário desenvolver uma placa de circuito impresso
+    (PCB) própria?
+
+    \item[QV07 --- Desempenho:]
+    Existem métricas obrigatórias de desempenho? Em caso afirmativo,
+    quais são os respetivos critérios de aceitação e condições
+    de avaliação?
+\end{description}

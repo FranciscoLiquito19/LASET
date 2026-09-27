@@ -1,2 +1,35 @@
-Nesta fase será definida apenas a arquitetura de alto nível do
-sistema, sem selecionar componentes de hardware específicos.
+A arquitetura preliminar organiza o sistema em torno de um sistema
+central, ao qual se associam cinco interfaces de comunicação: I2C, RS232,
+RS485, CAN e Ethernet. O sistema central representa a unidade funcional
+responsável pelas operações de leitura e escrita, enquanto cada interface
+estabelece a ligação aos dispositivos ou redes externas correspondentes.
+
+Esta representação delimita os principais blocos funcionais e as
+respetivas ligações ao exterior. A organização interna desses blocos e a
+sua implementação concreta serão definidas após o estudo do Estado da Arte
+e a consolidação dos requisitos do projeto.
+
+% TODO: substituir o espaço reservado por um diagrama dos blocos abstratos e das respetivas ligações.
+\begin{figure}[htbp]
+    \centering
+    \fbox{%
+        \parbox{0.88\linewidth}{%
+            \centering
+            \textbf{Diagrama de arquitetura a desenvolver}
+            \par\medskip
+            Sistema central
+            \par\smallskip
+            \raggedright
+            Interfaces associadas ao sistema central:
+            \begin{itemize}
+                \item I2C: ligação a dispositivos ou redes externas;
+                \item RS232: ligação a dispositivos ou redes externas;
+                \item RS485: ligação a dispositivos ou redes externas;
+                \item CAN: ligação a dispositivos ou redes externas;
+                \item Ethernet: ligação a dispositivos ou redes externas.
+            \end{itemize}
+        }%
+    }
+    \caption{Espaço reservado ao diagrama da arquitetura preliminar.}
+    \label{fig:arquitetura-preliminar}
+\end{figure}
