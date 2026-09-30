@@ -1,64 +1,95 @@
 %-----------------------------------------------------------
 %   Capítulo 1 - Introdução
 %-----------------------------------------------------------
-
-
 \chapter{Introdução}
-
-Basta acrescentar o texto em cada um dos ficheiros do directório Capítulos e compilar para se obter o relatório.
-
-O texto deverá ter as referências "devidamente referenciadas" \cite{ref_1} e devem privilegiar-se artigos, livros ou documentação técnica face a páginas \textit{web} ou \textit{wikipedia}. Todos os elementos da bibliografia devem ser referenciados no texto.
-
-
-As figuras também devem ter referência quando são obtidas em outro documento e devem ser utilizadas no texto utilizando as referências cruzadas tal como na figura \ref{fig:exemplo}.
-
-
-\begin{figure}[h!]
-  \begin{center}
-      \includegraphics[scale=0.7, bb=0 0 256 197]{./Figuras/robot.jpg}
-      \caption[Exemplo de figura com legenda.]{Exemplo de figura com legenda \cite{ref_2}.}
-      \label{fig:exemplo}
-  \end{center}
-\end{figure}
-
-Quando se representam as unidades deve existir o cuidado de deixar um espaço entre a grandeza e a unidade, devem ser inseparáveis no caso de mudança de linha.
-\\Exemplos:
-"... . . . . . . . . . . . . . . . cada iteração tem a duração de 22 ms..."(errado) ou "... ou 22ms..." (errado).\\
-".... cada iteração tem a duração de \mbox{22 ms}..." (correcto)
-
-Sempre que sejam escritas equações deve ser utilizado o ambiente adequado para que estas sejam numeradas automaticamente e se possam referenciar no texto. Exemplo disto é a equação \ref{nota_final}, utilizada para determinação da nota final.
-
-\begin{equation}
- N_{f} = A \times R_{ar} + B \times R_{rp} + C \times R_{rf}
- \label{nota_final}
-\end{equation}
+\label{cap:introducao}
 
 \section{Enquadramento e Motivação}
 
-Contextualizar o trabalho, explicar onde este se enquadra nas actividades do LSA e/ou de determinado projecto.
+O projeto de um sistema de leitura e escrita multiprotocolo insere-se
+no contexto dos sistemas embebidos e autónomos em que coexistem diferentes
+tecnologias de comunicação. O trabalho abrange I2C, RS232, RS485, CAN e
+Ethernet e é apresentado neste relatório numa fase preliminar de definição,
+centrada no enquadramento do problema e na organização do estudo e do
+desenvolvimento.
+
+Os sistemas autónomos e os sistemas embebidos integram funções de
+perceção, processamento, controlo e atuação que dependem da troca de
+informação entre os seus elementos. A aquisição de dados de sensores,
+o envio de comandos a atuadores e a comunicação com controladores ou
+equipamentos de supervisão podem envolver tecnologias de comunicação
+distintas numa mesma instalação. Esta coexistência resulta das
+características dos dispositivos e das funções que desempenham, bem
+como da necessidade de integrar equipamentos desenvolvidos em momentos
+ou contextos diferentes.
+
+Neste contexto, sensores, atuadores, controladores e outros equipamentos
+podem disponibilizar interfaces como I2C, RS232, RS485, CAN e Ethernet.
+Estas tecnologias apresentam diferenças nas características elétricas,
+na organização das ligações e nos mecanismos de comunicação que
+suportam. Por conseguinte, a ligação de um novo equipamento exige a
+análise da compatibilidade da interface e da forma como os dados são
+transmitidos e recebidos, além da compreensão do seu significado para
+a aplicação.
+
+O problema central reside na heterogeneidade destas interfaces e na
+dificuldade de integrar operações de leitura e escrita sobre equipamentos
+com formas de acesso distintas. O suporte de cada tecnologia pode exigir
+configurações, procedimentos de comunicação e mecanismos de tratamento
+de erros específicos. Quando estas particularidades são tratadas de
+forma dispersa na aplicação, a inclusão ou substituição de equipamentos
+pode implicar alterações em várias partes do sistema, dificultando a
+manutenção e a reutilização das funções de comunicação. Além disso, a
+disponibilidade de uma ligação compatível não assegura, por si só, a
+interpretação correta dos dados trocados.
+
+A relevância do trabalho reside, assim, na possibilidade de organizar de
+forma coerente os mecanismos de acesso aos equipamentos, facilitando a
+integração e a evolução de sistemas com diferentes tecnologias de
+comunicação.
 
 \section{Cenários de aplicação}
-Descrever algumas aplicações que justifiquem a necessidade de realizar o trabalho e como este pode contribuir para a melhoria do processo.
+
+\textit{TODO: definir os cenários de aplicação após validação do âmbito do projeto.}
 
 \section{Objectivos}
-Apresentar a lista de objectivos que se pretendem alcançar.
+
+\subsection{Objetivo Geral}
+
+Estudar e desenvolver um sistema capaz de realizar operações de leitura
+e escrita através das tecnologias de comunicação I2C, RS232, RS485,
+CAN e Ethernet.
+
+\subsection{Objetivos Específicos}
+
+Para concretizar o objetivo geral, estabelecem-se os seguintes objetivos
+específicos:
+
+\begin{enumerate}
+    \item Estudar as características de I2C, RS232, RS485, CAN e Ethernet
+    relevantes para a realização de operações de comunicação.
+
+    \item Analisar as diferenças e limitações das cinco tecnologias,
+    identificando as suas implicações para a integração num mesmo sistema.
+
+    \item Definir uma arquitetura de integração das cinco interfaces,
+    identificando os blocos funcionais e as respetivas ligações.
+
+    \item Implementar as funções de comunicação necessárias à transmissão
+    e receção de dados através de cada uma das cinco interfaces.
+
+    \item Validar experimentalmente as operações de transmissão e receção
+    em cada interface, de acordo com os requisitos que venham a ser
+    consolidados.
+\end{enumerate}
 
 \section{Estrutura do Relatório}
-No capítulo x é ...
 
-
-\newpage
-
-As tabelas também devem ter uma legenda, mas antes da tabela como mostra o exemplo da tabela \ref{tab:exemplo} e não devem ser utilizadas linhas verticais.
-
-\begin{table}[h!]
-\begin{center}
-    \caption{Exemplo de tabela com legenda.}
-    \begin{tabular}{lll}\hline
-      1 & 2 & 3\\\hline
-      4 & 5 & 6\\\hline
-      7 & 8 & 9\\\hline
-    \end{tabular}
-    \label{tab:exemplo}
-\end{center}
-\end{table}
+O Capítulo~\ref{cap:introducao} apresenta o enquadramento, a motivação
+e os objetivos do trabalho. O Capítulo~\ref{cap:estado-arte} organiza
+o Estado da Arte sobre as tecnologias abrangidas.
+O Capítulo~\ref{cap:requisitos} distingue as capacidades previstas,
+as propostas preliminares e as questões a esclarecer com os docentes.
+Por fim, o Capítulo~\ref{cap:arquitectura} apresenta os blocos funcionais
+abstratos da Arquitetura de Alto Nível, cuja concretização depende
+do estudo e da consolidação dos requisitos.

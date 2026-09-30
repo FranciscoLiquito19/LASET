@@ -2,20 +2,408 @@
 %   Capítulo 2 - Estado da Arte 
 %-----------------------------------------------------------
 \chapter{Estado da Arte}
+\label{cap:estado-arte}
 
-Neste capítulo deverão ser apresentadas outras abordagens e trabalhos relacionados com o problema e soluções disponíveis no mercado de produtos semelhantes ao que se pretende construir. Devem ser estudadas as suas características e feita uma análise comparativa das mesmas incluindo os custos de aquisição e utilização, de forma a possibilitar uma boa base de trabalho e conhecimento sobre os trabalhos relacionados, que permitam melhorar o que se pretende desenvolver, descrever algumas aplicações do dispositivo e identificar as características mais relevantes que este tem e que possam ser interessantes para o sistema que se pretende desenvolver.
-Para uma fácil análise comparativa deverá ser apresentada uma tabela resumo. Sempre que possível deverão ser apresentados esquemas, diagramas ou formulas que permitam melhor descrever as soluções analisadas. 
+\section{Comunicação em Sistemas Embebidos e Autónomos}
 
-A tabela \ref{tab:comparativa}, mostra uma comparação entre as diferentes abordagens estudadas.
+Nos sistemas embebidos e autónomos, as interfaces de comunicação respondem
+a diferentes escalas de interligação e requisitos de funcionamento. O I2C
+é utilizado na comunicação entre circuitos e periféricos, enquanto
+interfaces como RS485 permitem interligar equipamentos em aplicações de
+automação industrial e de
+edifícios~\cite{nxp_um10204_2021,stiller_rs485_2015}.
 
-\begin{table}[h!]
-\begin{center}
-    \caption{Tabela comparativa entre as diferentes abordagens.}
-    \begin{tabular}{ c c c }\hline
-       & $Caracteristica_{1}$ & $Caracteristica_{2}$\\\hline\hline
-      A & 5 & 6\\\hline
-      B & 8 & 9\\\hline
-    \end{tabular}
-    \label{tab:comparativa}
-\end{center}
+Neste contexto, importa distinguir a camada física, que caracteriza a
+sinalização elétrica, a organização da ligação entre os participantes e
+o protocolo de aplicação, que atribui significado aos dados trocados.
+As características de uma interface elétrica não determinam, por si só,
+o protocolo de aplicação
+adotado~\cite{dodson_rs232_2023,stiller_rs485_2015}.
+
+Estas tecnologias não ocupam todas o mesmo âmbito na comunicação.
+Enquanto o I2C inclui regras próprias de transferência no barramento,
+RS232 e RS485 caracterizam sobretudo a interface física. Modbus RTU
+constitui um exemplo de protocolo que pode operar sobre ligações série,
+sem ser uma propriedade intrínseca dessas
+interfaces~\cite{nxp_um10204_2021,modbus_serial_2006}.
+
+\section{I2C}
+
+O I2C utiliza um barramento série síncrono partilhado constituído por duas
+linhas: SDA, destinada à transferência de dados, e SCL, utilizada para o
+sinal de relógio. Nos modos \textit{Standard-mode}, \textit{Fast-mode} e
+\textit{Fast-mode Plus}, a sinalização baseia-se em saídas de dreno ou
+coletor aberto e na polarização das linhas por
+\textit{pull-up}~\cite[sec.~3.1]{nxp_um10204_2021}.
+
+Nestes modos, um controlador inicia cada transferência e gera o relógio;
+o destinatário é selecionado por endereço de 7 ou 10 bits. Os dados circulam em bytes,
+com indicação de confirmação ou não confirmação (ACK/NACK). A comunicação
+é bidirecional, existindo arbitragem quando vários controladores disputam
+o barramento~\cite[secs.~3.1.5--3.1.11]{nxp_um10204_2021}.
+
+O reduzido número de linhas e o endereçamento integrado favorecem a
+ligação de periféricos, como sensores, memórias e expansores de entradas
+e saídas. A capacidade de expansão e a velocidade ficam condicionadas
+pela capacitância do barramento e pelos tempos de subida dos
+sinais~\cite[secs.~2 e~7]{nxp_um10204_2021}.
+
+\section{RS232}
+
+A interface RS232 estabelece ligações série ponto a ponto, com sinalização
+não diferencial referida a uma massa comum. Os estados lógicos são
+representados por tensões de polaridade positiva ou negativa; as linhas
+distintas de transmissão e receção permitem comunicação simultânea nos
+dois sentidos (\textit{full-duplex})~\cite[secs.~2.1 e~2.2]{dodson_rs232_2023}.
+
+A norma define aspetos elétricos, funcionais e mecânicos. As designações
+DTE (\textit{Data Terminal Equipment}) e DCE (\textit{Data Communication
+Equipment}) distinguem funções dos equipamentos; deste âmbito não resulta
+um mecanismo de endereçamento multiponto nem um protocolo de
+aplicação~\cite[sec.~2]{dodson_rs232_2023}.
+É frequente a utilização de comunicação assíncrona, mas a norma também
+contempla sinais de temporização~\cite{ti_rs232_2002,dodson_rs232_2023}.
+
+A RS232 permite uma ligação ponto a ponto simples e tem sido amplamente
+utilizada na interligação de periféricos, modems e equipamentos de teste.
+As principais limitações incluem a suscetibilidade ao ruído e as restrições de alcance e débito;
+o comprimento admissível depende das características elétricas da
+ligação, em particular da sua
+capacitância~\cite{ti_rs232_2002,dodson_rs232_2023}.
+
+\section{RS485}
+
+RS485 define as características elétricas de emissores e recetores para
+comunicação série diferencial multiponto. A informação é representada
+pela diferença de tensão entre dois condutores, e vários nós podem
+partilhar o barramento~\cite{stiller_rs485_2015,ti_rs485_an1057_2013}.
+
+Na configuração \textit{half-duplex}, um par de sinais permite transmissão
+alternada nos dois sentidos; a configuração \textit{full-duplex} utiliza
+dois pares. A documentação recomenda uma disposição linear, com
+derivações curtas, para reduzir problemas de
+propagação~\cite[secs.~2 e~3]{ti_rs485_an1057_2013}.
+
+A norma não define o protocolo de aplicação. Por conseguinte, o
+endereçamento e a coordenação do acesso ao meio têm de ser tratados
+acima da camada elétrica; a transmissão simultânea de vários emissores
+no mesmo par pode causar contenção~\cite[secs.~1 e~10]{ti_rs485_an1057_2013}.
+
+A robustez a ruído proporcionada pela sinalização diferencial e o suporte
+multiponto constituem vantagens em aplicações de automação industrial,
+automação de edifícios e controlo de motores~\cite{stiller_rs485_2015}.
+O alcance e o débito são interdependentes, pelo que não se devem combinar
+valores máximos obtidos em condições diferentes. A qualidade da comunicação
+depende também da carga elétrica dos nós, das derivações e da adequação
+das terminações para limitar reflexões~\cite[secs.~2 e~5--7]{ti_rs485_an1057_2013}.
+
+\section{CAN}
+
+CAN (\textit{Controller Area Network}) abrange mecanismos de ligação de
+dados e opções de camada física. A família ISO~11898 distingue estes
+âmbitos; CANopen e J1939 acrescentam protocolos e perfis superiores,
+não sendo sinónimos de CAN~\cite{cia_can_standardization}.
+Na camada física \textit{high-speed}, a sinalização é diferencial entre
+CAN\_H e CAN\_L, recomendando-se um barramento linear terminado nas
+extremidades. O alcance depende do débito e dos atrasos de propagação
+da ligação~\cite{cia_can_hs}.
+
+As tramas são difundidas no barramento e identificadas por um campo de
+11 ou 29 bits, associado ao conteúdo e à prioridade de acesso, em vez
+de um endereço obrigatório de destinatário. Um protocolo superior pode
+atribuir significado adicional a esse campo. Quando vários nós iniciam
+a transmissão, a arbitragem compara os bits transmitidos: um nó que
+envia um estado recessivo e observa um dominante cede o acesso, sem
+destruir a trama vencedora~\cite{cia_can_cc}.
+
+A deteção de erros inclui verificação por CRC, confirmação de receção
+e monitorização dos bits. A sinalização de erro permite repetir uma
+trama afetada; o confinamento de falhas pode colocar um nó em estado
+\textit{bus-off}, impedindo que continue a transmitir. Estes mecanismos
+e a arbitragem por prioridade favorecem o controlo embebido,
+nomeadamente em veículos~\cite{cia_can_cc}.
+
+Classical CAN admite até 8 bytes de dados por trama. CAN FD aumenta
+esse limite para 64 bytes e permite, opcionalmente, um débito superior
+na fase de dados, mantendo a arbitragem à velocidade nominal.
+A dimensão das tramas e os condicionamentos físicos continuam a limitar
+a transferência; a variante e a configuração da rede devem, por isso,
+ser explicitadas na análise~\cite{cia_can_fd,cia_can_hs}.
+
+\section{Ethernet}
+
+IEEE~802.3 especifica a subcamada de controlo de acesso ao meio (MAC) e
+as variantes de camada física (PHY) de Ethernet. O MAC organiza a
+transferência de tramas; o PHY codifica e transmite os sinais no meio
+selecionado. A norma contempla diferentes débitos, meios e comprimentos
+de ligação, pelo que não existe um único alcance aplicável a todas
+as variantes~\cite{ieee_8023_2018}.
+
+Nas redes comutadas, os equipamentos estabelecem ligações ponto a ponto
+a comutadores (\textit{switches}), formando habitualmente uma estrela
+ou uma estrela hierárquica. As tramas contêm endereços MAC de origem e
+destino e um campo FCS para deteção de erros. As ligações
+\textit{full-duplex} permitem transmissão simultânea nos dois
+sentidos~\cite{simmons_ethernet_2008}.
+
+Ethernet pode transportar IP, sobre o qual operam TCP e UDP;
+Modbus TCP é um exemplo de protocolo de aplicação neste contexto.
+Estes protocolos pertencem a camadas superiores a
+Ethernet~\cite{simmons_ethernet_2008,modbus_specifications}.
+A diversidade de meios e débitos favorece a integração em redes de
+monitorização e controlo. A adequação a sistemas embebidos e industriais
+exige, contudo, delimitar a variante física, a organização da rede e
+os serviços superiores necessários~\cite{ieee_8023_2018,simmons_ethernet_2008}.
+
+\section{Sistemas ou Plataformas Multiprotocolo}
+
+A literatura sobre \textit{gateways} multiprotocolo distingue a agregação
+de tecnologias das funções de interpretação e troca de informação.
+Abdelwahed et al.\ analisam componentes físicos e de software e
+identificam desafios de compatibilidade, normalização e avaliação.
+A revisão centra-se sobretudo em tecnologias sem fios; é aqui usada
+para enquadrar a interoperabilidade, sem transpor resultados de
+desempenho para I2C, RS485 ou CAN~\cite{abdelwahed_gateway_2025}.
+% Consulta limitada ao resumo, introdução e excertos disponibilizados pela editora.
+
+A análise seguinte seleciona quatro exemplos com contributos distintos:
+duas plataformas programáveis e dois conversores para protocolos
+definidos. Esta seleção permite comparar modelos de integração, sem
+constituir uma escolha de plataforma para o projeto.
+
+\subsection{Plataformas Embebidas Programáveis}
+
+O GoWired Multiprotocol Gateway, da Domatic, exemplifica uma plataforma
+baseada em microcontrolador, com software modificável e compatível com
+o ambiente Arduino. A documentação anuncia duas interfaces RS485, CAN
+e Ethernet, incluindo utilização simultânea de protocolos nas duas
+interfaces série. Contudo, a página mantém a indicação de lançamento
+futuro; estas características são tratadas como anunciadas, sem
+confirmação de disponibilidade comercial ou de desempenho
+experimental~\cite{domatic_gowired}.
+
+O CompuLab IOT-GATE-iMX7 representa uma plataforma com suporte Linux
+e interfaces configuráveis~\cite{compulab_imx7}.
+O seu manual evidencia uma limitação concreta: a opção CAN substitui
+a interface RS485. I2C e SPI são disponibilizados no conector de
+expansão P7; algumas funções alternativas partilham pinos, exigindo
+verificação da configuração utilizada~\cite{compulab_imx7_manual_2018}.
+A possibilidade de programar estas plataformas não demonstra, por si
+só, a existência de conversão automática entre todas as interfaces.
+
+\subsection{Gateways e Conversores Dedicados}
+
+O Moxa MGate 5105-MB-EIP permite integrar Modbus RTU/ASCII/TCP e
+EtherNet/IP. A documentação descreve a recolha de dados Modbus,
+o armazenamento dos valores e a sua disponibilização em comunicações
+EtherNet/IP, com mapeamento de dados em memória. A conversão tem,
+assim, um âmbito definido pelos protocolos e funções suportados.
+A porta série de dados é configurável como RS232, RS422 ou RS485,
+não correspondendo a três portas independentes~\cite{moxa_mgate5105}.
+
+O HMS Anybus X-gateway AB7838-F liga uma rede CANopen, onde assume
+o papel de \textit{slave}, a EtherNet/IP, onde atua como
+\textit{adapter}. O fabricante documenta a troca de dados cíclicos de
+entradas e saídas e a configuração através de ferramenta própria.
+Este exemplo distingue a integração entre protocolos superiores da
+mera presença de CAN e Ethernet: as funções documentadas não
+equivalem ao encaminhamento arbitrário de tramas~\cite{hms_ab7838}.
+
+A Tabela~\ref{tab:plataformas-multiprotocolo} sintetiza apenas as
+características relevantes para esta comparação. \enquote{NS} significa
+não especificado nas fontes consultadas, e não ausência comprovada
+da funcionalidade. \enquote{Integrada} designa uma interface disponibilizada
+pelo equipamento; não implica que pertença diretamente ao MCU ou MPU.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.12}
+    \caption{Plataformas programáveis e conversores dedicados selecionados.}
+    \label{tab:plataformas-multiprotocolo}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.18\textwidth}*{3}{>{\raggedright\arraybackslash}X}@{}}
+        \toprule
+        Sistema e fonte & Computação e software & Interfaces documentadas & Configuração e limites \\
+        \midrule
+        GoWired~\cite{domatic_gowired}
+        & MCU ATSAMD21G18A; ambiente Arduino; SO/RTOS: NS.
+        & Integradas anunciadas: duas RS485, CAN e Ethernet.
+        RS232, CAN FD, I2C e SPI externos: NS.
+        & Plataforma programável anunciada; simultaneidade série declarada,
+        sem condições de desempenho publicadas. \\
+        \addlinespace
+        IOT-GATE-iMX7~\cite{compulab_imx7,compulab_imx7_manual_2018}
+        & i.MX~7Dual; suporte Linux.
+        & RS232 e RS485 integradas; CAN opcional em substituição de RS485;
+        Ethernet conforme configuração; I2C e SPI em P7. CAN FD: NS.
+        & Opção CAN exclui RS485; funções alternativas em P7 partilham
+        pinos. A integração depende do software. \\
+        \addlinespace
+        MGate 5105-MB-EIP~\cite{moxa_mgate5105}
+        & MCU/MPU e SO/RTOS: NS.
+        & Porta de dados RS232/422/485 e duas Ethernet integradas;
+        RS232 de consola. CAN/CAN FD, I2C e SPI: NS.
+        & Modbus--EtherNet/IP; mapeamento em memória.
+        Modos elétricos alternativos na mesma porta de dados. \\
+        \addlinespace
+        Anybus AB7838-F~\cite{hms_ab7838}
+        & MCU/MPU e SO/RTOS: NS.
+        & CAN para CANopen e duas portas Ethernet integradas.
+        RS232, RS485, CAN FD, I2C e SPI: NS.
+        & CANopen \textit{slave}--EtherNet/IP \textit{adapter};
+        troca de dados cíclicos de entradas e saídas. \\
+        \bottomrule
+    \end{tabularx}
 \end{table}
+
+\subsection{Normalização de Dados na Literatura Académica}
+
+Castellanos et al.\ apresentam um \textit{gateway} que recebe informação
+de nós sem fios e transforma os dados dos sensores num formato uniforme
+para envio a um servidor. O estudo inclui uma prova de conceito com
+dois nós, sustentando a discussão de normalização nesse cenário,
+sem demonstrar conversão entre as cinco tecnologias deste
+projeto~\cite{castellanos_gateway_2021}.
+
+O interesse arquitetural deste caso reside na separação entre aquisição,
+transformação dos dados e comunicação de saída. Por analogia, admite-se
+como direção a avaliar uma organização com adaptadores por interface
+ou protocolo e uma representação intermédia. Esta interpretação
+não corresponde a uma arquitetura já validada para I2C, RS232, RS485,
+CAN e Ethernet~\cite{castellanos_gateway_2021}.
+
+\section{Comparação das Tecnologias}
+
+As Tabelas~\ref{tab:comparacao-organizacao}
+e~\ref{tab:comparacao-condicoes} separam a organização da comunicação
+dos condicionamentos de utilização. A comparação é qualitativa:
+alcance e débito dependem da variante e da implementação, não sendo
+apresentados máximos independentes como se fossem simultaneamente
+atingíveis. Em CAN considera-se a camada física \textit{high-speed};
+em Ethernet, a organização comutada, sem a generalizar a todas
+as variantes.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.12}
+    \caption{Organização da comunicação nas tecnologias estudadas.}
+    \label{tab:comparacao-organizacao}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{3}{>{\raggedright\arraybackslash}X}@{}}
+        \toprule
+        Tecnologia & Topologia e multiponto & Sinalização & Identificação \\
+        \midrule
+        I2C~\cite{nxp_um10204_2021}
+        & Barramento partilhado; vários dispositivos.
+        & Série síncrona; SDA e SCL; não diferencial.
+        & Endereços de 7 ou 10 bits. \\
+        \addlinespace
+        RS232~\cite{dodson_rs232_2023}
+        & Ponto a ponto.
+        & Não diferencial; transmissão e receção separadas.
+        & Sem endereçamento multiponto próprio. \\
+        \addlinespace
+        RS485~\cite{ti_rs485_an1057_2013}
+        & Barramento linear recomendado; multiponto.
+        & Diferencial; um ou dois pares de sinais.
+        & Definida pelo protocolo superior. \\
+        \addlinespace
+        CAN~\cite{cia_can_cc,cia_can_hs}
+        & Barramento linear; vários nós.
+        & Diferencial; estados dominante e recessivo.
+        & Identificadores de trama; prioridade na arbitragem. \\
+        \addlinespace
+        Ethernet~\cite{simmons_ethernet_2008,ieee_8023_2018}
+        & Ligações ponto a ponto a comutadores; rede com vários nós.
+        & Dependente do PHY e do meio, elétrico ou ótico.
+        & Endereços MAC de origem e destino. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.12}
+    \caption{Condicionamentos e aplicações das tecnologias estudadas.}
+    \label{tab:comparacao-condicoes}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{3}{>{\raggedright\arraybackslash}X}@{}}
+        \toprule
+        Tecnologia & Alcance e débito & Robustez e condicionantes & Aplicações típicas \\
+        \midrule
+        I2C~\cite{nxp_um10204_2021}
+        & Condicionados pelo modo, capacitância e tempos de subida.
+        & Dependente da carga e dos níveis elétricos.
+        & Sensores, memórias e periféricos. \\
+        \addlinespace
+        RS232~\cite{ti_rs232_2002,dodson_rs232_2023}
+        & Dependentes da capacitância e do cabo.
+        & Suscetível a ruído; referência de massa comum.
+        & Periféricos, modems e equipamentos de teste. \\
+        \addlinespace
+        RS485~\cite{ti_rs485_an1057_2013,stiller_rs485_2015}
+        & Alcance e débito interdependentes.
+        & Sinalização diferencial; atenção a terminações, derivações
+        e carga.
+        & Automação industrial e de edifícios. \\
+        \addlinespace
+        CAN~\cite{cia_can_hs,cia_can_cc,cia_can_fd}
+        & Dependem da propagação e da variante; FD pode alterar
+        o débito na fase de dados.
+        & Deteção de erros e confinamento de falhas.
+        & Controlo automóvel e sistemas distribuídos. \\
+        \addlinespace
+        Ethernet~\cite{ieee_8023_2018,simmons_ethernet_2008}
+        & Definidos por variante, meio e condições da ligação.
+        & FCS para deteção de erros; condições físicas dependentes do meio.
+        & Redes de monitorização e controlo. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Síntese Crítica do Estado da Arte}
+
+Os exemplos analisados evidenciam duas questões distintas:
+disponibilizar interfaces e assegurar interoperabilidade. As plataformas
+programáveis fornecem recursos para implementar a integração, sujeitos
+às suas opções e incompatibilidades físicas; os conversores dedicados
+documentam pares de protocolos, papéis e mapeamentos
+concretos~\cite{compulab_imx7_manual_2018,moxa_mgate5105,hms_ab7838}.
+Por conseguinte, o conceito de \textit{gateway} embebido multiprotocolo
+em estudo deve ser delimitado pelas trocas de informação pretendidas,
+sem pressupor conversão arbitrária entre quaisquer interfaces.
+
+As tecnologias diferem na delimitação de tramas (\textit{framing}),
+identificação, unidades de transferência, débito, temporização e
+tratamento de erros. Por exemplo, RS485 define características elétricas,
+não um tamanho máximo de dados de aplicação. A transmissão de grandes
+volumes não é excluída por essa norma: a sua organização e viabilidade
+dependem do protocolo superior e das condições da
+ligação~\cite{ti_rs485_an1057_2013,modbus_serial_2006}.
+Também não se pode pressupor correspondência de uma trama recebida
+para uma trama transmitida. TCP ilustra esta diferença: transporta
+um fluxo de bytes e não preserva os limites das operações de escrita
+da aplicação~\cite[sec.~3.7]{eddy_tcp_2022}.
+
+Da comparação decorre que o encaminhamento pode exigir delimitação,
+segmentação, armazenamento temporário (\textit{buffering}) e controlo
+de fluxo, além da interpretação do protocolo superior. O mapeamento
+tem ainda de preservar o significado dos dados; copiar bytes não
+estabelece, por si só, equivalência entre operações ou grandezas.
+Esta conclusão articula os mecanismos de transporte com os exemplos
+de mapeamento e normalização
+estudados~\cite{eddy_tcp_2022,castellanos_gateway_2021}.
+
+Adaptadores e uma representação intermédia constituem, assim, uma
+direção arquitetural a avaliar. Será necessário verificar quais os
+identificadores, operações, estados de erro e propriedades temporais
+que essa representação deve preservar, evitando assumir que origem,
+destino, comprimento e dados bastam para todos os casos. A abstração
+pode facilitar a integração, mas exige avaliar a perda de informação
+específica e o processamento adicional; esta possibilidade mantém-se
+em aberto até à consolidação dos requisitos~\cite{abdelwahed_gateway_2025}.
+SPI permanece apenas uma possível extensão, sem integrar os requisitos
+aprovados nesta fase.

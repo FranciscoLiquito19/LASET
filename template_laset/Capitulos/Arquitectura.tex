@@ -2,10 +2,40 @@
 %   Capítulo 4 - Arquitectura do Sistema
 %-----------------------------------------------------------
 \chapter{Arquitectura de Alto Nível}
+\label{cap:arquitectura}
 
-Neste capítulo deverá ser apresentado o projecto do ponto de vista conceptual, com os detalhes que permitam a um vendedor apresentar o produto aos potenciais clientes sem entrar em detalhes técnicos que este não entenda.
-O sistema deve ser visto como uma "caixa preta" para a qual são especificados os interfaces com o exterior ou com os subsistemas. São determinadas as funcionalidades e modos de funcionamento.
+A arquitetura preliminar organiza o sistema em torno de um sistema
+central, ao qual se associam cinco interfaces de comunicação: I2C, RS232,
+RS485, CAN e Ethernet. O sistema central representa a unidade funcional
+responsável pelas operações de leitura e escrita, enquanto cada interface
+estabelece a ligação aos dispositivos ou redes externas correspondentes.
 
-Apresenta-se o diagrama de blocos de alto nível que permita visualizar o produto acabado e as ligações lógicas entre os diferentes blocos mas sem entrar em detalhes tecnológicos. Devem também ser descritos/justificados os diferentes blocos do diagrama.
+Esta representação delimita os principais blocos funcionais e as
+respetivas ligações ao exterior. A organização interna desses blocos e a
+sua implementação concreta serão definidas após o estudo do Estado da Arte
+e a consolidação dos requisitos do projeto.
 
-A informação apresentada neste capítulo deverá permitir a elaboração de uma folha de características do sistema \mbox{(\textit{datasheet})}.
+% TODO: substituir o espaço reservado por um diagrama dos blocos abstratos e das respetivas ligações.
+\begin{figure}[htbp]
+    \centering
+    \fbox{%
+        \parbox{0.88\linewidth}{%
+            \centering
+            \textbf{Diagrama de arquitetura a desenvolver}
+            \par\medskip
+            Sistema central
+            \par\smallskip
+            \raggedright
+            Interfaces associadas ao sistema central:
+            \begin{itemize}
+                \item I2C: ligação a dispositivos ou redes externas;
+                \item RS232: ligação a dispositivos ou redes externas;
+                \item RS485: ligação a dispositivos ou redes externas;
+                \item CAN: ligação a dispositivos ou redes externas;
+                \item Ethernet: ligação a dispositivos ou redes externas.
+            \end{itemize}
+        }%
+    }
+    \caption{Espaço reservado ao diagrama da arquitetura preliminar.}
+    \label{fig:arquitetura-preliminar}
+\end{figure}
