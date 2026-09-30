@@ -4,9 +4,6 @@
 \chapter{Análise de Requisitos}
 \label{cap:requisitos}
 
-% Ajuste local de quebra de linha para as listas nas margens do template.
-\begingroup
-\setlength{\emergencystretch}{1em}
 
 \section{Requisitos Funcionais}
 
@@ -16,45 +13,45 @@ multiprotocolo. O âmbito inclui leitura, escrita, processamento e
 encaminhamento entre interfaces, condicionado aos mapeamentos definidos.
 
 \begin{description}
-    \item[RF01 --- Suporte para I2C:]
+    \item[RF01 --- Suporte para I2C:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface I2C.
 
-    \item[RF02 --- Suporte para RS232:]
+    \item[RF02 --- Suporte para RS232:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface RS232.
 
-    \item[RF03 --- Suporte para RS485:]
+    \item[RF03 --- Suporte para RS485:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface RS485.
 
-    \item[RF04 --- Suporte para CAN:]
+    \item[RF04 --- Suporte para CAN:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface CAN.
 
-    \item[RF05 --- Suporte para Ethernet:]
+    \item[RF05 --- Suporte para Ethernet:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface Ethernet.
 
-    \item[RF06 --- Escrita e transmissão:]
+    \item[RF06 --- Escrita e transmissão:] \hfill\newline
     O sistema deve permitir operações de escrita ou transmissão de dados
     através de cada uma das cinco interfaces previstas, de acordo com as
     características da respetiva tecnologia.
 
-    \item[RF07 --- Leitura e receção:]
+    \item[RF07 --- Leitura e receção:] \hfill\newline
     O sistema deve permitir operações de leitura ou receção de dados
     através de cada uma das cinco interfaces previstas, de acordo com as
     características da respetiva tecnologia.
 
-    \item[RF08 --- Processamento de informação:]
+    \item[RF08 --- Processamento de informação:] \hfill\newline
     O sistema deve permitir processar informação recebida por uma interface
     antes da sua eventual transmissão. Para cada operação de processamento
     suportada, devem ser especificados os dados de entrada e os resultados
     esperados, de modo a permitir verificar o resultado obtido.
 
-    \item[RF09 --- Encaminhamento entre interfaces:]
+    \item[RF09 --- Encaminhamento entre interfaces:] \hfill\newline
     O sistema deve permitir encaminhar informação entre interfaces
     diferentes para as operações de encaminhamento previamente definidas.
     Para cada operação devem estar especificados a origem, o destino,
     os protocolos envolvidos, a transformação/mapeamento a aplicar e o
     resultado esperado.
 
-    \item[RF10 --- Preservação da informação necessária:]
+    \item[RF10 --- Preservação da informação necessária:] \hfill\newline
     O processamento e o encaminhamento devem preservar os dados e metadados
     necessários à operação da interface ou protocolo de destino, mantendo
     o seu significado de acordo com o mapeamento definido.
@@ -71,24 +68,24 @@ a validar com os docentes. Os respetivos critérios de aceitação serão
 definidos após a consolidação dos requisitos.
 
 \begin{description}
-    \item[RNF01 --- Modularidade:]
+    \item[RNF01 --- Modularidade:] \hfill\newline
     A organização do sistema deverá permitir separar as funções associadas
     às diferentes interfaces de comunicação.
 
-    \item[RNF02 --- Facilidade de manutenção:]
+    \item[RNF02 --- Facilidade de manutenção:] \hfill\newline
     A implementação deverá ser organizada e documentada de forma a
     facilitar a compreensão, a correção e a alteração das suas funções.
 
-    \item[RNF03 --- Extensibilidade:]
+    \item[RNF03 --- Extensibilidade:] \hfill\newline
     A arquitetura deverá facilitar a introdução futura de novas
     funcionalidades de comunicação, sem exigir a reformulação integral
     do sistema.
 
-    \item[RNF04 --- Fiabilidade:]
+    \item[RNF04 --- Fiabilidade:] \hfill\newline
     O sistema deverá executar as operações de comunicação de forma
     consistente nas condições de funcionamento que vierem a ser definidas.
 
-    \item[RNF05 --- Facilidade de teste e diagnóstico:]
+    \item[RNF05 --- Facilidade de teste e diagnóstico:] \hfill\newline
     O sistema deverá permitir observar o resultado das operações de
     comunicação, processamento e encaminhamento e identificar as operações
     associadas às falhas detetadas, para apoiar a verificação e o diagnóstico.
@@ -114,35 +111,34 @@ a estabelecer requisitos verificáveis, sem antecipar decisões de
 implementação.
 
 \begin{description}
-    \item[QV01 --- Operações de encaminhamento:]
+    \item[QV01 --- Operações de encaminhamento:] \hfill\newline
     Que pares de interfaces e protocolos deverão ser demonstrados?
     Que mapeamentos ou transformações concretas deverão ser implementados
     entre a origem e o destino?
 
-    \item[QV02 --- Protocolos normalizados:]
+    \item[QV02 --- Protocolos normalizados:] \hfill\newline
     É obrigatória a utilização de protocolos normalizados, como Modbus?
     Em caso afirmativo, quais?
 
-    \item[QV03 --- Plataforma de execução:]
+    \item[QV03 --- Plataforma de execução:] \hfill\newline
     Existe um requisito de utilização de microcontrolador ou é permitida
     uma plataforma com Linux?
 
-    \item[QV04 --- Variante de CAN:]
+    \item[QV04 --- Variante de CAN:] \hfill\newline
     O suporte para CAN deve abranger Classical CAN, CAN FD ou ambas
     as variantes?
 
-    \item[QV05 --- Protocolos sobre Ethernet:]
+    \item[QV05 --- Protocolos sobre Ethernet:] \hfill\newline
     Que protocolos de transporte e de aplicação deverão ser suportados
     na demonstração sobre Ethernet, por exemplo TCP, UDP ou protocolos
     de aplicação específicos?
 
-    \item[QV06 --- Placa de circuito impresso:]
+    \item[QV06 --- Placa de circuito impresso:] \hfill\newline
     É necessário desenvolver uma placa de circuito impresso
     (PCB) própria?
 
-    \item[QV07 --- Desempenho:]
+    \item[QV07 --- Desempenho:] \hfill\newline
     Existem métricas obrigatórias de desempenho? Em caso afirmativo,
     quais são os respetivos critérios de aceitação e condições
     de avaliação?
 \end{description}
-\endgroup
