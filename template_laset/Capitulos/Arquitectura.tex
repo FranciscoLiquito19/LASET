@@ -4,38 +4,83 @@
 \chapter{Arquitectura de Alto Nível}
 \label{cap:arquitectura}
 
-A arquitetura preliminar organiza o sistema em torno de um sistema
-central, ao qual se associam cinco interfaces de comunicação: I2C, RS232,
-RS485, CAN e Ethernet. O sistema central representa a unidade funcional
-responsável pelas operações de leitura e escrita, enquanto cada interface
-estabelece a ligação aos dispositivos ou redes externas correspondentes.
+A arquitetura preliminar representa um \textit{gateway} embebido
+multiprotocolo com interfaces I2C, RS232, RS485, CAN e Ethernet. As funções
+de leitura e escrita articulam-se com o processamento da informação
+recebida e com o encaminhamento para outra interface, segundo operações
+e mapeamentos definidos. A Figura~\ref{fig:arquitetura-preliminar}
+apresenta o percurso funcional de uma operação de encaminhamento.
 
-Esta representação delimita os principais blocos funcionais e as
-respetivas ligações ao exterior. A organização interna desses blocos e a
-sua implementação concreta serão definidas após o estudo do Estado da Arte
-e a consolidação dos requisitos do projeto.
-
-% TODO: substituir o espaço reservado por um diagrama dos blocos abstratos e das respetivas ligações.
 \begin{figure}[htbp]
     \centering
-    \fbox{%
-        \parbox{0.88\linewidth}{%
-            \centering
-            \textbf{Diagrama de arquitetura a desenvolver}
-            \par\medskip
-            Sistema central
-            \par\smallskip
-            \raggedright
-            Interfaces associadas ao sistema central:
-            \begin{itemize}
-                \item I2C: ligação a dispositivos ou redes externas;
-                \item RS232: ligação a dispositivos ou redes externas;
-                \item RS485: ligação a dispositivos ou redes externas;
-                \item CAN: ligação a dispositivos ou redes externas;
-                \item Ethernet: ligação a dispositivos ou redes externas.
-            \end{itemize}
-        }%
-    }
-    \caption{Espaço reservado ao diagrama da arquitetura preliminar.}
+    \small
+    \fbox{\parbox{0.80\linewidth}{\centering
+        \textbf{Interface de origem}\\
+        I2C, RS232, RS485, CAN ou Ethernet}}
+    \par\smallskip
+    $\downarrow$
+    \par\smallskip
+    \fbox{\parbox{0.80\linewidth}{\centering
+        \textbf{Módulos de interface}\\
+        Leitura / receção}}
+    \par\smallskip
+    $\downarrow$
+    \par\smallskip
+    \fbox{\parbox{0.80\linewidth}{\centering
+        \textbf{Processamento / normalização}\\
+        Segundo a operação definida}}
+    \par\smallskip
+    $\downarrow$
+    \par\smallskip
+    \fbox{\parbox{0.80\linewidth}{\centering
+        \textbf{Decisão de encaminhamento}\\
+        Condicionada ao mapeamento e ao destino}}
+    \par\smallskip
+    $\downarrow$
+    \par\smallskip
+    \fbox{\parbox{0.80\linewidth}{\centering
+        \textbf{Módulos de interface}\\
+        Escrita / transmissão}}
+    \par\smallskip
+    $\downarrow$
+    \par\smallskip
+    \fbox{\parbox{0.80\linewidth}{\centering
+        \textbf{Interface de destino selecionada}\\
+        Conforme a operação de encaminhamento}}
+    \caption{Percurso funcional de encaminhamento no gateway multiprotocolo.}
     \label{fig:arquitetura-preliminar}
 \end{figure}
+
+Os módulos de interface asseguram a ligação aos dispositivos ou redes
+externas e as operações de receção e transmissão de cada tecnologia.
+A sua representação em dois pontos do diagrama distingue as funções
+de entrada e saída; não impõe a duplicação de componentes nem uma
+organização física concreta.
+
+O bloco de processamento interpreta e transforma a informação segundo
+a operação definida. Quando necessário, pode efetuar normalização,
+preservando os dados e metadados exigidos pela operação de destino.
+Esta função não impõe uma representação interna comum a todas as
+tecnologias nem uma estrutura de dados específica.
+
+A decisão de encaminhamento determina se a informação processada pode
+ser enviada para o destino previsto, de acordo com o mapeamento
+estabelecido e com as características das interfaces e dos protocolos
+envolvidos. Nem todas as mensagens podem necessariamente ser
+encaminhadas para todas as interfaces. Na ausência de um mapeamento
+válido, a informação não é encaminhada para esse destino. As operações
+de leitura e processamento também podem existir sem transmissão
+posterior.
+
+O percurso representado não pressupõe uma correspondência de uma trama
+de entrada para uma trama de saída. Conforme a operação e os protocolos
+selecionados, podem ser necessários delimitação de tramas
+(\textit{framing}), segmentação, armazenamento temporário
+(\textit{buffering}), controlo de fluxo e interpretação de protocolos
+superiores. A distribuição concreta destes mecanismos pelos blocos
+será definida na fase de projeto.
+
+Esta representação é funcional e mantém em aberto a plataforma de
+execução, os componentes, a organização interna dos dados e os recursos
+de armazenamento. Os pares de interfaces ou protocolos e os mapeamentos
+a demonstrar serão concretizados após validação dos requisitos.

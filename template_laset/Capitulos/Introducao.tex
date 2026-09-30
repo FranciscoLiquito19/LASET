@@ -48,9 +48,38 @@ forma coerente os mecanismos de acesso aos equipamentos, facilitando a
 integração e a evolução de sistemas com diferentes tecnologias de
 comunicação.
 
+O sistema pretendido assume a função de um \textit{gateway} embebido
+multiprotocolo: além da leitura e escrita, deve permitir o processamento
+da informação recebida e o seu encaminhamento entre interfaces quando
+exista uma operação tecnicamente definida e semanticamente coerente.
+O encaminhamento depende das características da origem e do destino e
+do mapeamento estabelecido entre ambos. Não se pressupõe conversão entre
+todos os pares de interfaces, nem correspondência de uma trama recebida
+para uma trama transmitida.
+
 \section{Cenários de aplicação}
 
-\textit{TODO: definir os cenários de aplicação após validação do âmbito do projeto.}
+Os cenários seguintes ilustram utilizações possíveis do sistema. São
+exemplos conceptuais, independentes da plataforma de execução, e não
+fixam a implementação nem os pares de interfaces a demonstrar.
+
+\begin{itemize}
+    \item Aquisição de informação através de uma interface local, como
+    I2C, seguida de processamento e disponibilização através de Ethernet,
+    segundo uma operação definida e os protocolos superiores que vierem
+    a ser selecionados.
+
+    \item Receção de informação através de uma interface série ou CAN
+    e encaminhamento para outra interface, quando exista um mapeamento
+    que preserve o significado da informação necessário à operação de
+    destino.
+
+    \item Utilização como plataforma experimental para estudar diferenças
+    de delimitação de tramas (\textit{framing}), temporização,
+    endereçamento ou identificação e débito efetivo
+    (\textit{throughput}) entre as tecnologias, em condições de teste
+    definidas.
+\end{itemize}
 
 \section{Objectivos}
 
@@ -58,7 +87,8 @@ comunicação.
 
 Estudar e desenvolver um sistema capaz de realizar operações de leitura
 e escrita através das tecnologias de comunicação I2C, RS232, RS485,
-CAN e Ethernet.
+CAN e Ethernet, de processar a informação recebida e de a encaminhar
+entre interfaces de acordo com operações e mapeamentos definidos.
 
 \subsection{Objetivos Específicos}
 
@@ -73,14 +103,19 @@ específicos:
     identificando as suas implicações para a integração num mesmo sistema.
 
     \item Definir uma arquitetura de integração das cinco interfaces,
-    identificando os blocos funcionais e as respetivas ligações.
+    identificando os blocos de interface, processamento e decisão de
+    encaminhamento e as respetivas ligações.
 
     \item Implementar as funções de comunicação necessárias à transmissão
     e receção de dados através de cada uma das cinco interfaces.
 
+    \item Definir e implementar operações de processamento e encaminhamento
+    entre os pares de interfaces ou protocolos selecionados para
+    demonstração, explicitando os mapeamentos e a informação a preservar.
+
     \item Validar experimentalmente as operações de transmissão e receção
-    em cada interface, de acordo com os requisitos que venham a ser
-    consolidados.
+    em cada interface e as operações de processamento e encaminhamento
+    definidas, de acordo com os requisitos que venham a ser consolidados.
 \end{enumerate}
 
 \section{Estrutura do Relatório}

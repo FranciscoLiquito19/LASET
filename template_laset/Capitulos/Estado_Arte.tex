@@ -117,8 +117,10 @@ envia um estado recessivo e observa um dominante cede o acesso, sem
 destruir a trama vencedora~\cite{cia_can_cc}.
 
 A deteção de erros inclui verificação por CRC, confirmação de receção
-e monitorização dos bits. A sinalização de erro permite repetir uma
-trama afetada; o confinamento de falhas pode colocar um nó em estado
+e monitorização dos bits. A deteção de um erro invalida a trama no nó
+que o deteta e pode desencadear a sua retransmissão automática pelo
+transmissor, de acordo com os mecanismos de tratamento de erros e o
+estado do controlador; o confinamento de falhas pode colocar um nó em estado
 \textit{bus-off}, impedindo que continue a transmitir. Estes mecanismos
 e a arbitragem por prioridade favorecem o controlo embebido,
 nomeadamente em veículos~\cite{cia_can_cc}.
