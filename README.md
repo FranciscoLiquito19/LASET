@@ -22,8 +22,9 @@ para resolver as citações e os índices.
 A fase de Análise de Requisitos está configurada em
 `template_laset/Outros/Identificacao.tex`: `\Requisitostrue`, `\Projectofalse`
 e `\Finalfalse`. Inclui Introdução, Estado da Arte, Análise de Requisitos e
-Arquitectura de Alto Nível. A inclusão do anexo segue o comportamento original
-do template; o esquema elétrico ainda não tem conteúdo.
+Arquitetura de Alto Nível. O ficheiro `Anexos/AnexoA.tex` está reservado para
+o esquema elétrico da fase de projeto/final e contém apenas comentários,
+pelo que não gera um capítulo vazio nesta fase.
 
 A versão anterior permanece em `main.tex`, `sections/` e `references/`, sem
 alterações. Para a compilar a partir da raiz, continua disponível

@@ -12,6 +12,9 @@ tecnologias de comunicação. O trabalho abrange I2C, RS232, RS485, CAN e
 Ethernet e é apresentado neste relatório numa fase preliminar de definição,
 centrada no enquadramento do problema e na organização do estudo e do
 desenvolvimento.
+% TODO: confirmar com os docentes o enquadramento deste trabalho nas
+% atividades do LSA/LaSET/INESC TEC ou num projeto associado; a identificação
+% institucional do template não estabelece esse vínculo específico.
 
 Os sistemas autónomos e os sistemas embebidos integram funções de
 perceção, processamento, controlo e atuação que dependem da troca de
@@ -58,30 +61,43 @@ todos os pares de interfaces, nem correspondência de uma trama recebida
 para uma trama transmitida.
 
 \section{Cenários de aplicação}
+\label{sec:cenarios-aplicacao}
 
 Os cenários seguintes ilustram utilizações possíveis do sistema. São
 exemplos conceptuais, independentes da plataforma de execução, e não
 fixam a implementação nem os pares de interfaces a demonstrar.
 
-\begin{itemize}
-    \item Aquisição de informação através de uma interface local, como
-    I2C, seguida de processamento e disponibilização através de Ethernet,
-    segundo uma operação definida e os protocolos superiores que vierem
-    a ser selecionados.
+\begin{description}
+    \item[CA01 --- Supervisão de sensores locais:] \hfill\newline
+    Um sistema de supervisão em rede pode necessitar de dados de um sensor
+    acessível apenas por uma interface local, como I2C. O \textit{gateway}
+    permite adquirir e processar esses dados e disponibilizá-los, por
+    exemplo, através de Ethernet. Assim, a supervisão pode utilizar os
+    dados sem implementar diretamente a ligação I2C, segundo o mapeamento
+    e os protocolos superiores que vierem a ser definidos.
 
-    \item Receção de informação através de uma interface série ou CAN
-    e encaminhamento para outra interface, quando exista um mapeamento
-    que preserve o significado da informação necessário à operação de
-    destino.
+    \item[CA02 --- Integração de equipamentos heterogéneos:] \hfill\newline
+    Um equipamento com interface série ou CAN pode produzir informação
+    necessária a um controlador ou equipamento de supervisão com outra
+    interface. O \textit{gateway} recebe essa informação e encaminha-a
+    para o destino segundo um mapeamento que preserve o seu significado.
+    Esta mediação permite integrar equipamentos sem uma interface de
+    comunicação comum, desde que as operações de origem e destino sejam
+    compatíveis com o mapeamento definido.
 
-    \item Utilização como plataforma experimental para estudar diferenças
-    de delimitação de tramas (\textit{framing}), temporização,
-    endereçamento ou identificação e débito efetivo
-    (\textit{throughput}) entre as tecnologias, em condições de teste
-    definidas.
-\end{itemize}
+    \item[CA03 --- Plataforma de ensaio multiprotocolo:] \hfill\newline
+    Num contexto de desenvolvimento e integração de equipamentos, pode
+    ser necessário caracterizar a comunicação entre dispositivos com
+    interfaces distintas. O \textit{gateway} pode funcionar como plataforma
+    de ensaio, recebendo e processando informação desses dispositivos e,
+    quando previsto, encaminhando-a para um equipamento de ensaio.
+    A observação dessas operações permite estudar diferenças de delimitação
+    de tramas (\textit{framing}), temporização, endereçamento e débito
+    efetivo (\textit{throughput}), apoiando a identificação de limitações
+    antes da integração no sistema de destino.
+\end{description}
 
-\section{Objectivos}
+\section{Objetivos}
 
 \subsection{Objetivo Geral}
 
@@ -96,35 +112,45 @@ Para concretizar o objetivo geral, estabelecem-se os seguintes objetivos
 específicos:
 
 \begin{enumerate}
-    \item Estudar as características de I2C, RS232, RS485, CAN e Ethernet
+    \item \label{obj:estudo-tecnologias}
+    Estudar as características de I2C, RS232, RS485, CAN e Ethernet
     relevantes para a realização de operações de comunicação.
 
-    \item Analisar as diferenças e limitações das cinco tecnologias,
+    \item \label{obj:analise-limitacoes}
+    Analisar as diferenças e limitações das cinco tecnologias,
     identificando as suas implicações para a integração num mesmo sistema.
 
-    \item Definir uma arquitetura de integração das cinco interfaces,
+    \item \label{obj:arquitetura}
+    Definir uma arquitetura de integração das cinco interfaces,
     identificando os blocos de interface, processamento e decisão de
     encaminhamento e as respetivas ligações.
 
-    \item Implementar as funções de comunicação necessárias à transmissão
+    \item \label{obj:comunicacao}
+    Implementar as funções de comunicação necessárias à transmissão
     e receção de dados através de cada uma das cinco interfaces.
 
-    \item Definir e implementar operações de processamento e encaminhamento
+    \item \label{obj:processamento-encaminhamento}
+    Definir e implementar operações de processamento e encaminhamento
     entre os pares de interfaces ou protocolos selecionados para
     demonstração, explicitando os mapeamentos e a informação a preservar.
 
-    \item Validar experimentalmente as operações de transmissão e receção
+    \item \label{obj:validacao}
+    Validar experimentalmente as operações de transmissão e receção
     em cada interface e as operações de processamento e encaminhamento
     definidas, de acordo com os requisitos que venham a ser consolidados.
 \end{enumerate}
 
 \section{Estrutura do Relatório}
 
-O Capítulo~\ref{cap:introducao} apresenta o enquadramento, a motivação
-e os objetivos do trabalho. O Capítulo~\ref{cap:estado-arte} organiza
-o Estado da Arte sobre as tecnologias abrangidas.
-O Capítulo~\ref{cap:requisitos} distingue as capacidades previstas,
-as propostas preliminares e as questões a esclarecer com os docentes.
-Por fim, o Capítulo~\ref{cap:arquitectura} apresenta os blocos funcionais
-abstratos da Arquitetura de Alto Nível, cuja concretização depende
-do estudo e da consolidação dos requisitos.
+Nesta fase de Análise de Requisitos, o relatório inclui quatro capítulos.
+O Capítulo~\ref{cap:introducao} apresenta o enquadramento, a motivação,
+os cenários de aplicação e os objetivos do trabalho.
+O Capítulo~\ref{cap:estado-arte} analisa as tecnologias abrangidas e as
+soluções existentes, comparando as suas características e limitações.
+O Capítulo~\ref{cap:requisitos} define os requisitos preliminares,
+relaciona-os com as suas origens e formas previstas de validação e
+identifica as decisões a esclarecer com os docentes.
+O Capítulo~\ref{cap:arquitectura} apresenta a visão conceptual do sistema,
+as interfaces externas, as funcionalidades e os tipos de operação,
+bem como o percurso funcional de encaminhamento e as características
+preliminares. A bibliografia reúne as fontes citadas.

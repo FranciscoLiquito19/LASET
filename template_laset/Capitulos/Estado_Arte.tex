@@ -13,12 +13,12 @@ interfaces como RS485 permitem interligar equipamentos em aplicações de
 automação industrial e de
 edifícios~\cite{nxp_um10204_2021,stiller_rs485_2015}.
 
-Neste contexto, importa distinguir a camada física, que caracteriza a
-sinalização elétrica, a organização da ligação entre os participantes e
-o protocolo de aplicação, que atribui significado aos dados trocados.
-As características de uma interface elétrica não determinam, por si só,
-o protocolo de aplicação
-adotado~\cite{dodson_rs232_2023,stiller_rs485_2015}.
+Neste contexto, importa distinguir a camada física, relativa à transmissão
+de sinais no meio, da camada de ligação de dados, que organiza a
+transferência de tramas e o acesso ao meio. O protocolo de aplicação
+define as operações e o significado dos dados trocados. A existência de
+interfaces elétricas compatíveis não garante compatibilidade nas camadas
+superiores~\cite{dodson_rs232_2023,stiller_rs485_2015,ieee_8023_2018}.
 
 Estas tecnologias não ocupam todas o mesmo âmbito na comunicação.
 Enquanto o I2C inclui regras próprias de transferência no barramento,
@@ -32,12 +32,12 @@ interfaces~\cite{nxp_um10204_2021,modbus_serial_2006}.
 O I2C utiliza um barramento série síncrono partilhado constituído por duas
 linhas: SDA, destinada à transferência de dados, e SCL, utilizada para o
 sinal de relógio. Nos modos \textit{Standard-mode}, \textit{Fast-mode} e
-\textit{Fast-mode Plus}, a sinalização baseia-se em saídas de dreno ou
+\textit{Fast-mode Plus}, a sinalização baseia-se tipicamente em saídas de dreno ou
 coletor aberto e na polarização das linhas por
 \textit{pull-up}~\cite[sec.~3.1]{nxp_um10204_2021}.
 
 Nestes modos, um controlador inicia cada transferência e gera o relógio;
-o destinatário é selecionado por endereço de 7 ou 10 bits. Os dados circulam em bytes,
+o dispositivo alvo é selecionado por endereço de 7 ou 10 bits. Os dados circulam em bytes,
 com indicação de confirmação ou não confirmação (ACK/NACK). A comunicação
 é bidirecional, existindo arbitragem quando vários controladores disputam
 o barramento~\cite[secs.~3.1.5--3.1.11]{nxp_um10204_2021}.
@@ -108,7 +108,7 @@ CAN\_H e CAN\_L, recomendando-se um barramento linear terminado nas
 extremidades. O alcance depende do débito e dos atrasos de propagação
 da ligação~\cite{cia_can_hs}.
 
-As tramas são difundidas no barramento e identificadas por um campo de
+Em Classical CAN e CAN FD, as tramas são difundidas no barramento e identificadas por um campo de
 11 ou 29 bits, associado ao conteúdo e à prioridade de acesso, em vez
 de um endereço obrigatório de destinatário. Um protocolo superior pode
 atribuir significado adicional a esse campo. Quando vários nós iniciam
@@ -166,7 +166,8 @@ identificam desafios de compatibilidade, normalização e avaliação.
 A revisão centra-se sobretudo em tecnologias sem fios; é aqui usada
 para enquadrar a interoperabilidade, sem transpor resultados de
 desempenho para I2C, RS485 ou CAN~\cite{abdelwahed_gateway_2025}.
-% Consulta limitada ao resumo, introdução e excertos disponibilizados pela editora.
+% A consulta deste trabalho ficou limitada ao resumo, à introdução e aos
+% excertos disponibilizados pela editora.
 
 A análise seguinte seleciona quatro exemplos com contributos distintos:
 duas plataformas programáveis e dois conversores para protocolos
@@ -258,6 +259,58 @@ pelo equipamento; não implica que pertença diretamente ao MCU ou MPU.
         \bottomrule
     \end{tabularx}
 \end{table}
+
+A Tabela~\ref{tab:custos-plataformas} reúne a informação económica
+disponível. \enquote{ND} significa informação de custo não determinada
+nas fontes consultadas, sem implicar custo nulo.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.12}
+    \caption{Informação económica disponível para as plataformas selecionadas.}
+    \label{tab:custos-plataformas}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.18\textwidth}*{2}{>{\raggedright\arraybackslash}X}@{}}
+        \toprule
+        Sistema & Custo de aquisição & Utilização / observações \\
+        \midrule
+        GoWired~\cite{domatic_gowired}
+        & ND.
+        & Utilização: ND; lançamento futuro anunciado. \\
+        \addlinespace
+        IOT-GATE-iMX7~\cite{compulab_imx7}
+        & 129~USD por unidade; configuração mínima, encomendas de 1000 unidades.
+        & Utilização: ND; não constitui cotação do protótipo. \\
+        \addlinespace
+        MGate 5105-MB-EIP~\cite{moxa_mgate5105}
+        & ND.
+        & Utilização: ND. \\
+        \addlinespace
+        Anybus AB7838-F~\cite{hms_ab7838}
+        & ND.
+        & Utilização: ND. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+A página da CompuLab, consultada em 1 de outubro de 2026, publica o valor
+de 129~USD por unidade para encomendas de 1000 unidades da configuração
+mínima: 512~MB de RAM, 4~GB de eMMC e uma porta Ethernet. O fabricante
+indica acréscimos por opções e fatores para outras quantidades, bem como
+a possibilidade de alteração dos preços. Este valor não constitui uma
+cotação para a configuração do futuro
+protótipo~\cite{compulab_imx7}.
+
+Nas páginas dos restantes produtos não foi determinado um preço de
+aquisição. Também não foi determinado um custo total de utilização
+comparável para qualquer das quatro soluções. A disponibilidade de
+software modificável no GoWired ou de uma ferramenta de configuração
+incluída no Anybus não permite concluir que a utilização seja
+gratuita~\cite{domatic_gowired,hms_ab7838}.
+A informação disponível limita a comparação económica: seria necessário
+definir a configuração, os acessórios, o esforço de integração e
+manutenção e as condições de operação para comparar custos totais.
 
 \subsection{Normalização de Dados na Literatura Académica}
 
@@ -367,6 +420,7 @@ as variantes.
 \end{table}
 
 \section{Síntese Crítica do Estado da Arte}
+\label{sec:sintese-estado-arte}
 
 Os exemplos analisados evidenciam duas questões distintas:
 disponibilizar interfaces e assegurar interoperabilidade. As plataformas
@@ -388,7 +442,8 @@ ligação~\cite{ti_rs485_an1057_2013,modbus_serial_2006}.
 Também não se pode pressupor correspondência de uma trama recebida
 para uma trama transmitida. TCP ilustra esta diferença: transporta
 um fluxo de bytes e não preserva os limites das operações de escrita
-da aplicação~\cite[sec.~3.7]{eddy_tcp_2022}.
+da aplicação~\cite[sec.~3.7]{eddy_tcp_2022}. A sua utilização neste exemplo
+não constitui uma escolha de protocolo para o projeto.
 
 Da comparação decorre que o encaminhamento pode exigir delimitação,
 segmentação, armazenamento temporário (\textit{buffering}) e controlo
@@ -406,6 +461,12 @@ que essa representação deve preservar, evitando assumir que origem,
 destino, comprimento e dados bastam para todos os casos. A abstração
 pode facilitar a integração, mas exige avaliar a perda de informação
 específica e o processamento adicional; esta possibilidade mantém-se
-em aberto até à consolidação dos requisitos~\cite{abdelwahed_gateway_2025}.
-SPI permanece apenas uma possível extensão, sem integrar os requisitos
-aprovados nesta fase.
+em aberto até à consolidação dos requisitos.
+
+Para a Análise de Requisitos, estas conclusões implicam distinguir o
+suporte de leitura e escrita em cada interface das operações concretas
+de processamento e encaminhamento. Cada operação terá de identificar
+os protocolos, os papéis dos participantes, o mapeamento e a informação
+a preservar, permitindo comparar o resultado observado com o esperado.
+A observação de erros e resultados deverá apoiar essa verificação;
+as condições de ensaio e os critérios quantitativos permanecem por validar.
