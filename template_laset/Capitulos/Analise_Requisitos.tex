@@ -1,0 +1,241 @@
+%-----------------------------------------------------------
+%   Capítulo 3 - Análise de Requisitos
+%-----------------------------------------------------------
+\chapter{Análise de Requisitos}
+\label{cap:requisitos}
+
+Os requisitos seguintes resultam dos objetivos específicos da Introdução,
+dos cenários CA01--CA03 (Secção~\ref{sec:cenarios-aplicacao}) e das
+conclusões do Estado da Arte (Secção~\ref{sec:sintese-estado-arte}).
+Constituem uma especificação preliminar: as operações a demonstrar,
+as configurações de comunicação e os critérios de aceitação dependem
+da resolução das questões QV01--QV07 e da validação com os docentes.
+
+\section{Requisitos Funcionais}
+
+Os requisitos funcionais seguintes delimitam as capacidades de comunicação
+e de tratamento de informação de um \textit{gateway} embebido
+multiprotocolo. O âmbito inclui leitura, escrita, processamento e
+encaminhamento entre interfaces, condicionado aos mapeamentos definidos.
+Para verificar RF01--RF07, será necessário fixar os papéis do sistema
+e dos equipamentos de teste, as configurações e os protocolos de cada
+ligação. O suporte das cinco interfaces não estabelece, por si só,
+um requisito de utilização simultânea; essa condição deve ser validada.
+
+\begin{description}
+    \item[RF01 --- Suporte para I2C:] \hfill\newline
+    O sistema deve suportar comunicação através de uma interface I2C.
+
+    \item[RF02 --- Suporte para RS232:] \hfill\newline
+    O sistema deve suportar comunicação através de uma interface RS232.
+
+    \item[RF03 --- Suporte para RS485:] \hfill\newline
+    O sistema deve suportar comunicação através de uma interface RS485.
+
+    \item[RF04 --- Suporte para CAN:] \hfill\newline
+    O sistema deve suportar comunicação através de uma interface CAN.
+
+    \item[RF05 --- Suporte para Ethernet:] \hfill\newline
+    O sistema deve suportar comunicação através de uma interface Ethernet.
+
+    \item[RF06 --- Escrita e transmissão:] \hfill\newline
+    O sistema deve permitir operações de escrita ou transmissão de dados
+    através de cada uma das cinco interfaces previstas, de acordo com as
+    características da respetiva tecnologia.
+
+    \item[RF07 --- Leitura e receção:] \hfill\newline
+    O sistema deve permitir operações de leitura ou receção de dados
+    através de cada uma das cinco interfaces previstas, de acordo com as
+    características da respetiva tecnologia.
+
+    \item[RF08 --- Processamento de informação:] \hfill\newline
+    O sistema deve permitir processar informação recebida por uma interface
+    antes da sua eventual transmissão. Para cada operação de processamento
+    suportada, devem ser especificados os dados de entrada e os resultados
+    esperados, de modo a permitir verificar o resultado obtido.
+
+    \item[RF09 --- Encaminhamento entre interfaces:] \hfill\newline
+    O sistema deve permitir encaminhar informação entre interfaces
+    diferentes para as operações de encaminhamento previamente definidas.
+    Para cada operação devem estar especificados a origem, o destino,
+    os protocolos envolvidos, a transformação/mapeamento a aplicar e o
+    resultado esperado. Na ausência de um mapeamento válido, a informação
+    não deve ser encaminhada para esse destino.
+
+    \item[RF10 --- Preservação da informação necessária:] \hfill\newline
+    O processamento e o encaminhamento devem preservar os dados e metadados
+    necessários à operação da interface ou protocolo de destino, mantendo
+    o seu significado de acordo com o mapeamento definido. Esses elementos
+    e as transformações permitidas devem ser identificados para cada
+    operação, permitindo comparar a informação de origem com o resultado
+    no destino.
+\end{description}
+
+Estes requisitos não pressupõem encaminhamento entre todos os pares de
+interfaces, nem correspondência de uma trama recebida para uma trama
+transmitida. A representação interna da informação permanece por definir.
+
+\section{Requisitos Não Funcionais}
+
+Os requisitos não funcionais seguintes constituem propostas preliminares,
+a validar com os docentes. A formulação identifica propriedades passíveis
+de inspeção ou ensaio, sem fixar valores ainda não aprovados. Os critérios
+quantitativos, quando aplicáveis, dependem da validação dos requisitos.
+
+\begin{description}
+    \item[RNF01 --- Modularidade:] \hfill\newline
+    A organização do sistema deverá distinguir as responsabilidades
+    associadas a cada interface das funções de processamento e
+    encaminhamento, com fronteiras e dependências identificadas
+    na arquitetura e na implementação.
+
+    \item[RNF02 --- Manutenção:] \hfill\newline
+    A documentação deverá identificar as responsabilidades, as entradas,
+    as saídas e as dependências das funções implementadas, bem como as
+    configurações necessárias para reproduzir as operações de comunicação.
+
+    \item[RNF03 --- Extensibilidade:] \hfill\newline
+    A arquitetura deverá identificar os pontos de extensão e as
+    dependências a alterar para integrar novas operações de comunicação.
+
+    \item[RNF04 --- Fiabilidade:] \hfill\newline
+    Nas condições de funcionamento a definir, o sistema deverá produzir
+    os resultados previstos para as operações e permitir identificar
+    as falhas detetadas.
+
+    \item[RNF05 --- Teste e diagnóstico:] \hfill\newline
+    O sistema deverá permitir observar o resultado das operações de
+    comunicação, processamento e encaminhamento e identificar as operações
+    associadas às falhas detetadas, para apoiar a verificação e o diagnóstico.
+    A forma de acesso a essa informação permanece por definir; não se
+    pressupõe uma interface de diagnóstico específica.
+\end{description}
+
+\section{Rastreabilidade dos Requisitos}
+
+A Tabela~\ref{tab:rastreabilidade-requisitos} relaciona os requisitos
+com os objetivos numerados na Introdução, os cenários identificados e
+a síntese do Estado da Arte. As formas de validação são preliminares;
+os dados de ensaio e os resultados esperados deverão ser definidos
+antes da execução dos testes.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.12}
+    \caption{Origem e forma prevista de validação dos requisitos.}
+    \label{tab:rastreabilidade-requisitos}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{2}{>{\raggedright\arraybackslash}X}@{}}
+        \toprule
+        Requisito & Origem / Justificação & Forma prevista de validação \\
+        \midrule
+        RF01--RF05
+        & Objetivos~\ref{obj:estudo-tecnologias} e~\ref{obj:comunicacao}:
+        abrangência das cinco tecnologias.
+        & Teste de comunicação com um equipamento de teste por interface,
+        nas configurações acordadas. \\
+        \addlinespace
+        RF06--RF07
+        & Objetivos~\ref{obj:comunicacao} e~\ref{obj:validacao};
+        CA01--CA03: aquisição e transferência de dados.
+        & Testes de escrita/transmissão e leitura/receção em cada interface,
+        comparando dados enviados e recebidos. \\
+        \addlinespace
+        RF08
+        & Objetivo~\ref{obj:processamento-encaminhamento};
+        CA01--CA02: tratamento da informação para a utilização prevista.
+        & Testes funcionais com entradas e resultados esperados definidos
+        para cada operação. \\
+        \addlinespace
+        RF09--RF10
+        & Objetivo~\ref{obj:processamento-encaminhamento}; CA02;
+        síntese do Estado da Arte: mapeamento e preservação de significado.
+        & Testes de encaminhamento com e sem mapeamento válido; comparação
+        dos dados e metadados especificados na origem e no destino. \\
+        \addlinespace
+        RNF01, RNF03
+        & Objetivo~\ref{obj:arquitetura}; síntese do Estado da Arte:
+        heterogeneidade das funções de comunicação.
+        & Inspeção da arquitetura e do software; análise de um caso
+        de extensão acordado, comparando as dependências alteradas
+        com os pontos de extensão identificados. \\
+        \addlinespace
+        RNF02
+        & Objetivo~\ref{obj:arquitetura} e problema de manutenção
+        identificado no enquadramento.
+        & Inspeção da documentação e da correspondência com
+        as funções e configurações implementadas. \\
+        \addlinespace
+        RNF04
+        & Objetivos~\ref{obj:analise-limitacoes} e~\ref{obj:validacao};
+        CA03: avaliação sob condições definidas.
+        & Ensaios repetidos e comparação dos resultados esperados e
+        observados. Condições, falhas a ensaiar, número de repetições
+        e limites de aceitação a validar. \\
+        \addlinespace
+        RNF05
+        & Objetivo~\ref{obj:validacao}; CA03:
+        observação dos resultados e das limitações.
+        & Testes de observação dos resultados e de associação
+        das falhas detetadas às operações. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{Restrições do Projeto}
+
+Os requisitos funcionais descrevem as capacidades pretendidas, enquanto
+as restrições delimitariam as condições obrigatórias de implementação.
+Não estão documentadas restrições técnicas confirmadas relativas à
+plataforma, aos componentes, ao orçamento ou às condições de instalação.
+
+A plataforma de execução, a organização concreta das interfaces e os
+pares de interfaces e protocolos a demonstrar permanecem por definir,
+assim como os respetivos mapeamentos. Estas decisões em aberto não
+constituem, por si só, restrições técnicas. As restrições adicionais
+deverão ser registadas após confirmação com os docentes.
+
+\section{Requisitos a Validar com os Docentes}
+
+As questões seguintes têm de ser resolvidas com os docentes antes de
+congelar a especificação final. Destinam-se a esclarecer o âmbito do
+sistema e a estabelecer requisitos verificáveis, sem antecipar decisões
+de implementação. As respostas deverão concretizar as operações e os
+critérios de aceitação e permitir validar as propostas RNF01--RNF05.
+
+\begin{description}
+    \item[QV01 --- Operações de comunicação:] \hfill\newline
+    Que pares de interfaces e protocolos deverão ser demonstrados?
+    Que mapeamentos ou transformações concretas deverão ser implementados
+    entre a origem e o destino? Que papéis e configurações serão usados
+    em cada interface e será exigida operação simultânea entre interfaces?
+
+    \item[QV02 --- Protocolos normalizados:] \hfill\newline
+    É obrigatória a utilização de protocolos normalizados, como Modbus?
+    Em caso afirmativo, quais?
+
+    \item[QV03 --- Plataforma de execução:] \hfill\newline
+    Existe um requisito de utilização de microcontrolador ou é permitida
+    uma plataforma com Linux? Existem outras restrições obrigatórias
+    à plataforma de execução?
+
+    \item[QV04 --- Variante de CAN:] \hfill\newline
+    O suporte para CAN deve abranger Classical CAN, CAN FD ou ambas
+    as variantes?
+
+    \item[QV05 --- Protocolos sobre Ethernet:] \hfill\newline
+    Que protocolos de transporte e de aplicação deverão ser suportados
+    na demonstração sobre Ethernet, por exemplo TCP, UDP ou protocolos
+    de aplicação específicos?
+
+    \item[QV06 --- Placa de circuito impresso:] \hfill\newline
+    É necessário desenvolver uma placa de circuito impresso
+    (PCB) própria?
+
+    \item[QV07 --- Desempenho e fiabilidade:] \hfill\newline
+    Existem métricas obrigatórias de desempenho? Em caso afirmativo,
+    quais são os respetivos critérios de aceitação e condições
+    de avaliação? Que condições de funcionamento e critérios de
+    fiabilidade deverão ser usados nos ensaios de RNF04?
+\end{description}

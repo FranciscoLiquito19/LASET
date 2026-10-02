@@ -6,19 +6,37 @@ Autores: Francisco Liquito e Pedro Ribeiro. Ano letivo: 2026/2027.
 
 ## Compilar
 
-Instalar uma distribuição LaTeX com os pacotes usados em `main.tex`, além de `latexmk` e `biber`. A bibliografia usa `biblatex` com estilo IEEE.
+O relatório migrado usa o template oficial em `template_laset/Modelo_LaSET.tex`.
+Instalar uma distribuição LaTeX com os pacotes usados nesse ficheiro, além de
+`latexmk` e BibTeX. A bibliografia mantém o estilo `unsrt` do template.
 
 ```sh
-latexmk -pdf -outdir=build main.tex
+cd template_laset
+latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error Modelo_LaSET.tex
 ```
 
-O PDF é gerado em `build/main.pdf`. A pasta `build/` e os ficheiros temporários não são versionados.
+O PDF é gerado em `template_laset/Modelo_LaSET.pdf` (caminho relativo à raiz do
+repositório). O `latexmk` executa pdfLaTeX, BibTeX e as passagens necessárias
+para resolver as citações e os índices.
+
+A fase de Análise de Requisitos está configurada em
+`template_laset/Outros/Identificacao.tex`: `\Requisitostrue`, `\Projectofalse`
+e `\Finalfalse`. Inclui Introdução, Estado da Arte, Análise de Requisitos e
+Arquitetura de Alto Nível. O ficheiro `Anexos/AnexoA.tex` está reservado para
+o esquema elétrico da fase de projeto/final e contém apenas comentários,
+pelo que não gera um capítulo vazio nesta fase.
+
+A versão anterior permanece em `main.tex`, `sections/` e `references/`, sem
+alterações. Para a compilar a partir da raiz, continua disponível
+`latexmk -pdf -outdir=build main.tex`, com `biblatex`/Biber e estilo IEEE.
 
 ## Estrutura
 
-- `main.tex`: configuração, dados da capa e organização do relatório.
-- `sections/`: conteúdo das secções.
-- `references/referencias.bib`: referências bibliográficas.
+- `template_laset/Modelo_LaSET.tex`: ficheiro principal do relatório migrado.
+- `template_laset/Capitulos/`: conteúdo organizado pelos capítulos oficiais.
+- `template_laset/Outros/Identificacao.tex`: fase, título e autores.
+- `template_laset/bibliografia.bib`: referências migradas para BibTeX.
+- `main.tex`, `sections/` e `references/`: versão anterior preservada.
 
 ## Trabalhar em conjunto
 
@@ -39,7 +57,7 @@ git switch -c descricao-da-alteracao
 Depois de editar e compilar, guardar apenas os ficheiros pretendidos e publicar o ramo:
 
 ```sh
-git add main.tex sections/ references/
+git add template_laset/ README.md
 git commit -m "Descrever a alteração"
 git push -u origin descricao-da-alteracao
 ```
