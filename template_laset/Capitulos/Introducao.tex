@@ -51,39 +51,50 @@ forma coerente os mecanismos de acesso aos equipamentos, facilitando a
 integração e a evolução de sistemas com diferentes tecnologias de
 comunicação.
 
-O sistema pretendido assume a função de um \textit{gateway} embebido
-multiprotocolo: além da leitura e escrita, deve permitir o processamento
-da informação recebida e o seu encaminhamento entre interfaces quando
-exista uma operação tecnicamente definida e semanticamente coerente.
-O encaminhamento depende das características da origem e do destino e
-do mapeamento estabelecido entre ambos. Não se pressupõe conversão entre
-todos os pares de interfaces, nem correspondência de uma trama recebida
-para uma trama transmitida.
+O sistema pretendido assume a função de um \textit{gateway} multiprotocolo,
+com Ethernet como ligação principal a um computador ou sistema central.
+Através dessa ligação, o sistema central deve conseguir enviar comandos
+e receber dados ou respostas de dispositivos ligados a CAN, RS485, RS232
+e I2C. Pretende-se um acesso tão uniforme quanto possível, mantendo
+explícitos os parâmetros necessários a cada interface e protocolo.
+O encaminhamento deve preservar o significado da informação e pode
+exigir adaptação às características da origem e do destino; não se
+pressupõe correspondência de uma trama recebida para uma trama transmitida.
+A gestão de comunicações concorrentes e de diferenças de taxa faz parte
+do problema. O encaminhamento entre outras interfaces constitui uma
+possibilidade de extensão, sem tornar obrigatória a conversão entre
+todos os pares.
 
 \section{Cenários de aplicação}
 \label{sec:cenarios-aplicacao}
 
-Os cenários seguintes ilustram utilizações possíveis do sistema. São
-exemplos conceptuais, independentes da plataforma de execução, e não
-fixam a implementação nem os pares de interfaces a demonstrar.
+Os cenários seguintes ilustram o caso de utilização principal e possíveis
+extensões do sistema. São exemplos conceptuais, independentes da
+plataforma de execução. O caso base abrange a comunicação bidirecional
+entre Ethernet e cada uma das restantes quatro interfaces, sem fixar
+os protocolos de aplicação ou a implementação.
 
 \begin{description}
-    \item[CA01 --- Supervisão de sensores locais:] \hfill\newline
-    Um sistema de supervisão em rede pode necessitar de dados de um sensor
-    acessível apenas por uma interface local, como I2C. O \textit{gateway}
-    permite adquirir e processar esses dados e disponibilizá-los, por
-    exemplo, através de Ethernet. Assim, a supervisão pode utilizar os
-    dados sem implementar diretamente a ligação I2C, segundo o mapeamento
-    e os protocolos superiores que vierem a ser definidos.
+    \item[CA01 --- Comando e supervisão via Ethernet:] \hfill\newline
+    Um computador ou sistema central pode necessitar de comandar e
+    supervisionar dispositivos ligados a CAN, RS485, RS232 ou I2C.
+    Através de Ethernet, indica ao \textit{gateway} a interface de destino,
+    os dados ou comando e a informação de identificação ou endereçamento
+    aplicável. O \textit{gateway} transmite a informação ao dispositivo
+    e disponibiliza ao sistema central os dados ou respostas recebidos.
+    Esta mediação permite aceder, por uma ligação principal comum, a
+    equipamentos de barramento e a dispositivos locais, como sensores
+    I2C, respeitando as características de cada ligação.
 
     \item[CA02 --- Integração de equipamentos heterogéneos:] \hfill\newline
-    Um equipamento com interface série ou CAN pode produzir informação
-    necessária a um controlador ou equipamento de supervisão com outra
-    interface. O \textit{gateway} recebe essa informação e encaminha-a
-    para o destino segundo um mapeamento que preserve o seu significado.
+    Um equipamento com interface série pode produzir informação necessária
+    a outro equipamento com interface CAN. Como extensão ao caso base,
+    o \textit{gateway} poderá receber essa informação e encaminhá-la para
+    o destino segundo um mapeamento que preserve o seu significado.
     Esta mediação permite integrar equipamentos sem uma interface de
     comunicação comum, desde que as operações de origem e destino sejam
-    compatíveis com o mapeamento definido.
+    compatíveis com o mapeamento definido. O exemplo não constitui um
+    par de encaminhamento obrigatório para a primeira versão.
 
     \item[CA03 --- Plataforma de ensaio multiprotocolo:] \hfill\newline
     Num contexto de desenvolvimento e integração de equipamentos, pode
@@ -93,18 +104,20 @@ fixam a implementação nem os pares de interfaces a demonstrar.
     quando previsto, encaminhando-a para um equipamento de ensaio.
     A observação dessas operações permite estudar diferenças de delimitação
     de tramas (\textit{framing}), temporização, endereçamento e débito
-    efetivo (\textit{throughput}), apoiando a identificação de limitações
-    antes da integração no sistema de destino.
+    efetivo (\textit{throughput}), incluindo o comportamento com várias
+    comunicações ativas, apoiando a identificação de limitações antes
+    da integração no sistema de destino.
 \end{description}
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Estudar e desenvolver um sistema capaz de realizar operações de leitura
-e escrita através das tecnologias de comunicação I2C, RS232, RS485,
-CAN e Ethernet, de processar a informação recebida e de a encaminhar
-entre interfaces de acordo com operações e mapeamentos definidos.
+Estudar e desenvolver um \textit{gateway} multiprotocolo que permita a
+um computador ou sistema central realizar, através de Ethernet,
+operações de leitura e escrita com dispositivos ligados a I2C, RS232,
+RS485 e CAN, processando e encaminhando a informação nos dois sentidos
+com a adaptação necessária aos protocolos e destinos envolvidos.
 
 \subsection{Objetivos Específicos}
 
@@ -122,17 +135,21 @@ específicos:
 
     \item \label{obj:arquitetura}
     Definir uma arquitetura de integração das cinco interfaces,
+    com Ethernet como ligação principal ao sistema central,
     identificando os blocos de interface, processamento e decisão de
     encaminhamento e as respetivas ligações.
 
     \item \label{obj:comunicacao}
     Implementar as funções de comunicação necessárias à transmissão
-    e receção de dados através de cada uma das cinco interfaces.
+    e receção de dados através de cada uma das cinco interfaces,
+    incluindo a gestão de comunicações concorrentes e de diferenças
+    de taxa.
 
     \item \label{obj:processamento-encaminhamento}
     Definir e implementar operações de processamento e encaminhamento
-    entre os pares de interfaces ou protocolos selecionados para
-    demonstração, explicitando os mapeamentos e a informação a preservar.
+    bidirecional entre Ethernet e cada uma das restantes quatro
+    interfaces, explicitando a seleção de destino, as adaptações
+    necessárias e a informação a preservar.
 
     \item \label{obj:validacao}
     Validar experimentalmente as operações de transmissão e receção

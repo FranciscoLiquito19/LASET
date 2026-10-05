@@ -43,8 +43,10 @@ com indicação de confirmação ou não confirmação (ACK/NACK). A comunicaç�
 o barramento~\cite[secs.~3.1.5--3.1.11]{nxp_um10204_2021}.
 
 O reduzido número de linhas e o endereçamento integrado favorecem a
-ligação de periféricos, como sensores, memórias e expansores de entradas
-e saídas. A capacidade de expansão e a velocidade ficam condicionadas
+ligação local de periféricos, como sensores, memórias e expansores de
+entradas e saídas, habitualmente no mesmo equipamento. Este contexto de
+interligação entre circuitos distingue-se das redes distribuídas com
+CAN ou RS485. A capacidade de expansão e a velocidade ficam condicionadas
 pela capacitância do barramento e pelos tempos de subida dos
 sinais~\cite[secs.~2 e~7]{nxp_um10204_2021}.
 
@@ -157,6 +159,40 @@ monitorização e controlo. A adequação a sistemas embebidos e industriais
 exige, contudo, delimitar a variante física, a organização da rede e
 os serviços superiores necessários~\cite{ieee_8023_2018,simmons_ethernet_2008}.
 
+A validação de requisitos com os docentes estabelece Ethernet como
+ligação principal ao computador ou sistema central, com capacidade
+nominal mínima de 100~Mbit/s; Gigabit Ethernet é desejável. A família
+100BASE-T exemplifica Ethernet a 100~Mbit/s sobre pares entrançados;
+o requisito fixa a capacidade nominal, mantendo a variante PHY e o meio
+por selecionar. O débito nominal caracteriza a ligação,
+enquanto o débito útil depende também dos campos de controlo, dos
+intervalos entre tramas e dos protocolos
+superiores~\cite{simmons_ethernet_2008}. Por conseguinte, esta capacidade
+não garante uma latência ou um débito útil específicos do gateway, que
+dependem ainda da carga e do processamento.
+
+\section{Interface Física, Isolamento e Proteção}
+
+A presença de uma função de comunicação digital não assegura, por si só,
+os níveis elétricos exigidos pelo meio. RS232 requer emissores e recetores
+adequados às suas tensões; RS485 requer circuitos de interface diferencial;
+em CAN \textit{high-speed}, o transceiver realiza a ligação elétrica entre
+o controlador e CAN\_H/CAN\_L. Estas funções podem estar integradas ou
+exigir circuitos externos, conforme a plataforma, sem determinar nesta
+fase componentes específicos~\cite{dodson_rs232_2023,ti_rs485_an1057_2013,cia_can_hs}.
+
+Em ligações expostas ao ambiente industrial, a robustez depende também
+das diferenças de potencial entre massas e da exposição a ruído,
+descargas eletrostáticas (ESD) e sobretensões transitórias. A documentação
+de RS485 apresenta isolamento galvânico para evitar caminhos de corrente
+entre massas e proteção contra transientes dimensionada para as
+perturbações esperadas; isolamento e proteção devem ser avaliados em
+conjunto~\cite[secs.~1 e~6]{viviano_rs485_isolation_2018}.
+No projeto, esta análise deve abranger a proteção da eletrónica de
+controlo e a integridade da comunicação, de acordo com cada interface
+e ambiente de utilização. Não decorre daqui a obrigatoriedade de isolar
+todas as interfaces, nem a definição antecipada de níveis de imunidade.
+
 \section{Sistemas ou Plataformas Multiprotocolo}
 
 A literatura sobre \textit{gateways} multiprotocolo distingue a agregação
@@ -186,7 +222,8 @@ confirmação de disponibilidade comercial ou de desempenho
 experimental~\cite{domatic_gowired}.
 
 O CompuLab IOT-GATE-iMX7 representa uma plataforma com suporte Linux
-e interfaces configuráveis~\cite{compulab_imx7}.
+e interfaces configuráveis, incluindo uma ou duas portas Gigabit Ethernet
+e PoE opcional~\cite{compulab_imx7}.
 O seu manual evidencia uma limitação concreta: a opção CAN substitui
 a interface RS485. I2C e SPI são disponibilizados no conector de
 expansão P7; algumas funções alternativas partilham pinos, exigindo
@@ -239,7 +276,7 @@ pelo equipamento; não implica que pertença diretamente ao MCU ou MPU.
         IOT-GATE-iMX7~\cite{compulab_imx7,compulab_imx7_manual_2018}
         & i.MX~7Dual; suporte Linux.
         & RS232 e RS485 integradas; CAN opcional em substituição de RS485;
-        Ethernet conforme configuração; I2C e SPI em P7. CAN FD: NS.
+        uma ou duas Gigabit Ethernet; I2C e SPI em P7. CAN FD: NS.
         & Opção CAN exclui RS485; funções alternativas em P7 partilham
         pinos. A integração depende do software. \\
         \addlinespace
@@ -328,6 +365,40 @@ ou protocolo e uma representação intermédia. Esta interpretação
 não corresponde a uma arquitetura já validada para I2C, RS232, RS485,
 CAN e Ethernet~\cite{castellanos_gateway_2021}.
 
+\section{Concorrência e Adaptação de Taxas}
+
+A utilização de várias interfaces em simultâneo, anunciada por exemplo
+para as portas série do GoWired, coloca um problema de partilha dos
+recursos de processamento e transmissão~\cite{domatic_gowired}.
+Daí decorre a necessidade de gerir operações concorrentes e definir
+como são atendidas quando disputam recursos. A arbitragem do próprio
+barramento, como a prioridade dos identificadores CAN, não substitui
+essa gestão no interior do gateway~\cite{cia_can_cc}. No projeto, a
+política de prioridades terá de considerar os tempos de espera e evitar
+que uma comunicação impeça indefinidamente o progresso das restantes;
+esta necessidade não determina um sistema operativo ou escalonador.
+
+As diferenças de taxa podem ocorrer tanto na concentração de dados dos
+barramentos para Ethernet como no envio do sistema central para uma
+interface mais lenta. Se os dados chegam antes de poderem ser
+transmitidos, pode ser necessário armazenamento temporário
+(\textit{buffering}). Por balanço entre a informação recebida e escoada,
+um buffer finito absorve apenas desequilíbrios limitados: se a taxa de
+entrada exceder de forma sustentada a capacidade de saída, não pode
+garantir ausência de perdas. É necessário definir a carga admissível
+e o comportamento perante saturação, em vez de atribuir essa garantia
+apenas à existência de memória.
+
+O controlo de fluxo ou \textit{backpressure} pode limitar a produção de
+dados quando os protocolos e os participantes o permitem. Em TCP,
+a janela anunciada pelo recetor condiciona os dados que o emissor pode
+enviar e relaciona-se com o espaço de receção
+disponível~\cite[sec.~3.8.6]{eddy_tcp_2022}. Este mecanismo exemplifica
+uma possibilidade, sem assumir TCP no projeto nem a existência de
+controlo de fluxo equivalente em todas as interfaces. As condições de
+operação terão de compatibilizar taxas, armazenamento, prioridades e
+tempos de espera, mantendo em aberto os limites quantitativos.
+
 \section{Comparação das Tecnologias}
 
 As Tabelas~\ref{tab:comparacao-organizacao}
@@ -392,7 +463,7 @@ as variantes.
         I2C~\cite{nxp_um10204_2021}
         & Condicionados pelo modo, capacitância e tempos de subida.
         & Dependente da carga e dos níveis elétricos.
-        & Sensores, memórias e periféricos. \\
+        & Sensores, memórias e periféricos locais. \\
         \addlinespace
         RS232~\cite{ti_rs232_2002,dodson_rs232_2023}
         & Dependentes da capacitância e do cabo.
@@ -430,7 +501,12 @@ documentam pares de protocolos, papéis e mapeamentos
 concretos~\cite{compulab_imx7_manual_2018,moxa_mgate5105,hms_ab7838}.
 Por conseguinte, o conceito de \textit{gateway} embebido multiprotocolo
 em estudo deve ser delimitado pelas trocas de informação pretendidas,
-sem pressupor conversão arbitrária entre quaisquer interfaces.
+sem pressupor conversão arbitrária entre quaisquer interfaces. No âmbito
+confirmado na validação de requisitos com os docentes, Ethernet é a ligação principal ao
+sistema central, que envia comandos e recebe dados de CAN, RS485, RS232
+e I2C. O encaminhamento bidirecional entre Ethernet e cada uma destas
+interfaces constitui o núcleo obrigatório; outros pares são uma
+possibilidade de generalização a confirmar.
 
 As tecnologias diferem na delimitação de tramas (\textit{framing}),
 identificação, unidades de transferência, débito, temporização e
@@ -446,27 +522,32 @@ da aplicação~\cite[sec.~3.7]{eddy_tcp_2022}. A sua utilização neste exemplo
 não constitui uma escolha de protocolo para o projeto.
 
 Da comparação decorre que o encaminhamento pode exigir delimitação,
-segmentação, armazenamento temporário (\textit{buffering}) e controlo
-de fluxo, além da interpretação do protocolo superior. O mapeamento
+segmentação e adaptação, além da interpretação do protocolo superior.
+O mapeamento
 tem ainda de preservar o significado dos dados; copiar bytes não
 estabelece, por si só, equivalência entre operações ou grandezas.
 Esta conclusão articula os mecanismos de transporte com os exemplos
 de mapeamento e normalização
 estudados~\cite{eddy_tcp_2022,castellanos_gateway_2021}.
 
-Adaptadores e uma representação intermédia constituem, assim, uma
-direção arquitetural a avaliar. Será necessário verificar quais os
-identificadores, operações, estados de erro e propriedades temporais
-que essa representação deve preservar, evitando assumir que origem,
-destino, comprimento e dados bastam para todos os casos. A abstração
-pode facilitar a integração, mas exige avaliar a perda de informação
-específica e o processamento adicional; esta possibilidade mantém-se
-em aberto até à consolidação dos requisitos.
+O acesso a partir do sistema central deve permitir selecionar a
+interface e o destinatário ou identificador aplicável, fornecer dados
+ou comandos e receber os resultados. A uniformidade e a transparência
+deste acesso são objetivos desejáveis de abstração. Em CAN, o identificador
+de trama não equivale necessariamente
+a um endereço de nó; a sua interpretação depende do protocolo superior.
+Esta abstração externa não obriga a uma representação intermédia
+universal. Adaptadores e uma representação comum continuam a ser
+hipóteses de projeto, a avaliar quanto à preservação da informação
+específica e ao processamento adicional.
 
-Para a Análise de Requisitos, estas conclusões implicam distinguir o
-suporte de leitura e escrita em cada interface das operações concretas
-de processamento e encaminhamento. Cada operação terá de identificar
-os protocolos, os papéis dos participantes, o mapeamento e a informação
-a preservar, permitindo comparar o resultado observado com o esperado.
-A observação de erros e resultados deverá apoiar essa verificação;
-as condições de ensaio e os critérios quantitativos permanecem por validar.
+Para a Análise de Requisitos, estas conclusões sustentam o acesso
+bidirecional centrado em Ethernet, a adaptação e preservação da informação
+e a gestão de concorrência, prioridades e diferenças de taxa. A capacidade
+geral de gateway exige informação suficiente sobre destino, configuração
+e protocolo em cada operação; não implica conversão semântica automática
+de protocolos desconhecidos. O mínimo nominal Ethernet de 100~Mbit/s
+está definido, mas as condições de carga, os limites de armazenamento e
+os critérios temporais e de fiabilidade permanecem por validar. A
+observação de operações, erros e resultados deverá permitir verificar
+esse comportamento sem antecipar a implementação.

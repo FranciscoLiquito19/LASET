@@ -7,35 +7,38 @@
 \section{Visão Geral do Sistema}
 
 O sistema é concebido como um \textit{gateway} embebido multiprotocolo
-que disponibiliza operações de leitura e escrita através de I2C, RS232,
-RS485, CAN e Ethernet. A informação recebida pode ser processada e,
-quando exista um mapeamento válido, encaminhada para outra interface.
-Esta visão concretiza as capacidades RF01--RF10 do
-Capítulo~\ref{cap:requisitos}, mantendo em aberto a plataforma e os
-pares de interfaces a demonstrar.
+com Ethernet como interface principal de acesso pelo sistema central.
+Este pode enviar comandos e receber dados ou feedback de dispositivos
+ligados a CAN, RS485, RS232 e I2C. O encaminhamento nos dois sentidos
+inclui as adaptações necessárias aos protocolos e operações suportados.
+Esta visão concretiza RF01--RF14 do Capítulo~\ref{cap:requisitos};
+a plataforma e a organização interna permanecem por definir.
 
 A Figura~\ref{fig:gateway-caixa-preta} apresenta o sistema como uma
 caixa preta: identifica as ligações com o exterior sem expor a sua
 implementação. As setas representam a possibilidade de leitura/receção
 e escrita/transmissão. Não implicam comunicação simultânea nos dois
 sentidos, iniciativa de comunicação por qualquer participante ou
-conversão entre todos os pares de interfaces.
+conversão entre todos os pares de interfaces. Cada ligação representa
+um tipo de interface, sem fixar o número de canais físicos ou de nós.
 
 \begin{figure}[htbp]
     \centering
     \small
-    \begin{tabular}{@{}c@{\quad}c@{}}
-        \begin{tabular}{r@{\quad}c}
-            I2C      & $\longleftrightarrow$ \\
-            RS232    & $\longleftrightarrow$ \\
-            RS485    & $\longleftrightarrow$ \\
-            CAN      & $\longleftrightarrow$ \\
-            Ethernet & $\longleftrightarrow$
+    \begin{tabular}{@{}c@{\ }c@{\ }c@{\ }c@{}}
+        \parbox[c]{0.19\textwidth}{\centering
+            Sistema central\\Ethernet}
+        & $\longleftrightarrow$
+        & \fbox{\parbox[c][23mm][c]{0.30\textwidth}{\centering
+            \textbf{Gateway\\Multiprotocolo}}}
+        & \begin{tabular}{c@{\quad}l}
+            $\longleftrightarrow$ & CAN \\
+            $\longleftrightarrow$ & RS485 \\
+            $\longleftrightarrow$ & RS232 \\
+            $\longleftrightarrow$ & I2C
         \end{tabular}
-        & \fbox{\parbox[c][27mm][c]{0.44\textwidth}{\centering
-            \textbf{Gateway Multiprotocolo}}}
     \end{tabular}
-    \caption{Visão do gateway como caixa preta e interfaces externas previstas.}
+    \caption{Acesso bidirecional do sistema central aos barramentos através de Ethernet.}
     \label{fig:gateway-caixa-preta}
 \end{figure}
 
@@ -45,7 +48,8 @@ O acesso por I2C destina-se à troca de informação com dispositivos num
 barramento local. RS232 permite a comunicação série ponto a ponto;
 RS485 permite a ligação a equipamentos num barramento diferencial
 multiponto. A interface CAN permite a troca de tramas numa rede CAN,
-e Ethernet permite a ligação a uma rede Ethernet. Estas funções
+e Ethernet estabelece a ligação principal ao sistema central, com capacidade
+nominal mínima de 100~Mbit/s. Estas funções
 correspondem ao suporte previsto em RF01--RF05 e às características
 estudadas no Capítulo~\ref{cap:estado-arte}.
 
@@ -70,9 +74,16 @@ As capacidades observáveis do sistema organizam-se nas seguintes funções:
     (RF06).
     \item \textbf{Processamento:} interpretar ou transformar informação
     de acordo com entradas e resultados esperados especificados (RF08).
-    \item \textbf{Encaminhamento condicionado:} transferir informação
-    para o destino definido quando exista um mapeamento válido,
-    preservando os dados e metadados necessários à operação (RF09--RF10).
+    \item \textbf{Encaminhamento bidirecional:} transferir comandos e
+    dados entre Ethernet e cada um dos quatro tipos de interfaces,
+    preservando a informação necessária e adaptando-a quando aplicável
+    (RF09--RF10).
+    \item \textbf{Acesso externo:} permitir selecionar a interface e o
+    destino da operação e identificar a origem dos dados devolvidos,
+    segundo os parâmetros de cada tecnologia (RF11).
+    \item \textbf{Gestão das comunicações:} tratar operações concorrentes,
+    diferenças de taxa e prioridades; manter temporariamente a informação
+    que aguarda transmissão quando necessário (RF12--RF14).
     \item \textbf{Diagnóstico previsto:} permitir observar resultados e
     associar falhas às operações em que foram detetadas. Esta capacidade
     decorre da proposta RNF05; a sua forma de acesso e os critérios de
@@ -90,22 +101,26 @@ operação, sem definir uma máquina de estados ou impor modos exclusivos:
     \item \textbf{Leitura com processamento:} os dados recebidos são
     interpretados ou transformados, sem transmissão noutra interface.
     \item \textbf{Leitura com processamento e encaminhamento:} a
-    informação é tratada e enviada para o destino especificado, desde
-    que exista um mapeamento válido.
+    informação é tratada e enviada para o destino especificado, segundo
+    as configurações e adaptações necessárias à operação.
     \item \textbf{Escrita/transmissão direta:} o sistema transmite
     informação fornecida à operação sem exigir uma receção prévia
     noutra interface.
 \end{itemize}
 
-A execução simultânea destes tipos de operação e as respetivas condições
-de carga não são estabelecidas nesta fase.
+O sistema deve gerir operações concorrentes em diferentes interfaces.
+As combinações de canais, as condições de carga e a política de prioridades
+serão especificadas, sem impor tarefas, filas ou mecanismos de execução
+concretos.
 
 \section{Percurso Funcional de Encaminhamento}
 
 A Figura~\ref{fig:arquitetura-preliminar} acrescenta um segundo nível de
 detalhe à visão de caixa preta. Representa as funções envolvidas numa
 operação com encaminhamento, sem estabelecer componentes, tarefas de
-software ou uma organização física.
+software ou uma organização física. No caso base, um dos extremos é
+Ethernet e o outro é CAN, RS485, RS232 ou I2C; o percurso aplica-se
+nos dois sentidos.
 
 \begin{figure}[htbp]
     \centering
@@ -130,7 +145,7 @@ software ou uma organização física.
     \par\smallskip
     \fbox{\parbox{0.80\linewidth}{\centering
         \textbf{Decisão de encaminhamento}\\
-        Condicionada ao mapeamento e ao destino}}
+        Conforme a operação e o destino}}
     \par\smallskip
     $\downarrow$
     \par\smallskip
@@ -154,17 +169,19 @@ de entrada e saída; não impõe duplicação de componentes.
 O processamento interpreta ou transforma a informação segundo a operação
 definida. A normalização só se aplica quando necessária: uma representação
 intermédia comum é uma possibilidade a avaliar, sem constituir uma decisão
-de arquitetura. A decisão de encaminhamento verifica a correspondência
-entre a informação, o mapeamento e o destino. Na ausência de um mapeamento
-válido, não ocorre encaminhamento para esse destino.
+de arquitetura. A decisão de encaminhamento usa a interface e o destino
+selecionados, os parâmetros de comunicação e o mapeamento quando necessário.
+Se estes elementos não permitirem determinar uma operação válida,
+esta não deve ser executada.
 
 O percurso não pressupõe uma correspondência de uma trama de entrada
 para uma trama de saída. Como resulta da síntese do Estado da Arte,
 poderão ser necessários delimitação de tramas (\textit{framing}),
-segmentação, armazenamento temporário (\textit{buffering}), controlo de
-fluxo e interpretação de protocolos superiores. A necessidade e a
-distribuição destes mecanismos serão avaliadas na fase de projeto,
-consoante as operações e os protocolos selecionados.
+segmentação, controlo de fluxo e interpretação de protocolos superiores.
+O armazenamento temporário (\textit{buffering}) é exigido quando a
+informação tiver de aguardar transmissão; a capacidade e o comportamento
+em saturação serão definidos. A distribuição destes mecanismos e a
+gestão das comunicações concorrentes serão tratadas na fase de projeto.
 
 \section{Características Preliminares do Sistema}
 
@@ -191,8 +208,14 @@ não constitui uma especificação final nem apresenta resultados medidos.
         Escrita/transmissão & Prevista nas cinco interfaces (RF06). \\
         Processamento & Operações com entradas e resultados especificados
         (RF08); transformações concretas por definir. \\
-        Encaminhamento & Condicionado a mapeamentos válidos (RF09--RF10);
-        pares e protocolos a demonstrar por definir (QV01--QV02). \\
+        Encaminhamento & Ethernet com cada uma das interfaces CAN, RS485,
+        RS232 e I2C, nos dois sentidos (RF09--RF10). Operações e protocolos
+        por concretizar (QV01--QV02). \\
+        Acesso externo & Seleção de interface e destino
+        (RF11); formato por definir (QV05). \\
+        Concorrência & Gestão de interfaces ativas, armazenamento temporário
+        quando necessário e prioridades (RF12--RF14); escala, políticas
+        e limites por definir (QV08--QV10). \\
         Conversão universal & Não constitui um requisito; não se assume
         conversão entre todos os pares de interfaces. \\
         Diagnóstico & Proposta RNF05; acesso e critérios por validar. \\
@@ -201,8 +224,10 @@ não constitui uma especificação final nem apresenta resultados medidos.
         (QV04). \\
         Protocolos sobre Ethernet & Por definir (QV05). \\
         PCB própria & Necessidade por confirmar (QV06). \\
-        Desempenho & Métricas, condições e limites de aceitação por definir
-        (QV07). \\
+        Desempenho & Ethernet nominal de pelo menos 100~Mbit/s (RF05).
+        Latência e condições de carga por definir (QV07). \\
+        Opções desejáveis & Gigabit Ethernet, PoE e consumo reduzido;
+        sem obrigatoriedade nesta fase (QV12). \\
         \bottomrule
     \end{tabularx}
 \end{table}
