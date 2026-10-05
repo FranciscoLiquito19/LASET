@@ -1,5 +1,6 @@
-# LaTeX build
-build/
+# LaTeX build: ignorar artefactos, mas versionar o PDF final
+build/*
+!template_laset/build/Modelo_LaSET.pdf
 
 # LaTeX temporary files
 *.aux
