@@ -1,0 +1,103 @@
+O meu colega teve de ir embora porque ele foi para a Vila Real.
+Então, eu e ele estamos com o sistema de leitura multiprotocolo e já falámos com o professor Jacob
+e ele disse para falar com o Silvio porque em termos de requisitos de protocolos não conseguirá ajudar melhor do que ele.
+E isto, como eu for, o sistema vai ser um abrigo, algo que fale, um barramento,
+um mais alto e negro, tipo Ethernet, o sistema da Imaginet, temos um computador,
+e do computador vamos querer mandar comandos para vários motores que tenham um barramento de scan,
+ou que estão a utilizar baterias que estão num barramento de 485,
+em vez de termos placas, que uma placa para ter, não quero falar de scan, mas é uma placa que temos.
+Vamos ter aqui a bolsa de placa, vai receber a internet e vai falar nestes barramentos todos.
+Onde mais que úteis à partida será o K-485, mas que são barramentos,
+mas também podemos ter umas portas RS-232 se para cá tem um sensor local ou o I2C aqui na mão local.
+de hoje em dia não é para se usar num, por exemplo, um avião, num país resumarino,
+para virar desgraduados, é para falá-lo localmente dentro de um sistema computacional.
+Mas pronto, ou seja, o que vemos é que, de ir à partida do sistema imediato,
+porque normalmente o microcontroler já tem periférios despistos,
+vamos ver como é que tínhamos que fazer os transcibers enquanto é um sistema medicinal,
+Porque o que é isso que falam em 2x, que é a crème de humidez ser isolada para se houver um ruído, não queimámos o micro,
+o IEM é uma coisa no cano, o 4-5, que isso é mais normal, e o 2-3-2, que os próprios transchivos podem já ter isolamento ou aguentar picos e outras coisas.
+Para dizer se quisermos há este momento, se é o mesmo distravo, temos os que ter estes comentários.
+Mas, em termos de genérecos físicos, agora temos que ver, ok, isto queremos que no PC
+central conseguir estar a ver o correio no barramento, ou manda-nos provar o barramento.
+Ou seja, quer dizer que eu vou querer dizer, ok, manda esta mensagem para o barramento
+cano número 3 e ela manda, e se calhar põe um ID.
+E é suposto que fazermos, por exemplo, tradução de protocolos e enviar no Linux o e-mail?
+Pelo menos do Ethernet para os outros jogos.
+Agora, se vocês conseguirem fazer uma coisa mais néria, ou se...
+Não sei se vai... O main normal é do PC, queremos aceder a todos os sensores ou autores
+e vice-versa tudo, suma toda a data e feedback da necessidade de testar,
+temos a saber isto, e o PC está a ter acesso a tudo que está no sistema.
+Isto dura protocolos, só se tivéssemos aqui um atuador que estava a medir o feedback do
+controlador, está uma nova ferramenta para ser mais caro, ao menos no sistema central
+Eu acho que isso era o principal objetivo, e para isso temos de definir protocolos, ou seja, se for como interface série, ok,
+é uma opção cataculta.
+E isto o que era? Ou seja, podia ser uma coisa que alguém se mandava o pacote de pinto,
+mandava o pacote de pinto e ele se deu o pacote de pinto.
+Ou outra coisa pode ser, ok, será que necessitámos ter aqui o servidor
+e uma suda de estabilização e depois falo?
+Temos de pensar um bocado como é que vai ser a arquitetura.
+E depois, num barramento de carne, um bateu de cima e já podíamos ter vários objetos.
+Ou seja, é uma ferramenta de cá, não podem haver, por exemplo, de territórios.
+Cada um manda uma mensagem na barra, os usuários têm de saber de quem é que manda ou se calar.
+Normalmente, as mensagens dizem que tem um ID e cada motor identifica-se.
+Mas temos que arranjar maneira de isto ser cometido de forma mais transparente da maneira que isso veste-se.
+Ou seja, e todos estes protocolos podem estar a ver ao mesmo tempo, e vamos ter que gerir isso no seu mesmo tempo real
+para conseguir estar a ler todos estes barramentos e ter o mínimo de atraso que a mensagem.
+Estamos a receber muitas aqui e outras que estão aqui, não queremos que esta fiquem aqui para durarem.
+Nós temos aqui distritos a ler ou a registrar os textos e...
+ou para utilizar o que isto é o prioritário e esta ferramenta é prioritária sobre aquilo,
+temos que pensar estas funcionalidades.
+Vamos dar, vamos garantir um tempo mínimo ou prioridade a partir de em termos de banda,
+e se tivermos aqui 10 chain no Edamame,
+um cano que seja cano FBS ou 8 ou 10 megabits,
+Quer dizer, com carnes já podemos ter um câmbio da net, sabemos de vários carnes,
+mas à partida os séries, não tem-se visto, não andam muitos megabits, o I2C também não.
+À partida, se tivermos 100 megabits num número da net, não é pela banda que vamos interagir,
+mas a maneira como pode-se gerar este processo, e a conversão, e como é que se cadia isto,
+vamos ter que garantir que minimizámos a potência.
+Claro, claro.
+Sim, a pessoa já falou, por exemplo,
+em cada porto de ter a usar, por exemplo,
+threaders, smart...
+Pode ser que vão ver que vão dar
+uma determinada sucessão
+para os sistemas de tempo real
+e aí vão dar um sistema de tempo real
+que anteceda o tempo real
+e que vai ajudar nessa gestão.
+teremos tarefas diferentes para cada um de esses barramentos, ou não, depois vamos organizá-los.
+Mas temos de ver como tornar mais ou menos transparente com a Ethernet todos estes protocolos
+e como é que conseguimos para dizer para que o barramento vai ao mesmo tempo e para quem.
+como é que vamos fazer isto, é especificar este problema, vamos tentar detalhar, perceber
+ok no mínimo quantos nós andamos cano, o ideal era ter muitos, mas ok vamos com menos
+2 ou 3, cá na FDN, se calhar mais 2 ou 3, 4 ou 5, agora os 4 ou 5, podemos ter alguns
+que sejam opcionais, que podem ser 4 ou 5, 2, 3, 2 ou 4, 2, 2, porque pode haver a Áspero,
+que pedia por software para militarizar a suporto de quem fala, para atribuir, se calhar,
+Queremos ter o máximo possível de interfaces séries.
+Quase as opções que eu falo assim.
+E depois que ainda este é mais pontual.
+E depois dá para aliar pequenos sensores locais,
+acelerados ou outros transídeos.
+Ficamos a mais dois.
+E, portanto, olhar o foco será mais um arremoto sério e caro.
+que também é sempre, pronto, Kani 485 se lasche, 482 se lasche, e a resto das duas.
+O Ethernet no mínimo 100 Mbps para conseguir dar, poder despachar isto tudo,
+e idealmente sequer a Gigabit, que aí minimizar bem da latência na saída.
+A alimentação disto deu-me a executar também TPOE, ou seja, a ser alimentado a toaia da noite.
+Podia ser interessante para alguns sítios em que está remoto e só temos um cabo, podia ir a um cabo da noite.
+Idealmente esta eletrónica, se fosse sem componentes com ar, ou seja, que pudesse
+funcionar em óleo e à pressão, era do tipo que funcionava em bacon e esmerilhos,
+depois podíamos ver, portanto, que ia ser outra coisa, eu não fui a analisar,
+eu não me preocupasse...
+Sim, e deixar pronto para outras possíveis utilizações.
+Mas depois podemos detalhar, ou seja, eram, idealmente, as funcionalidades, protocolos,
+ser mais transparente possível, se não precisar de termos um API específico para mandar mensagens,
+cada barramento, se era uma coisa diferente, ser bastante low powers, isso acho que é
+natural que seja, para sermos sempre grandes componentes externos.
+Pronto, o poder-se durante a pressão é um plus, se conseguirem adaptar, obri-se.
+Ok.
+Pronto, ele tem que começar a pôr isto no papel, porque o nosso caso é daqueles que
+é mais ou menos simples das especificações, quanto mais cedo passarem a esta fase e passarem
+a fase de projeto e vamos ter que detalhar protocolos e isso.
+É bastante software e o hardware não é assim muito complicado.
+Ok. Pronto. Obrigado.

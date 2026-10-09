@@ -6,18 +6,31 @@ Autores: Francisco Liquito e Pedro Ribeiro. Ano letivo: 2026/2027.
 
 ## Compilar
 
-O relatório migrado usa o template oficial em `template_laset/Modelo_LaSET.tex`.
+O único relatório oficial tem como ficheiro principal
+`template_laset/Modelo_LaSET.tex`.
 Instalar uma distribuição LaTeX com os pacotes usados nesse ficheiro, além de
 `latexmk` e BibTeX. A bibliografia mantém o estilo `unsrt` do template.
 
 ```sh
 cd template_laset
-latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error Modelo_LaSET.tex
+mkdir -p build
+latexmk -pdf \
+  -outdir=build \
+  -interaction=nonstopmode \
+  -halt-on-error \
+  -file-line-error \
+  Modelo_LaSET.tex
 ```
 
-O PDF é gerado em `template_laset/Modelo_LaSET.pdf` (caminho relativo à raiz do
+O PDF é gerado em `template_laset/build/Modelo_LaSET.pdf` (caminho relativo à raiz do
 repositório). O `latexmk` executa pdfLaTeX, BibTeX e as passagens necessárias
 para resolver as citações e os índices.
+
+No VS Code, a receita existente do LaTeX Workshop usa
+`"latex-workshop.latex.outDir": "%DIR%/build"` e passa esse diretório ao
+`latexmk` através de `-outdir=%OUTDIR%`. Ao compilar o ficheiro principal,
+o resultado fica no mesmo caminho indicado acima. O diretório `build/`
+e os ficheiros auxiliares de compilação são ignorados pelo Git.
 
 A fase de Análise de Requisitos está configurada em
 `template_laset/Outros/Identificacao.tex`: `\Requisitostrue`, `\Projectofalse`
@@ -26,17 +39,16 @@ Arquitetura de Alto Nível. O ficheiro `Anexos/AnexoA.tex` está reservado para
 o esquema elétrico da fase de projeto/final e contém apenas comentários,
 pelo que não gera um capítulo vazio nesta fase.
 
-A versão anterior permanece em `main.tex`, `sections/` e `references/`, sem
-alterações. Para a compilar a partir da raiz, continua disponível
-`latexmk -pdf -outdir=build main.tex`, com `biblatex`/Biber e estilo IEEE.
-
 ## Estrutura
 
-- `template_laset/Modelo_LaSET.tex`: ficheiro principal do relatório migrado.
+- `template_laset/Modelo_LaSET.tex`: ficheiro principal do único relatório oficial.
 - `template_laset/Capitulos/`: conteúdo organizado pelos capítulos oficiais.
 - `template_laset/Outros/Identificacao.tex`: fase, título e autores.
-- `template_laset/bibliografia.bib`: referências migradas para BibTeX.
-- `main.tex`, `sections/` e `references/`: versão anterior preservada.
+- `template_laset/Figuras/`: imagens utilizadas no relatório.
+- `template_laset/Anexos/`: conteúdo dos anexos.
+- `template_laset/bibliografia.bib`: referências bibliográficas em BibTeX.
+- `template_laset/build/`: PDF e auxiliares gerados localmente, não versionados.
+- `.vscode/settings.json`: configuração de compilação do LaTeX Workshop.
 
 ## Trabalhar em conjunto
 

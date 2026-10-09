@@ -1,0 +1,75 @@
+Porta série é uma acção e vamos dizer que há uma pessoa aqui para vocês perguntarem
+se é para um veículo grande, que é o de Petra ou para vários lugares.
+Por exemplo, ele tem várias caixas para ele comunicar por vários protocolos e a ideia
+é que por exemplo, se uma fala porta série e a outra fala CAN, o vosso dispositivo esteja
+no meio e consiga fazer essa interface.
+Portanto, vocês têm que pedir os requisitos de quais são os protocolos que é necessário ter,
+porque eu acho que no trabalho já tinha alguns.
+Sim, tem todo o trabalho.
+Dê-os quase certeza que são.
+Depois podem ganhar outros.
+E depois, tudo que entra por uma porta tem que conseguir sair pelas outras todas.
+Vocês leem de todas e depois têm que conseguir escrever nas outras, nas restantes.
+Isso é a ideia ideal.
+que é para o nosso dispositivo ser uma interface internacional.
+Ou seja, todos os que escrevem também.
+O que fazíamos, por exemplo, ao receber, criávamos como se fosse um...
+Tem que ter memórias.
+Podem ter queues, não é só?
+Podem ter queues.
+E mais à frente é só pair.
+Tem que cuidar de coisas que sejam também de tempo real.
+Tem que ter várias trades para cada porta,
+por exemplo, para estresse de leitura, leitura, com armazenar os dados,
+seja o que for, se a memória inteira ou não,
+pois é preciso que se for um microcomputor tem que ter um microcomputor do outro,
+ou em termos de armazenar uma grande quantidade de dados,
+se não tem que ter uma prórroga externa de memória física,
+para vocês guardarem a memória e depois irem ler,
+é preciso avaliar-se como é.
+Por isso é que tem que definir os requisitos.
+E a partida é...
+Aqui os MAF, as prioridades, a gente está no processo de ter isso, e cadê-se para ter prioridades?
+Se tiverem 3 portas, qual delas é que é mais importante?
+Se não conseguem ler as 3 ao mesmo tempo, qual é que leiam a lê primeiro?
+Com que taxa é que estão a enviar os dados que receberam da porta A para a porta B?
+ou da porta 1 para a porta 20, ter essas configurações de género, entra a 100, mas basta sair a 10.
+Então vamos só, subam lá e configuram. Quero a 10 só.
+Isso tudo, é isso que vocês têm que analisar.
+A pessoa de amiguel é a pessoa ideal para ajudar nos resíduos pesados de como é que tem que ser lido, como é que tem que ser lido,
+O que entra numa tem que sair na mesma e por aí fora, e depois a gestão do resto, por exemplo,
+muito importante, entra a USB e tem que sair em câmbio. Ali é um bypass praticamente.
+Toda a comissão de necessidades para os motores. Não interessa agora a coisa que seja.
+Entra numa loce mica, é armazenada ou não é armazenada, se tiverem a porta do câmbio livre,
+só o primeiro alocado, após todos os motores, porque o cano é um de boas ameaças,
+ele não é deixado permanente destacar vários celeiros,
+quando ligados ao master, vocês conseguem depois mandar direto.
+No cano, por exemplo, tem 4 motores para ligar, ou vocês conseguem dizer para o motor a comandar,
+mas para o WSB, eles servem por exemplo a trama completa, por isso é preciso perceber os resíduos,
+como é que se vai funcionar, ou vocês vão perguntar às pessoas amigas,
+Você sabe como é a velocidade, vem completa a trama para os quatro e assim no cano sai um para cada um, indivisivelmente.
+Vocês têm que depois saber onde, no cano é preciso escolher endereços, é preciso saber se os dispositivos estão ligados ao endereço
+e você agora tem que lá para configurar isso tudo.
+Vocês têm que ver aquele protocolo que é que precisam ter para conseguir colocar em funcionamento todos os dispositivos e estáticos.
+Agora, gostar de protocolos, portos, etc., tem que ser com quem beira usar.
+Na segunda, tiveram um caso?
+
+Falaram com o professor Pedro André?
+Não.
+Nós tínhamos falado mais que com o professor Guilherme.
+Mas, no ideal, para a bolsa é com o professor Pedro André.
+E Guilherme também.
+Mais com o professor Pedro André e com o professor Pedro André.
+Mais coisas que eu posso ou não ajudar.
+Acho que era mais a parte dos requisitos.
+E o que é que as pessoas querem como finalidade do projeto?
+Acho que o que eu for dizer é o bem.
+Se calhar dizer de forma diferente.
+Ok.
+Mas eu diria que cana, SPI, do enxergo...
+Ok.
+Cana, SPI, do enxergo...
+Certeza.
+Ok.
+É a getaway. Não é a getaway. A semana é a getaway e eu tenho que ser no interfaz com vários protocolos.
+Tem que ser bidireccional, não ter nada a ver com nada.
