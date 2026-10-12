@@ -51,73 +51,92 @@ forma coerente os mecanismos de acesso aos equipamentos, facilitando a
 integração e a evolução de sistemas com diferentes tecnologias de
 comunicação.
 
-O sistema pretendido assume a função de um \textit{gateway} multiprotocolo,
-com Ethernet como ligação principal a um computador ou sistema central.
-Através dessa ligação, o sistema central deve conseguir enviar comandos
-e receber dados ou respostas de dispositivos ligados a CAN, RS485, RS232
-e I2C. Pretende-se um acesso tão uniforme quanto possível, mantendo
-explícitos os parâmetros necessários a cada interface e protocolo.
-O encaminhamento deve preservar o significado da informação e pode
-exigir adaptação às características da origem e do destino; não se
-pressupõe correspondência de uma trama recebida para uma trama transmitida.
-A gestão de comunicações concorrentes e de diferenças de taxa faz parte
-do problema. O encaminhamento entre outras interfaces constitui uma
-possibilidade de extensão, sem tornar obrigatória a conversão entre
-todos os pares.
+O sistema pretendido assume a função de um \textit{gateway} embebido
+multiprotocolo. O computador ou sistema central deve comunicar com a
+unidade embebida por RS232, CAN ou Ethernet, dispondo das três alternativas,
+sem se exigir a sua utilização simultânea pelo PC nem fixar uma interface
+preferencial. A unidade comunica também com dispositivos externos através
+de I2C, RS232, RS485 e CAN e disponibiliza Ethernet com capacidade nominal
+mínima de 100~Mbit/s. CAN pode servir a ligação ao PC e a ligação a nós
+externos; a distribuição dos canais por estes papéis será especificada.
+
+O âmbito confirmado inclui dois barramentos I2C independentes, pelo menos
+dois barramentos CAN, três saídas de modulação por largura de impulso
+(PWM) com proteção elétrica para comando de cargas ou atuadores e uma
+entrada de alimentação entre 5~V e 60~V. A necessidade de um terceiro
+CAN permanece por confirmar. A execução utiliza um sistema operativo de
+tempo real (RTOS), ainda por selecionar, e a unidade embebida deve manter
+uma referência temporal sincronizada com o PC para associar comandos,
+dados e eventos. Estes requisitos não estabelecem uma garantia de tempo
+real estrito nem a precisão da sincronização.
+
+Pretende-se um acesso tão uniforme quanto possível, mantendo explícitos
+os parâmetros necessários a cada interface e protocolo. O encaminhamento
+deve preservar o significado da informação e pode exigir adaptação às
+características da origem e do destino; não se pressupõe correspondência
+de uma trama recebida para uma trama transmitida. A gestão de comunicações
+concorrentes, prioridades e diferenças de taxa faz parte do problema.
+A disponibilização dos dados pode fazer-se pelas interfaces de comunicação;
+o armazenamento persistente em microSD é uma opção a avaliar. A conversão
+entre todos os pares de interfaces não é um requisito.
 
 \section{Cenários de aplicação}
 \label{sec:cenarios-aplicacao}
 
-Os cenários seguintes ilustram o caso de utilização principal e possíveis
-extensões do sistema. São exemplos conceptuais, independentes da
-plataforma de execução. O caso base abrange a comunicação bidirecional
-entre Ethernet e cada uma das restantes quatro interfaces, sem fixar
-os protocolos de aplicação ou a implementação.
+Os cenários seguintes ilustram capacidades previstas, sem fixar uma
+aplicação final, os protocolos superiores ou a implementação. As três
+alternativas de comunicação com o PC devem ser suportadas; as operações
+e os percursos concretos serão especificados na Análise de Requisitos.
 
 \begin{description}
-    \item[CA01 --- Comando e supervisão via Ethernet:] \hfill\newline
-    Um computador ou sistema central pode necessitar de comandar e
-    supervisionar dispositivos ligados a CAN, RS485, RS232 ou I2C.
-    Através de Ethernet, indica ao \textit{gateway} a interface de destino,
-    os dados ou comando e a informação de identificação ou endereçamento
-    aplicável. O \textit{gateway} transmite a informação ao dispositivo
-    e disponibiliza ao sistema central os dados ou respostas recebidos.
-    Esta mediação permite aceder, por uma ligação principal comum, a
-    equipamentos de barramento e a dispositivos locais, como sensores
-    I2C, respeitando as características de cada ligação.
+    \item[CA01 --- Comando e supervisão pelo PC:] \hfill\newline
+    Um computador comunica com o sistema por RS232, CAN ou Ethernet.
+    Solicita uma operação, indicando a interface ou canal de destino,
+    o dispositivo, endereço ou identificador aplicável e os dados ou
+    comando. A unidade embebida processa o pedido, comunica com o
+    dispositivo externo segundo a operação definida e devolve dados
+    ou feedback ao PC. A referência temporal sincronizada permite
+    associar temporalmente os comandos, dados e eventos relevantes.
+    Este cenário abrange, por exemplo, pedidos recebidos por RS232,
+    sem depender exclusivamente de Ethernet. Não exige a utilização
+    simultânea das três ligações pelo computador.
 
-    \item[CA02 --- Integração de equipamentos heterogéneos:] \hfill\newline
-    Um equipamento com interface série pode produzir informação necessária
-    a outro equipamento com interface CAN. Como extensão ao caso base,
-    o \textit{gateway} poderá receber essa informação e encaminhá-la para
-    o destino segundo um mapeamento que preserve o seu significado.
-    Esta mediação permite integrar equipamentos sem uma interface de
-    comunicação comum, desde que as operações de origem e destino sejam
-    compatíveis com o mapeamento definido. O exemplo não constitui um
-    par de encaminhamento obrigatório para a primeira versão.
+    \item[CA02 --- Comando de cargas ou atuadores por PWM:] \hfill\newline
+    O computador envia um comando pela alternativa de comunicação
+    selecionada para atuar sobre um dos três canais PWM protegidos.
+    Uma luz ou uma garra é um exemplo possível de carga ou atuador,
+    sem definir a aplicação final. A garra pode utilizar um dos três
+    canais existentes; não constitui um quarto canal. A operação
+    respeita os parâmetros e as condições elétricas a especificar,
+    e a informação sobre o comando pode ser associada à referência
+    temporal comum. Não se pressupõe medição física ou feedback
+    do atuador sem uma interface de aquisição definida.
 
     \item[CA03 --- Plataforma de ensaio multiprotocolo:] \hfill\newline
-    Num contexto de desenvolvimento e integração de equipamentos, pode
-    ser necessário caracterizar a comunicação entre dispositivos com
-    interfaces distintas. O \textit{gateway} pode funcionar como plataforma
-    de ensaio, recebendo e processando informação desses dispositivos e,
-    quando previsto, encaminhando-a para um equipamento de ensaio.
-    A observação dessas operações permite estudar diferenças de delimitação
-    de tramas (\textit{framing}), temporização, endereçamento e débito
-    efetivo (\textit{throughput}), incluindo o comportamento com várias
-    comunicações ativas, apoiando a identificação de limitações antes
-    da integração no sistema de destino.
+    Num contexto de desenvolvimento e integração, a plataforma permite
+    ensaiar os dois I2C, os canais CAN definidos e as restantes interfaces,
+    incluindo operações concorrentes geridas pelo RTOS. Os ensaios
+    caracterizam delimitação de tramas (\textit{framing}), temporização,
+    endereçamento, débito efetivo (\textit{throughput}), diferenças de
+    taxa e prioridades. Os dados adquiridos são disponibilizados pelas
+    interfaces previstas; o registo local em microSD pode ser avaliado
+    como alternativa opcional. A sincronização com o PC permite
+    correlacionar temporalmente os eventos observados, com erro máximo
+    ainda por definir. O encaminhamento autónomo entre dispositivos
+    externos pode ser estudado como extensão, segundo mapeamentos
+    especificados, sem exigir conversão universal.
 \end{description}
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Estudar e desenvolver um \textit{gateway} multiprotocolo que permita a
-um computador ou sistema central realizar, através de Ethernet,
-operações de leitura e escrita com dispositivos ligados a I2C, RS232,
-RS485 e CAN, processando e encaminhando a informação nos dois sentidos
-com a adaptação necessária aos protocolos e destinos envolvidos.
+Estudar e desenvolver um sistema embebido multiprotocolo que comunique
+bidirecionalmente com um computador por RS232, CAN ou Ethernet, integre
+dispositivos externos e comande cargas ou atuadores por saídas PWM
+protegidas. O sistema deve executar sobre RTOS, manter uma referência
+temporal sincronizada com o computador e assegurar processamento e
+encaminhamento da informação segundo as operações especificadas.
 
 \subsection{Objetivos Específicos}
 
@@ -127,34 +146,48 @@ específicos:
 \begin{enumerate}
     \item \label{obj:estudo-tecnologias}
     Estudar as características de I2C, RS232, RS485, CAN e Ethernet
-    relevantes para a realização de operações de comunicação.
+    relevantes para a realização de operações de comunicação, bem como
+    os fundamentos de RTOS, PWM, sincronização e alimentação.
 
     \item \label{obj:analise-limitacoes}
     Analisar as diferenças e limitações das cinco tecnologias,
     identificando as suas implicações para a integração num mesmo sistema.
 
     \item \label{obj:arquitetura}
-    Definir uma arquitetura de integração das cinco interfaces,
-    com Ethernet como ligação principal ao sistema central,
-    identificando os blocos de interface, processamento e decisão de
-    encaminhamento e as respetivas ligações.
+    Definir uma arquitetura de integração das cinco tecnologias de
+    comunicação, com acesso do PC por RS232, CAN ou Ethernet, dois
+    barramentos I2C independentes, pelo menos dois CAN e três saídas PWM
+    protegidas, identificando os blocos e as respetivas ligações.
+    A necessidade de um terceiro CAN deve ser esclarecida.
 
     \item \label{obj:comunicacao}
     Implementar as funções de comunicação necessárias à transmissão
     e receção de dados através de cada uma das cinco interfaces,
-    incluindo a gestão de comunicações concorrentes e de diferenças
-    de taxa.
+    incluindo a gestão de comunicações concorrentes, prioridades e
+    diferenças de taxa sobre um RTOS ainda por selecionar.
 
     \item \label{obj:processamento-encaminhamento}
     Definir e implementar operações de processamento e encaminhamento
-    bidirecional entre Ethernet e cada uma das restantes quatro
-    interfaces, explicitando a seleção de destino, as adaptações
-    necessárias e a informação a preservar.
+    entre o PC e os dispositivos externos pelas ligações previstas,
+    explicitando a seleção de destino, as adaptações necessárias e
+    a informação a preservar, sem impor uma matriz universal de conversão.
+
+    \item \label{obj:atuacao-alimentacao}
+    Implementar o comando através de exatamente três saídas PWM com
+    proteção elétrica e a alimentação de entrada entre 5~V e 60~V,
+    após definição das cargas e dos critérios elétricos de validação.
+
+    \item \label{obj:sincronizacao}
+    Implementar a sincronização temporal entre o PC e a unidade embebida,
+    definindo a referência, os eventos a associar e os critérios de
+    precisão e recuperação antes da seleção do mecanismo.
 
     \item \label{obj:validacao}
     Validar experimentalmente as operações de transmissão e receção
     em cada interface e as operações de processamento e encaminhamento
-    definidas, de acordo com os requisitos que venham a ser consolidados.
+    definidas, o acesso do PC pelas três alternativas, a atuação PWM,
+    a alimentação e a sincronização temporal, de acordo com os critérios
+    de aceitação que venham a ser consolidados.
 \end{enumerate}
 
 \section{Estrutura do Relatório}

@@ -159,9 +159,10 @@ monitorização e controlo. A adequação a sistemas embebidos e industriais
 exige, contudo, delimitar a variante física, a organização da rede e
 os serviços superiores necessários~\cite{ieee_8023_2018,simmons_ethernet_2008}.
 
-A validação de requisitos com os docentes estabelece Ethernet como
-ligação principal ao computador ou sistema central, com capacidade
-nominal mínima de 100~Mbit/s; Gigabit Ethernet é desejável. A família
+A validação de requisitos junto do docente mantém Ethernet como uma das três
+alternativas de comunicação entre o PC e a unidade embebida, juntamente
+com RS232 e CAN, com capacidade nominal mínima de 100~Mbit/s;
+Gigabit Ethernet é desejável. A família
 100BASE-T exemplifica Ethernet a 100~Mbit/s sobre pares entrançados;
 o requisito fixa a capacidade nominal, mantendo a variante PHY e o meio
 por selecionar. O débito nominal caracteriza a ligação,
@@ -376,10 +377,11 @@ barramento, como a prioridade dos identificadores CAN, não substitui
 essa gestão no interior do gateway~\cite{cia_can_cc}. No projeto, a
 política de prioridades terá de considerar os tempos de espera e evitar
 que uma comunicação impeça indefinidamente o progresso das restantes;
-esta necessidade não determina um sistema operativo ou escalonador.
+a validação de requisitos exige um RTOS, mantendo a seleção do sistema
+operativo e da política concreta de execução para a fase de projeto.
 
 As diferenças de taxa podem ocorrer tanto na concentração de dados dos
-barramentos para Ethernet como no envio do sistema central para uma
+barramentos para a ligação ao PC como no envio do sistema central para uma
 interface mais lenta. Se os dados chegam antes de poderem ser
 transmitidos, pode ser necessário armazenamento temporário
 (\textit{buffering}). Por balanço entre a informação recebida e escoada,
@@ -398,6 +400,85 @@ uma possibilidade, sem assumir TCP no projeto nem a existência de
 controlo de fluxo equivalente em todas as interfaces. As condições de
 operação terão de compatibilizar taxas, armazenamento, prioridades e
 tempos de espera, mantendo em aberto os limites quantitativos.
+
+\section{Execução Concorrente sobre RTOS}
+\label{sec:rtos}
+
+Um RTOS organiza a execução concorrente através de tarefas, prioridades,
+espera por eventos e serviços de temporização. Uma tarefa que aguarda
+um evento pode deixar o processador disponível para outras atividades.
+A documentação do FreeRTOS apresenta estes mecanismos e a sua relação
+com o escalonamento~\cite[cap.~3]{barry_freertos_2016}. Num sistema com
+várias interfaces, permitem coordenar receção, processamento e transmissão;
+a adequação depende das cargas e dos tempos de resposta especificados.
+
+A utilização de RTOS é uma restrição técnica confirmada. FreeRTOS é um candidato
+explicitamente mencionado pelo docente, sem ser uma escolha obrigatória.
+Não se fixa uma tarefa por interface, o número de tarefas, prioridades,
+períodos ou mecanismos de comunicação internos. A existência de RTOS,
+por si só, não demonstra cumprimento de todos os prazos: os limites
+temporais e a execução sob carga têm de ser analisados e validados.
+
+\section{PWM e Comando de Cargas}
+\label{sec:pwm}
+
+A modulação por largura de impulso (PWM) varia a duração do impulso ativo
+relativamente ao período, expressa pelo ciclo de trabalho
+(\textit{duty cycle}). A documentação da Microchip apresenta a sua
+utilização no comando de potência de cargas, incluindo motores, e
+exemplos com estágios de acionamento~\cite{microchip_tips_2009}.
+PWM designa uma saída de controlo, não um protocolo de comunicação.
+
+Quando os níveis ou a corrente da carga excedem a capacidade da saída
+lógica, é necessário um estágio de acionamento adequado. No projeto,
+frequência, resolução e condições elétricas dependem das cargas reais.
+Estão confirmados três canais PWM no total, com proteção elétrica;
+a natureza dessa proteção deve ser especificada antes de selecionar
+componentes ou definir ensaios de falha. Luzes e uma garra são exemplos
+de equipamentos, sem corresponderem a canais adicionais.
+
+\section{Alimentação com Gama de Entrada Ampla}
+\label{sec:alimentacao}
+
+A entrada confirmada de 5~V a 60~V exige compatibilizar a tensão externa
+com as tensões de funcionamento internas. O estudo da Texas Instruments
+sobre conversores DC--DC com gama ampla analisa a variação dos esforços
+elétricos e da eficiência com as condições de entrada e
+carga~\cite{ti_wide_input_2013}. Estes aspetos motivam avaliar conversão
+ou regulação, dissipação e proteção da entrada em toda a gama requerida.
+
+Não se escolhe uma topologia nem componentes nesta fase. A corrente e
+potência máximas, a polaridade, os transientes admissíveis, a proteção
+e a eficiência requerida permanecem por definir. A gama da entrada do
+sistema não define a tensão das cargas PWM nem impõe ensaios de
+transientes ainda não especificados.
+
+\section{Sincronização e Disponibilização de Dados}
+\label{sec:sincronizacao-dados}
+
+A sincronização procura relacionar as referências temporais do PC e
+da unidade embebida para associar comandos, dados e eventos. A RFC~5905
+exemplifica a utilização de marcas temporais e a estimativa de desvio
+entre relógios considerando atrasos da comunicação~\cite{mills_ntp_2010}.
+É usada para fundamentar estes conceitos, sem selecionar NTP, PTP ou
+outro protocolo para o projeto. A interface utilizada, a referência
+absoluta ou relativa, o erro admissível e a resincronização permanecem
+por especificar.
+
+Sincronizar relógios é distinto de cumprir prazos de execução. A presença
+de RTOS não sincroniza automaticamente o sistema com o PC, e uma
+referência temporal comum não garante latência limitada ou tempo real
+estrito. O método de associação temporal e os pontos de aquisição das
+marcas temporais deverão ser definidos para que o erro possa ser medido.
+
+Os dados podem ser disponibilizados diretamente pelas interfaces de
+comunicação, sem exigir armazenamento persistente local. A família SD
+inclui cartões microSD destinados a armazenamento, com variantes de
+capacidade e interface documentadas pela SD
+Association~\cite{sda_overview}. Se o registo local for selecionado,
+terão de ser definidos retenção, capacidade e comportamento perante
+interrupções. Esta é uma opção arquitetural; não substitui a definição
+dos limites do armazenamento temporário necessário às diferenças de taxa.
 
 \section{Comparação das Tecnologias}
 
@@ -502,11 +583,13 @@ concretos~\cite{compulab_imx7_manual_2018,moxa_mgate5105,hms_ab7838}.
 Por conseguinte, o conceito de \textit{gateway} embebido multiprotocolo
 em estudo deve ser delimitado pelas trocas de informação pretendidas,
 sem pressupor conversão arbitrária entre quaisquer interfaces. No âmbito
-confirmado na validação de requisitos com os docentes, Ethernet é a ligação principal ao
-sistema central, que envia comandos e recebe dados de CAN, RS485, RS232
-e I2C. O encaminhamento bidirecional entre Ethernet e cada uma destas
-interfaces constitui o núcleo obrigatório; outros pares são uma
-possibilidade de generalização a confirmar.
+confirmado na validação de requisitos junto do docente, o sistema central comunica
+por RS232, CAN ou Ethernet. A unidade integra dois I2C independentes,
+pelo menos dois CAN, RS232, RS485 e Ethernet. CAN pode ligar o PC ou
+nós externos, com distribuição dos canais por definir. O processamento
+e encaminhamento têm de respeitar operações e mapeamentos especificados;
+a matriz de percursos e a eventual generalização entre dispositivos
+externos devem ser concretizadas, sem pressupor todos os pares.
 
 As tecnologias diferem na delimitação de tramas (\textit{framing}),
 identificação, unidades de transferência, débito, temporização e
@@ -542,7 +625,7 @@ hipóteses de projeto, a avaliar quanto à preservação da informação
 específica e ao processamento adicional.
 
 Para a Análise de Requisitos, estas conclusões sustentam o acesso
-bidirecional centrado em Ethernet, a adaptação e preservação da informação
+bidirecional por RS232, CAN ou Ethernet, a adaptação e preservação da informação
 e a gestão de concorrência, prioridades e diferenças de taxa. A capacidade
 geral de gateway exige informação suficiente sobre destino, configuração
 e protocolo em cada operação; não implica conversão semântica automática
@@ -551,3 +634,9 @@ está definido, mas as condições de carga, os limites de armazenamento e
 os critérios temporais e de fiabilidade permanecem por validar. A
 observação de operações, erros e resultados deverá permitir verificar
 esse comportamento sem antecipar a implementação.
+
+Os novos requisitos acrescentam execução sobre RTOS, três PWM protegidos,
+alimentação de entrada de 5~V a 60~V e sincronização temporal com o PC.
+A literatura fundamenta os conceitos e os problemas a avaliar, sem
+escolher hardware, RTOS, mecanismo de sincronização ou armazenamento
+persistente. O terceiro CAN e a microSD permanecem decisões abertas.

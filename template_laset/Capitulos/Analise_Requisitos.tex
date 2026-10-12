@@ -7,33 +7,36 @@
 Os requisitos seguintes resultam dos objetivos específicos da Introdução,
 dos cenários CA01--CA03 (Secção~\ref{sec:cenarios-aplicacao}), das
 conclusões do Estado da Arte (Secção~\ref{sec:sintese-estado-arte}) e do
-levantamento e validação de requisitos junto dos docentes responsáveis
-pelo projeto. Este processo confirma o
-acesso bidirecional do sistema central, através de Ethernet, a CAN,
-RS485, RS232 e I2C, bem como a necessidade de gerir comunicações
-concorrentes, diferenças de taxa e prioridades. A capacidade nominal
-mínima da interface Ethernet é de 100~Mbit/s.
+levantamento e validação de requisitos junto do docente responsável
+pelo projeto. Este processo confirma o acesso do
+PC por RS232, CAN e Ethernet, dois I2C independentes, pelo menos dois CAN,
+três PWM protegidos, RTOS, sincronização temporal e alimentação de 5~V a
+60~V. Mantêm-se RS485, concorrência, prioridades, gestão de diferenças
+de taxa e Ethernet com mínimo nominal de 100~Mbit/s.
 
-Distingue-se este núcleo obrigatório das características desejáveis e
-das decisões ainda abertas. Os protocolos, as configurações, a escala
-de utilização e os critérios de aceitação pendentes serão concretizados
-através das questões da Secção~\ref{sec:questoes-validacao}. A especificação
-permanece preliminar nesses aspetos, sem reabrir as capacidades já
-confirmadas.
+Distingue-se este núcleo obrigatório das propostas não funcionais,
+características desejáveis e decisões abertas. A terceira interface CAN,
+o RTOS concreto, os protocolos, as condições elétricas e os critérios
+quantitativos pendentes serão especificados através das questões da
+Secção~\ref{sec:questoes-validacao}. As formas de validação são previstas,
+não resultados de ensaios já realizados.
 
 \section{Requisitos Funcionais}
 
-Os requisitos funcionais delimitam as capacidades obrigatórias do
-\textit{gateway}. RF06 e RF07 estabelecem os dois sentidos de comunicação,
-e RF09 aplica-os a cada uma das quatro ligações entre Ethernet e as
-restantes interfaces. A bidirecionalidade não implica transmissão
-simultânea nos dois sentidos em todos os barramentos. A concorrência
-entre interfaces é exigida por RF12; o número de canais e as condições
-de carga permanecem por definir.
+Os requisitos RF01 a RF05 definem interfaces e quantidades; RF06 a RF14
+mantêm as funções de comunicação e gestão, atualizando o acesso do PC.
+RF15--RF17 cobrem atuação PWM, sincronização e disponibilização de dados.
+A execução sobre RTOS constitui a restrição técnica RNF07. A
+bidirecionalidade não exige transmissão simultânea nos dois
+sentidos em todos os barramentos, nem utilização simultânea das três
+alternativas de ligação pelo PC.
 
 \begin{description}
-    \item[RF01 --- Suporte para I2C:] \hfill\newline
-    O sistema deve suportar comunicação através de uma interface I2C.
+    \item[RF01 --- Dois barramentos I2C independentes:] \hfill\newline
+    O sistema deve disponibilizar dois barramentos I2C independentes
+    para comunicar com dispositivos externos. Os papéis e parâmetros
+    de comunicação permanecem por especificar, sem selecionar
+    periféricos, frequências, pinos ou componentes.
 
     \item[RF02 --- Suporte para RS232:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface RS232.
@@ -41,23 +44,27 @@ de carga permanecem por definir.
     \item[RF03 --- Suporte para RS485:] \hfill\newline
     O sistema deve suportar comunicação através de uma interface RS485.
 
-    \item[RF04 --- Suporte para CAN:] \hfill\newline
-    O sistema deve suportar comunicação através de uma interface CAN.
+    \item[RF04 --- Pelo menos dois barramentos CAN:] \hfill\newline
+    O sistema deve disponibilizar pelo menos duas interfaces/barramentos
+    CAN. A necessidade de uma terceira permanece por confirmar (QV08).
+    CAN deve poder servir a comunicação com o PC e com nós externos;
+    a distribuição dos canais por estes papéis será definida em QV01.
+    Variante, débitos e protocolos superiores não estão selecionados.
 
     \item[RF05 --- Suporte para Ethernet:] \hfill\newline
-    O sistema deve disponibilizar Ethernet como interface principal de
-    comunicação com o computador ou sistema central, com capacidade
-    nominal mínima de 100~Mbit/s. Este valor não constitui uma garantia
+    O sistema deve disponibilizar uma interface Ethernet com capacidade
+    nominal mínima de 100~Mbit/s, como uma das alternativas de comunicação
+    com o computador ou sistema central. Este valor não constitui uma garantia
     de débito útil ou de latência.
 
     \item[RF06 --- Escrita e transmissão:] \hfill\newline
     O sistema deve permitir operações de escrita ou transmissão de dados
-    através de cada uma das cinco interfaces previstas, de acordo com as
+    através de cada uma das cinco tecnologias de comunicação previstas, de acordo com as
     características da respetiva tecnologia.
 
     \item[RF07 --- Leitura e receção:] \hfill\newline
     O sistema deve permitir operações de leitura ou receção de dados
-    através de cada uma das cinco interfaces previstas, de acordo com as
+    através de cada uma das cinco tecnologias de comunicação previstas, de acordo com as
     características da respetiva tecnologia.
 
     \item[RF08 --- Processamento e adaptação:] \hfill\newline
@@ -66,14 +73,13 @@ de carga permanecem por definir.
     os protocolos envolvidos. As operações suportadas devem explicitar
     os dados de entrada, as transformações e os resultados esperados.
 
-    \item[RF09 --- Encaminhamento bidirecional através de Ethernet:] \hfill\newline
-    O sistema deve permitir ao sistema central enviar comandos ou dados
-    e receber dados ou feedback através de Ethernet, de e para dispositivos
-    ligados a cada uma das interfaces CAN, RS485, RS232 e I2C. Cada operação
-    requer informação suficiente sobre origem, destino, configuração e
-    protocolo, incluindo o mapeamento ou a transformação quando necessários.
-    A operação só pode ser executada se essa informação permitir determinar
-    uma ação compatível com a interface e o protocolo de destino.
+    \item[RF09 --- Comunicação bidirecional PC--unidade embebida:] \hfill\newline
+    O computador deve conseguir enviar comandos ou dados e receber
+    dados ou feedback da unidade embebida através de cada uma das
+    alternativas RS232, CAN e Ethernet. Não se exige que o PC as utilize
+    simultaneamente. A interface preferencial, se existir, e os
+    protocolos e formatos externos permanecem por definir (QV05);
+    não se pressupõem redundância ou comutação automática entre ligações.
 
     \item[RF10 --- Preservação da informação necessária:] \hfill\newline
     O processamento e o encaminhamento devem preservar os dados e metadados
@@ -84,8 +90,9 @@ de carga permanecem por definir.
     no destino.
 
     \item[RF11 --- Acesso externo e seleção do destino:] \hfill\newline
-    Através de Ethernet, o sistema deve permitir solicitar uma operação,
-    indicando a interface ou barramento de destino, o dispositivo, endereço
+    Através da ligação ao PC utilizada, o sistema deve permitir solicitar
+    uma operação, indicando a interface e o canal ou barramento de destino,
+    o dispositivo, endereço
     ou identificador quando aplicável, e os dados ou comandos a transmitir.
     Os dados e feedback devolvidos ao sistema central devem permitir
     identificar a respetiva origem.
@@ -108,38 +115,73 @@ de carga permanecem por definir.
     deve gerir o seu atendimento segundo uma política de prioridades a
     definir. A política concreta e a possibilidade de a configurar durante
     a utilização permanecem por validar.
+
+    \item[RF15 --- Três saídas PWM protegidas:] \hfill\newline
+    O sistema deve disponibilizar exatamente três saídas/canais PWM para
+    comando de cargas ou atuadores físicos, com proteção elétrica
+    apropriada em todos os três canais. Luzes e uma garra são exemplos
+    de equipamentos comandados; a garra utiliza um dos canais e não
+    acrescenta um quarto PWM. Níveis, tensão e corrente das cargas,
+    frequência, resolução e natureza da proteção serão definidos em QV13.
+
+    \item[RF16 --- Sincronização temporal com o PC:] \hfill\newline
+    A unidade embebida deve manter uma referência temporal coerente e
+    sincronizada com o computador, permitindo associar temporalmente
+    comandos, dados e eventos. Precisão, erro máximo, referência absoluta
+    ou relativa, método, interface, periodicidade e recuperação após
+    perda de comunicação ou reinício serão definidos em QV15. Não se
+    seleciona protocolo nem se pressupõe relógio de tempo real (RTC).
+
+    \item[RF17 --- Disponibilização e encaminhamento de dados:] \hfill\newline
+    O sistema deve disponibilizar os dados adquiridos pelas interfaces
+    de comunicação previstas e encaminhar comandos e dados entre o PC
+    e os dispositivos externos segundo as operações especificadas.
+    Deve suportar os percursos bidirecionais Ethernet com CAN, RS485,
+    RS232 e I2C; RF09 especifica separadamente as três alternativas de
+    acesso ao PC. Outros percursos permanecem sujeitos a QV01 ou a extensão,
+    sem exigir conversão entre todos os pares.
+    Cada operação deve identificar origem, destino, configuração,
+    protocolo e mapeamento necessários; só pode ser executada quando
+    esses elementos permitirem determinar uma ação compatível.
+    O armazenamento persistente local em microSD é uma opção a validar
+    em QV16, não uma condição obrigatória para disponibilizar os dados.
 \end{description}
 
-O encaminhamento obrigatório abrange todos os quatro pares Ethernet
-com CAN, RS485, RS232 e I2C; não se reduz à escolha de alguns desses pares
-para demonstração. Os casos concretos e os protocolos suportados ainda
-terão de ser definidos. Não se exige conversão semântica automática
-entre protocolos desconhecidos, nem correspondência de uma trama de
-entrada para uma trama de saída. Em CAN, um identificador de trama não
-constitui, por si só, um endereço de dispositivo; a seleção deve respeitar
-o significado atribuído pelo protocolo utilizado.
+RF09 exige suporte às três alternativas de comunicação PC--unidade:
+RS232, CAN e Ethernet. RF17 estabelece separadamente os quatro percursos
+de encaminhamento Ethernet confirmados. As operações, os percursos
+adicionais e a distribuição dos canais CAN serão especificados em QV01,
+sem impor conversão entre todos os pares. RS485 mantém-se no âmbito,
+sem ser uma ligação obrigatória PC--unidade. As quantidades de RF01 e RF04
+não são multiplicadas pela representação de papéis na arquitetura.
 
-A generalização a pares sem Ethernet é uma extensão desejável, não um
-critério obrigatório de aceitação. RF11 especifica o acesso externo;
-a uniformidade e a transparência desse acesso são objetivos desejáveis
-de abstração, sem impor uma representação intermédia universal ou um
-formato interno.
-O armazenamento temporário exigido em RF13 não garante absorção ilimitada
-de tráfego superior à capacidade de saída.
+Não se exige conversão semântica automática entre protocolos desconhecidos,
+nem correspondência de uma trama de entrada para uma trama de saída.
+Em CAN, um identificador de trama não constitui, por si só, um endereço
+de dispositivo. A uniformidade do acesso é desejável, sem impor uma
+representação intermédia universal. O armazenamento temporário exigido
+em RF13 não garante absorção ilimitada de tráfego superior à capacidade
+de saída; distingue-se do registo persistente opcional em microSD.
+RTOS (RNF07), sincronização (RF16) e limites temporais (RNF06) são aspetos
+distintos, sem uma garantia confirmada de tempo real estrito.
 
 \section{Requisitos Não Funcionais}
 
 As propostas RNF01, RNF02 e RNF03 dizem respeito à organização e evolução
 do sistema. Os restantes requisitos descrevem propriedades de fiabilidade,
-observabilidade e comportamento temporal decorrentes do âmbito funcional. Os critérios de
-aceitação ainda não confirmados serão validados com os docentes; os
+observabilidade e comportamento temporal decorrentes do âmbito funcional.
+RNF07 define a restrição técnica de execução sobre RTOS e RNF08 regista
+a gama elétrica confirmada da alimentação, sem duplicar os requisitos
+funcionais de proteção PWM ou sincronização.
+Os critérios de aceitação ainda não confirmados serão validados com o docente; os
 métodos previstos encontram-se na secção de rastreabilidade.
 
 \begin{description}
     \item[RNF01 --- Modularidade:] \hfill\newline
     A organização do sistema deverá distinguir as responsabilidades
-    associadas a cada interface das funções de processamento e
-    encaminhamento, com fronteiras e dependências identificadas
+    associadas às interfaces de comunicação e à atuação PWM das funções
+    de processamento, encaminhamento e sincronização, com fronteiras
+    e dependências identificadas
     na arquitetura e na implementação.
 
     \item[RNF02 --- Manutenção:] \hfill\newline
@@ -170,212 +212,276 @@ métodos previstos encontram-se na secção de rastreabilidade.
     objetivo de minimizar a latência introduzida pelo processamento e
     encaminhamento. Este requisito é preliminar e requer quantificação:
     os limites máximos aceitáveis sob carga individual e concorrente serão
-    definidos após a resolução de QV07. Não existe atualmente uma garantia
-    de tempo real estrito (\textit{hard real-time}).
+    definidos após a resolução de QV07. A utilização obrigatória de RTOS
+    não estabelece uma garantia de tempo real estrito
+    (\textit{hard real-time}); o erro de sincronização de RF16 é avaliado
+    separadamente em QV15.
+
+    \item[RNF07 --- Execução sobre sistema operativo de tempo real:] \hfill\newline
+    A solução deve executar sobre um RTOS. FreeRTOS é candidato
+    explicitamente mencionado pelo docente, sem ser obrigatório.
+    O RTOS concreto, a organização das tarefas e atividades, as
+    prioridades, o escalonamento e os restantes mecanismos de execução
+    ficam para a fase de projeto, segundo os critérios a definir em QV03.
+
+    \item[RNF08 --- Gama de alimentação de entrada:] \hfill\newline
+    O sistema deve aceitar tensão de alimentação de entrada entre
+    5~V e 60~V, incluindo os limites. A corrente e potência máximas,
+    as condições de carga, a polaridade, os transientes, a proteção da
+    entrada e a eficiência requerida serão definidos em QV14 antes
+    do dimensionamento e da validação elétrica. A gama não especifica
+    a tensão das cargas PWM.
 \end{description}
 
 \section{Rastreabilidade dos Requisitos}
 
 As Tabelas~\ref{tab:rastreabilidade-requisitos}
-e~\ref{tab:rastreabilidade-rnf} relacionam as capacidades e propriedades
-com os objetivos, cenários, conclusões do Estado da Arte e validação de
-requisitos com os docentes. As formas de validação são previstas: antes dos ensaios,
-será necessário definir configurações, dados e resultados esperados.
+e~\ref{tab:rastreabilidade-rnf} identificam uma origem e uma forma de
+validação para cada requisito. As origens relativas ao docente resultam
+do levantamento e validação de requisitos junto do responsável pelo
+projeto. As propostas de organização, diagnóstico e limites ainda
+abertos permanecem sujeitas a validação.
+Antes dos ensaios serão fixados protocolos, cargas, condições elétricas,
+pontos de medição e resultados esperados. Não se atribuem valores de
+aceitação que ainda não tenham sido confirmados.
 
-\begin{table}[htbp]
-    \centering
-    \small
-    \setlength{\tabcolsep}{4pt}
-    \renewcommand{\arraystretch}{1.12}
-    \caption{Origem e validação prevista dos requisitos funcionais.}
-    \label{tab:rastreabilidade-requisitos}
-    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{2}{>{\raggedright\arraybackslash}X}@{}}
-        \toprule
-        Requisito & Origem / Justificação & Forma prevista de validação \\
-        \midrule
-        RF01--RF04
-        & Objetivos~\ref{obj:estudo-tecnologias} e~\ref{obj:comunicacao};
-        CA01: acesso aos quatro barramentos.
-        & Teste de comunicação por interface nas configurações acordadas. \\
-        \addlinespace
-        RF05
-        & Validação com os docentes: Ethernet principal com mínimo nominal de 100~Mbit/s;
-        CA01.
-        & Inspeção da capacidade documentada e verificação da ligação
-        a pelo menos 100~Mbit/s com equipamento compatível. \\
-        \addlinespace
-        RF06--RF07
-        & Objetivo~\ref{obj:comunicacao}; CA01; validação com os docentes:
-        comandos e feedback nos dois sentidos.
-        & Testes de escrita/transmissão e leitura/receção nas cinco
-        interfaces, sem exigir simultaneidade dos dois sentidos. \\
-        \addlinespace
-        RF08, RF10
-        & Objetivo~\ref{obj:processamento-encaminhamento}; síntese do
-        Estado da Arte: adaptação e preservação de significado.
-        & Comparação de entradas e saídas, incluindo dados e metadados
-        necessários, para as adaptações especificadas. \\
-        \addlinespace
-        RF09
-        & Validação com os docentes; CA01: Ethernet com cada uma das outras quatro interfaces.
-        & Testes nos dois sentidos de cada um dos quatro pares;
-        casos com informação válida e insuficiente para executar a operação. \\
-        \addlinespace
-        RF11
-        & Validação com os docentes; CA01: acesso externo e seleção do destino.
-        & Solicitação de operações por Ethernet variando interface e
-        destino; verificação da origem do feedback. \\
-        \addlinespace
-        RF12, RF14
-        & Validação com os docentes; CA03; Estado da Arte: concorrência e prioridades.
-        & Tráfego concorrente; verificação do progresso das operações e
-        da ordem de atendimento segundo a política acordada. \\
-        \addlinespace
-        RF13
-        & Validação com os docentes; Estado da Arte: diferenças de taxa e armazenamento
-        temporário.
-        & Entrada temporariamente mais rápida que a saída; verificação
-        do armazenamento e do comportamento nos limites a definir em QV10. \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.40\textwidth}>{\raggedright\arraybackslash}p{0.41\textwidth}@{}}
+\caption{Origem e validação prevista dos requisitos funcionais.}\label{tab:rastreabilidade-requisitos}\\
+\toprule
+Requisito & Origem / Justificação & Forma prevista de validação \\
+\midrule
+\endfirsthead
+\multicolumn{3}{c}{\tablename~\thetable{} -- continuação}\\
+\toprule
+Requisito & Origem / Justificação & Forma prevista de validação \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continua na página seguinte}\\
+\endfoot
+\bottomrule
+\endlastfoot
+RF01 & Levantamento/validação com o docente: dois I2C independentes; CA01 e CA03. & Inspeção dos dois canais e comunicação em ambos nas configurações acordadas. \\
+\addlinespace
+RF02 & Âmbito oficial RS232; acesso do PC confirmado; CA01. & Testes de transmissão e receção RS232 na configuração especificada. \\
+\addlinespace
+RF03 & Âmbito oficial RS485 mantido; objetivo~\ref{obj:comunicacao}. & Comunicação com dispositivos RS485 segundo o protocolo e papéis definidos. \\
+\addlinespace
+RF04 & Levantamento/validação com o docente: mínimo de dois CAN; ligação ao PC e a nós externos. & Inspeção da quantidade e comunicação nos canais definidos; incluir o terceiro apenas se confirmado em QV08. \\
+\addlinespace
+RF05 & Levantamento/validação com o docente: mínimo nominal de 100~Mbit/s; CA01. & Inspeção da capacidade e ligação a pelo menos 100~Mbit/s com equipamento compatível. \\
+\addlinespace
+RF06 & Objetivo~\ref{obj:comunicacao}; envio de comandos e dados. & Escrita/transmissão em cada tecnologia de comunicação, com destinos e dados definidos. \\
+\addlinespace
+RF07 & Objetivo~\ref{obj:comunicacao}; aquisição e feedback; CA01 e CA03. & Leitura/receção em cada tecnologia, comparando dados enviados e adquiridos. \\
+\addlinespace
+RF08 & Objetivo~\ref{obj:processamento-encaminhamento}; síntese do Estado da Arte. & Comparação de entradas, transformações e saídas para as operações especificadas. \\
+\addlinespace
+RF09 & Levantamento/validação com o docente; CA01: RS232, CAN e Ethernet. & Comunicação bidirecional PC--unidade por cada uma das três alternativas, em ensaios separados se necessário. \\
+\addlinespace
+RF10 & Síntese do Estado da Arte: preservar significado e metadados. & Comparação entre origem e destino segundo o mapeamento, incluindo metadados necessários. \\
+\addlinespace
+RF11 & CA01; seleção de interface, canal e destino pelo PC. & Pedidos variando destino; verificação da origem do feedback e de pedidos sem informação suficiente. \\
+\addlinespace
+RF12 & Levantamento/validação com o docente: concorrência; CA03. & Tráfego concorrente e verificação do progresso nas restantes interfaces durante esperas, sob carga acordada. \\
+\addlinespace
+RF13 & Levantamento/validação com o docente: diferenças de taxa e armazenamento temporário. & Entrada temporariamente mais rápida que a saída; verificar armazenamento e saturação nos limites de QV10. \\
+\addlinespace
+RF14 & Levantamento/validação com o docente: prioridades; CA03. & Verificar ordem de atendimento e progresso sob disputa de recursos segundo a política de QV09. \\
+\addlinespace
+RF15 & Levantamento/validação com o docente: três PWM protegidos; CA02; objetivo~\ref{obj:atuacao-alimentacao}. & Observar e medir os três sinais e validar acionamento. Ensaios de proteção após definição das cargas e critérios de QV13. \\
+\addlinespace
+RF16 & Levantamento/validação com o docente: sincronização PC--unidade; CA01 e CA03; objetivo~\ref{obj:sincronizacao}. & Medir erro temporal e associação de eventos; ensaiar perda de ligação e reinício após definir tolerância e método em QV15. \\
+\addlinespace
+RF17 & Levantamento/validação com o docente: percursos Ethernet confirmados e disponibilização de dados; CA01 e CA03. & Testar entrega e ambos os sentidos dos percursos Ethernet com CAN, RS485, RS232 e I2C. Validar percursos adicionais e eventual registo local após QV01 e QV16. \\
+\addlinespace
+\end{longtable}
+\endgroup
 
-\begin{table}[htbp]
-    \centering
-    \small
-    \setlength{\tabcolsep}{4pt}
-    \renewcommand{\arraystretch}{1.12}
-    \caption{Origem e validação prevista dos requisitos não funcionais.}
-    \label{tab:rastreabilidade-rnf}
-    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{2}{>{\raggedright\arraybackslash}X}@{}}
-        \toprule
-        Requisito & Origem / Justificação & Forma prevista de validação \\
-        \midrule
-        RNF01, RNF03
-        & Objetivo~\ref{obj:arquitetura}; heterogeneidade das interfaces e
-        generalização desejável do encaminhamento.
-        & Inspeção da arquitetura e do software; análise de um caso de
-        extensão acordado e das dependências alteradas. \\
-        \addlinespace
-        RNF02
-        & Objetivo~\ref{obj:arquitetura}; problema de manutenção
-        identificado no enquadramento.
-        & Inspeção da documentação e da correspondência com funções e
-        configurações implementadas. \\
-        \addlinespace
-        RNF04
-        & Objetivo~\ref{obj:validacao}; CA03; RF12--RF13:
-        funcionamento sob concorrência e diferenças de taxa.
-        & Ensaios repetidos; comparação de resultados esperados e
-        observados. Cargas, falhas, repetições e aceitação a validar. \\
-        \addlinespace
-        RNF05
-        & Objetivo~\ref{obj:validacao}; CA03:
-        observação de mensagens, operações e erros.
-        & Observação de operações e de erros provocados em condições
-        controladas; verificação da sua associação às interfaces. \\
-        \addlinespace
-        RNF06
-        & Validação com os docentes: redução de atrasos; CA03 e RF12--RF14.
-        & Medição de latência com carga individual e concorrente;
-        pontos de medição e limites de aceitação a definir. \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.40\textwidth}>{\raggedright\arraybackslash}p{0.41\textwidth}@{}}
+\caption{Origem e validação prevista dos requisitos não funcionais.}\label{tab:rastreabilidade-rnf}\\
+\toprule
+Requisito & Origem / Justificação & Forma prevista de validação \\
+\midrule
+\endfirsthead
+\multicolumn{3}{c}{\tablename~\thetable{} -- continuação}\\
+\toprule
+Requisito & Origem / Justificação & Forma prevista de validação \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continua na página seguinte}\\
+\endfoot
+\bottomrule
+\endlastfoot
+RNF01 & Objetivo~\ref{obj:arquitetura}; responsabilidades de comunicação, PWM e serviços. & Inspeção das fronteiras entre módulos, funções e dependências. \\
+\addlinespace
+RNF02 & Objetivo~\ref{obj:arquitetura}; manutenção e reprodução das operações. & Inspeção da documentação e reprodução das configurações implementadas. \\
+\addlinespace
+RNF03 & Objetivo~\ref{obj:arquitetura}; evolução e encaminhamento desejável. & Análise de um caso de extensão acordado e das dependências alteradas. \\
+\addlinespace
+RNF04 & Objetivo~\ref{obj:validacao}; CA03; RF12--RF13. & Ensaios repetidos e comparação com resultados esperados; cargas, falhas e aceitação a definir em QV07. \\
+\addlinespace
+RNF05 & Objetivo~\ref{obj:validacao}; observação de operações e erros em CA03. & Observar operações e erros em condições controladas e verificar associação à origem; acesso e critérios a validar. \\
+\addlinespace
+RNF06 & Levantamento/validação com o docente: redução de atrasos; RF12--RF14. & Medição de latência sob carga individual e concorrente, com pontos e limites definidos em QV07; distinta do erro de RF16. \\
+\addlinespace
+RNF07 & Levantamento/validação com o docente: RTOS obrigatório; CA03; Estado da Arte, Secção~\ref{sec:rtos}. & Inspeção da arquitetura e do software; execução concorrente sobre o RTOS selecionado. \\
+\addlinespace
+RNF08 & Levantamento/validação com o docente: entrada de 5~V a 60~V; objetivo~\ref{obj:atuacao-alimentacao}. & Ensaiar 5~V, 60~V e valores intermédios com cargas definidas. Proteção, transientes e eficiência avaliados após especificação em QV14. \\
+\addlinespace
+\end{longtable}
+\endgroup
 
 \section{Características Desejáveis}
 
-São desejáveis o suporte Gigabit Ethernet, a alimentação por Ethernet
-(\textit{Power over Ethernet}, PoE) para instalações com um único cabo e
-um consumo reduzido. Não constituem critérios obrigatórios de aceitação
-nesta fase; não existe um limite de consumo confirmado. A generalização
-do encaminhamento a pares sem Ethernet enquadra-se igualmente como
-extensão. Estas características serão avaliadas sem presumir a sua
-inclusão na primeira versão.
+São desejáveis Gigabit Ethernet, alimentação por Ethernet
+(\textit{Power over Ethernet}, PoE) e consumo reduzido, sem valores
+mínimos de eficiência ou máximos de consumo confirmados. O armazenamento
+persistente em microSD é uma opção, não obrigatório; o encaminhamento
+direto dos dados pode satisfazer RF17. O encaminhamento autónomo mais
+geral entre dispositivos externos constitui uma possível extensão.
+Estas opções serão avaliadas em QV12 e QV16, sem presumir a sua inclusão
+na primeira versão nem substituir a entrada obrigatória de 5~V a 60~V.
 
 \section{Restrições do Projeto}
 
-O âmbito funcional confirmado inclui o acesso bidirecional por Ethernet
-aos quatro tipos de interfaces, a gestão de concorrência e a capacidade
-nominal Ethernet de pelo menos 100~Mbit/s. Não estão confirmadas
-restrições de implementação relativas à plataforma, componentes,
-orçamento, PCB ou condições especiais de instalação.
+As condições confirmadas são dois I2C independentes, pelo menos dois
+CAN, suporte RS232 e RS485, Ethernet com mínimo nominal de 100~Mbit/s,
+acesso bidirecional do PC por RS232, CAN e Ethernet, exatamente três
+PWM protegidos, execução sobre RTOS, sincronização temporal com o PC
+e entrada de alimentação entre 5~V e 60~V. As últimas duas condições
+não fixam precisão temporal, tensão de cargas ou potência da alimentação.
 
-Os protocolos, as quantidades de canais e nós, as políticas de atendimento
-e os limites de armazenamento e de desempenho continuam por definir.
-A necessidade de isolamento e proteção deve ser avaliada por interface;
-não se impõe isolamento galvânico universal. Também não se exigem SPI,
-um sistema operativo específico ou funcionamento em pressão, óleo ou
-outras condições ambientais especiais. Decisões em aberto não são
-restrições técnicas já estabelecidas.
+A seleção da unidade de processamento concreta, RTOS, PCB, transceivers,
+estágios de acionamento, memória e componentes de alimentação e proteção
+permanece aberta. FreeRTOS é candidato, sem escolha efetuada. A terceira
+CAN, os protocolos superiores, os restantes canais eventualmente repetidos,
+o número de nós e os limites de carga e desempenho devem ser confirmados.
+
+A proteção elétrica dos três PWM é obrigatória, mas a sua natureza depende
+da especificação das cargas. O isolamento e a proteção das interfaces
+de comunicação e da alimentação devem ser avaliados segundo as condições
+elétricas; não se impõe isolamento galvânico universal. Não se exige
+microSD, SPI, Linux, redundância, comutação automática de ligação ou
+funcionamento em condições ambientais especiais. RTOS não constitui
+uma garantia de tempo real estrito.
 
 \section{Requisitos a Validar com os Docentes}
 \label{sec:questoes-validacao}
 
-Estão definidos os quatro pares base através de Ethernet, os dois sentidos
-de comunicação, a necessidade de concorrência e o mínimo nominal de
-100~Mbit/s. As questões seguintes completam a especificação antes de a
-congelar; não colocam novamente essas capacidades em dúvida.
+As questões seguintes completam a especificação sem reabrir o núcleo
+confirmado. As duas interfaces I2C, o mínimo de duas CAN, os três PWM,
+a gama de alimentação e a obrigatoriedade de RTOS e sincronização
+já estão estabelecidos; falta concretizar os critérios abaixo.
 
 \begin{description}
-    \item[QV01 --- Operações de comunicação:] \hfill\newline
-    Para cada par Ethernet com CAN, RS485, RS232 e I2C, que operações,
-    papéis, configurações e adaptações devem ser demonstrados? Que
-    generalizações a pares sem Ethernet se pretende estudar como extensão?
+    \item[QV01 --- Operações e papéis dos canais:] \hfill\newline
+    Que operações concretizam RF17 e que percursos adicionais se pretendem
+    pelas alternativas de acesso PC--unidade de RF09? Como são distribuídos
+    os canais CAN entre ligação ao PC e nós externos? Que papéis e
+    configurações terão os dois I2C e as restantes interfaces? Que
+    encaminhamentos autónomos entre dispositivos são extensões desejadas?
 
-    \item[QV02 --- Protocolos de aplicação:] \hfill\newline
-    Que protocolos de aplicação devem ser suportados em RS232 e RS485?
-    Existem protocolos superiores obrigatórios nas restantes interfaces,
-    por exemplo em CAN? Como serão interpretados endereços e identificadores?
+    \item[QV02 --- Protocolos dos dispositivos externos:] \hfill\newline
+    Que protocolos de aplicação serão suportados em RS232 e RS485 e
+    que protocolos superiores são necessários em CAN e nas restantes
+    interfaces? Como serão interpretados endereços, identificadores
+    e mapeamentos para preservar o significado dos dados?
 
-    \item[QV03 --- Plataforma de execução:] \hfill\newline
-    Existem restrições à utilização de MCU, SoC ou plataforma com Linux?
-    Os requisitos temporais a definir exigem um RTOS ou deixam em aberto
-    o mecanismo de execução?
+    \item[QV03 --- Seleção de plataforma e RTOS:] \hfill\newline
+    Qual unidade de processamento e qual RTOS serão selecionados e
+    que critérios justificam a escolha, incluindo recursos, suporte
+    de interfaces e requisitos temporais? FreeRTOS é candidato;
+    o uso de um RTOS já está confirmado (RNF07). Como serão organizadas as
+    atividades concorrentes após definição das cargas e dos prazos?
 
-    \item[QV04 --- Variante de CAN:] \hfill\newline
-    O suporte para CAN deve abranger Classical CAN, CAN FD ou ambas
-    as variantes?
+    \item[QV04 --- Variante e configuração de CAN:] \hfill\newline
+    Será necessário Classical CAN, CAN FD ou ambos? Que débitos e
+    configurações serão utilizados em cada canal e que implicações
+    terão para os protocolos superiores definidos em QV02 e QV05?
 
-    \item[QV05 --- Acesso por Ethernet:] \hfill\newline
-    Que protocolos de transporte e de aplicação serão utilizados: TCP,
-    UDP ou outros? Qual será o formato externo para solicitar operações,
-    selecionar interface e destino e receber dados, feedback e erros?
+    \item[QV05 --- Comunicação PC--unidade embebida:] \hfill\newline
+    Que protocolos e formatos serão utilizados sobre RS232, CAN e
+    Ethernet, incluindo transporte sobre Ethernet? Haverá formato
+    comum ou APIs distintas para pedidos, dados, feedback e erros?
+    Existe uma interface preferencial? Não se presume utilização
+    simultânea pelo PC, redundância ou comutação automática.
 
     \item[QV06 --- Placa de circuito impresso:] \hfill\newline
-    É necessário desenvolver uma placa de circuito impresso
-    (PCB) própria?
+    É necessário desenvolver uma PCB própria? Que condicionantes
+    de integração, dimensões e conectores devem ser consideradas?
 
     \item[QV07 --- Desempenho e fiabilidade:] \hfill\newline
-    Além do mínimo nominal Ethernet de 100~Mbit/s já definido, quais são
-    os limites aceitáveis de latência e as cargas e condições de operação?
-    Que falhas, repetições e critérios serão usados na avaliação de
-    fiabilidade? Não existe ainda uma exigência de tempo real estrito.
+    Quais são os limites de latência e eventuais prazos das operações,
+    as cargas de ensaio e os critérios de fiabilidade? Que falhas e
+    repetições devem ser avaliadas? Mantém-se Ethernet nominal de
+    pelo menos 100~Mbit/s, sem garantia confirmada de tempo real estrito.
 
-    \item[QV08 --- Quantidades de interfaces e dispositivos:] \hfill\newline
-    Quantos canais físicos de cada tipo devem existir, incluindo eventuais
-    interfaces repetidas? Quantos nós ou dispositivos devem ser suportados
-    por barramento, em particular CAN e RS485? Que combinações devem operar
-    simultaneamente?
+    \item[QV08 --- Quantidades pendentes e nós:] \hfill\newline
+    É necessária uma terceira interface CAN além das duas obrigatórias?
+    Quantos nós devem ser suportados em cada CAN e em RS485? Existem
+    outras interfaces repetidas e que combinações de canais devem operar
+    simultaneamente? Os dois I2C independentes e os três PWM já estão
+    confirmados.
 
     \item[QV09 --- Prioridades:] \hfill\newline
     Qual será a política de atendimento das comunicações concorrentes?
-    Que critérios de prioridade e garantias de progresso devem ser
-    observados? As prioridades terão de ser configuráveis durante a utilização?
+    Que critérios e garantias de progresso devem ser observados e
+    as prioridades terão de ser configuráveis durante a utilização?
 
     \item[QV10 --- Armazenamento temporário:] \hfill\newline
     Que diferenças de taxa e durações de tráfego devem ser absorvidas?
     Quais serão os limites de armazenamento e o comportamento quando
-    forem excedidos? Que mecanismos de controlo de fluxo permitem os
-    protocolos selecionados?
+    forem excedidos? Que controlo de fluxo permitem os protocolos?
+    O armazenamento temporário distingue-se do registo persistente.
 
-    \item[QV11 --- Isolamento e proteção:] \hfill\newline
-    Que interfaces necessitam de isolamento galvânico e que condições
-    elétricas, exposição a ruído, surtos ou descargas eletrostáticas
-    devem orientar a proteção? Quais serão os critérios de avaliação?
+    \item[QV11 --- Isolamento e proteção das comunicações:] \hfill\newline
+    Que interfaces necessitam de isolamento galvânico? Que níveis
+    elétricos e condições de ruído, surtos ou descargas eletrostáticas
+    orientam a proteção e os critérios de avaliação de cada interface?
 
-    \item[QV12 --- Características opcionais:] \hfill\newline
-    Que características desejáveis se pretende incluir na primeira versão:
-    Gigabit Ethernet, PoE ou ambas? Que condições
-    e eventual limite de consumo devem orientar a avaliação energética?
+    \item[QV12 --- Características desejáveis:] \hfill\newline
+    Pretende-se incluir Gigabit Ethernet ou PoE na primeira versão?
+    Que objetivos de consumo reduzido devem orientar a avaliação?
+    Como será compatibilizado eventual PoE com a entrada de 5~V a 60~V?
+
+    \item[QV13 --- PWM, cargas e proteção elétrica:] \hfill\newline
+    Para os três canais, quais são frequência, resolução, níveis
+    dos sinais, tensão das cargas e corrente máxima? Que tipos de
+    cargas e características de luzes ou garra devem ser suportados?
+    Que natureza de proteção elétrica e que condições de ensaio
+    são necessárias em cada saída? Não estão selecionados mecanismos
+    ou componentes de proteção.
+
+    \item[QV14 --- Alimentação e condições elétricas:] \hfill\newline
+    Na gama confirmada de 5~V a 60~V, quais são corrente e potência
+    máximas, polaridade e cargas de funcionamento? Que transientes,
+    proteção de entrada e eficiência devem ser especificados? Que
+    condições serão utilizadas nos ensaios dos limites e valores
+    intermédios da gama?
+
+    \item[QV15 --- Sincronização e associação temporal:] \hfill\newline
+    Qual precisão e erro máximo são necessários? A referência será
+    absoluta ou relativa? Que método, protocolo e interface serão
+    usados e com que periodicidade de sincronização? Onde se obtêm
+    as marcas temporais de comandos, dados e eventos, e como se
+    recupera após perda de ligação ou reinício? Não se pressupõem
+    RTC, NTP, PTP ou mensagens próprias.
+
+    \item[QV16 --- Armazenamento persistente:] \hfill\newline
+    É necessário armazenamento local persistente em microSD ou basta
+    disponibilizar e encaminhar os dados pelas interfaces no decurso
+    da operação, respeitando os limites temporais a definir?
+    Se houver registo local, que retenção, capacidade, taxa de escrita
+    e recuperação após interrupção são exigidas? MicroSD mantém-se
+    opcional até confirmação da estratégia.
 \end{description}
