@@ -4,6 +4,12 @@
 \chapter{Estado da Arte}
 \label{cap:estado-arte}
 
+Este estudo fornece conhecimento para analisar P01--P04 e os casos de
+utilização da Introdução. Características de tecnologias e exemplos
+comerciais ajudam a identificar limites e parâmetros a especificar;
+não originam requisitos apenas por estarem disponíveis numa plataforma.
+A seleção de implementação segue os requisitos e os critérios de aceitação.
+
 \section{Comunicação em Sistemas Embebidos e Autónomos}
 
 Nos sistemas embebidos e autónomos, as interfaces de comunicação respondem
@@ -193,6 +199,17 @@ No projeto, esta análise deve abranger a proteção da eletrónica de
 controlo e a integridade da comunicação, de acordo com cada interface
 e ambiente de utilização. Não decorre daqui a obrigatoriedade de isolar
 todas as interfaces, nem a definição antecipada de níveis de imunidade.
+
+Para UC06 distinguem-se três domínios: proteção da entrada de alimentação,
+proteção das comunicações e proteção das saídas PWM/cargas. Os fenómenos,
+níveis e critérios de ensaio têm de ser especificados em cada domínio
+antes do dimensionamento. A proteção dos três PWM está confirmada;
+isolamento ou mecanismos particulares não decorrem automaticamente dessa
+condição. A possível utilização sob pressão ou em ambiente especial
+introduz uma questão de aplicabilidade, ainda sem pressão, temperatura,
+humidade ou grau de proteção definidos. Não se transpõe um requisito
+de imunidade elétrica para uma garantia ambiental: QV18 deve primeiro
+caracterizar o contexto de instalação de P04.
 
 \section{Sistemas ou Plataformas Multiprotocolo}
 
@@ -412,7 +429,11 @@ com o escalonamento~\cite[cap.~3]{barry_freertos_2016}. Num sistema com
 várias interfaces, permitem coordenar receção, processamento e transmissão;
 a adequação depende das cargas e dos tempos de resposta especificados.
 
-A utilização de RTOS é uma restrição técnica confirmada. FreeRTOS é um candidato
+UC04 exige coordenação de operações concorrentes, prioridades e
+temporização. A utilização de RTOS é uma restrição técnica confirmada
+para suportar essa necessidade, não uma escolha decorrente dos recursos
+de uma plataforma nem uma conclusão de que só um RTOS permite concorrência.
+FreeRTOS é um candidato
 explicitamente mencionado pelo docente, sem ser uma escolha obrigatória.
 Não se fixa uma tarefa por interface, o número de tarefas, prioridades,
 períodos ou mecanismos de comunicação internos. A existência de RTOS,
@@ -635,8 +656,18 @@ os critérios temporais e de fiabilidade permanecem por validar. A
 observação de operações, erros e resultados deverá permitir verificar
 esse comportamento sem antecipar a implementação.
 
-Os novos requisitos acrescentam execução sobre RTOS, três PWM protegidos,
-alimentação de entrada de 5~V a 60~V e sincronização temporal com o PC.
+Os casos UC03--UC06 enquadram atuação protegida, coerência temporal,
+concorrência e funcionamento elétrico. Mantêm-se três PWM protegidos,
+alimentação de entrada de 5~V a 60~V, RTOS como restrição validada e
+sincronização com o PC.
 A literatura fundamenta os conceitos e os problemas a avaliar, sem
 escolher hardware, RTOS, mecanismo de sincronização ou armazenamento
 persistente. O terceiro CAN e a microSD permanecem decisões abertas.
+
+A passagem deste estudo à arquitetura exige fechar os parâmetros da
+Tabela~\ref{tab:parametros-aceitacao}: taxas e condições de comunicação,
+latência, buffering, erro temporal, cargas e proteção. Os limites de uma
+tecnologia são informação de projeto, não valores de aceitação presumidos.
+Pressão e outras condições ambientais só integrarão a especificação se
+a sua necessidade for confirmada. Esta análise não acrescenta uma norma,
+classificação ambiental ou solução de proteção obrigatória.

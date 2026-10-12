@@ -6,6 +6,12 @@
 
 \section{Visão Geral do Sistema}
 
+A arquitetura é consequência de P01--P04, UC01--UC07 e dos requisitos
+rastreáveis do Capítulo~\ref{cap:requisitos}. Os critérios confirmados
+impõem capacidades; os parâmetros da Tabela~\ref{tab:parametros-aceitacao}
+ainda a definir condicionam o dimensionamento. Não se escolhem primeiro
+componentes para depois transformar os seus recursos em requisitos.
+
 O sistema é concebido como uma unidade embebida multiprotocolo com
 funções de \textit{gateway} e atuação, executadas sobre um RTOS.
 O computador ou sistema central comunica por RS232, CAN ou Ethernet,
@@ -84,6 +90,14 @@ Ethernet. A sincronização temporal usa uma dessas ligações ou um método
 a definir em QV15, sem exigir uma interface física adicional.
 
 \section{Funcionalidades de Alto Nível}
+
+UC01, UC02 e UC07 justificam acesso ao PC, aquisição, tratamento e
+encaminhamento; UC03 justifica comando dos três PWM protegidos; UC04
+justifica gestão de concorrência, prioridades e armazenamento temporário,
+com RTOS como restrição RNF07. UC05 justifica a referência temporal
+sincronizada e UC06 enquadra alimentação e condições elétricas.
+As condições ambientais, incluindo pressão, continuam a confirmar
+em QV18, sem um bloco ou componente imposto nesta fase.
 
 As capacidades observáveis do sistema organizam-se nas seguintes funções:
 
@@ -271,6 +285,7 @@ RTOS e plataforma & RTOS obrigatório (RNF07); FreeRTOS candidato. RTOS e unidad
 Diagnóstico & Proposta RNF05; acesso e critérios por validar. \\
 PCB própria & Necessidade por confirmar (QV06). \\
 Desempenho & Latência e cargas por definir (QV07); sem garantia de tempo real estrito. \\
+Ambiente e pressão & Aplicabilidade e valores a confirmar (UC06; QV18); sem classificação de proteção presumida. \\
 Armazenamento local & MicroSD opcional (QV16); envio pelas interfaces pode dispensar registo persistente. \\
 Opções desejáveis & Gigabit Ethernet, PoE, consumo reduzido e encaminhamento autónomo mais geral; por avaliar (QV01 e QV12). \\
 \end{longtable}
