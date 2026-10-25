@@ -1,0 +1,25 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[ligacao,draw=LasetGrey!45] (0.5,0) -- (13.9,0);
+    \draw[ligacao,draw=LasetGrey!45] (0.5,-2.6) -- (13.9,-2.6);
+    % Um período ocupa 7 cm. As larguras são proporcionais a 1,1/20 e 1,9/20.
+    \pgfmathsetmacro{\fimMinA}{2+7*1.1/20}
+    \pgfmathsetmacro{\fimMinB}{9+7*1.1/20}
+    \pgfmathsetmacro{\fimMaxA}{2+7*1.9/20}
+    \pgfmathsetmacro{\fimMaxB}{9+7*1.9/20}
+    \fill[LasetTeal!20] (2,0) rectangle (\fimMinA,1.2);
+    \fill[LasetTeal!20] (9,0) rectangle (\fimMinB,1.2);
+    \fill[LasetTeal!20] (2,-2.6) rectangle (\fimMaxA,-1.4);
+    \fill[LasetTeal!20] (9,-2.6) rectangle (\fimMaxB,-1.4);
+    \draw[draw=LasetTeal,line width=1.1pt]
+        (0.5,0)--(2,0)--(2,1.2)--(\fimMinA,1.2)--(\fimMinA,0)--(9,0)--(9,1.2)--(\fimMinB,1.2)--(\fimMinB,0)--(13.9,0);
+    \draw[draw=LasetTeal,line width=1.1pt]
+        (0.5,-2.6)--(2,-2.6)--(2,-1.4)--(\fimMaxA,-1.4)--(\fimMaxA,-2.6)--(9,-2.6)--(9,-1.4)--(\fimMaxB,-1.4)--(\fimMaxB,-2.6)--(13.9,-2.6);
+    \draw[duplo] (2,2) -- node[legenda,above] {$T=1/f=20$ ms, para $f=50$ Hz} (9,2);
+    \draw[dashed,draw=LasetGrey!60] (2,1.2)--(2,2.2);
+    \draw[dashed,draw=LasetGrey!60] (9,1.2)--(9,2.2);
+    \node[legenda,anchor=west] at (0.5,0.6) {Mínimo};
+    \node[legenda,anchor=west] at (0.5,-2) {Máximo};
+    \draw[fluxo] (5,0.85) node[legenda,anchor=west] {1100 $\mu$s} -- (\fimMinA,0.85);
+    \draw[fluxo] (5,-1.75) node[legenda,anchor=west] {1900 $\mu$s} -- (\fimMaxA,-1.75);
+    \node[legenda,anchor=east] at (13.9,-3.2) {tempo $\rightarrow$};
+\end{tikzpicture}

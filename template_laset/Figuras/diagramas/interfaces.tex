@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+    \node[nucleo,text width=3.1cm,minimum height=2.5cm] (core) at (6.4,0)
+        {\textbf{Unidade embebida}\\Gateway e atuação\\Processamento\\Encaminhamento\\RTOS e relógio};
+    \node[bloco,text width=2.8cm] (pc) at (1.6,1)
+        {\textbf{PC}\\RS232 ou CAN\\ou Ethernet\\Ethernet: $\geq$100 Mbit/s\\(nominal)};
+    \node[auxiliar,text width=2.8cm] (gps) at (1.6,-1.7)
+        {\textbf{Referência externa}\\PPS a 1 Hz\\e informação GPS};
+    \node[bloco,text width=4.6cm,minimum height=3.3cm] (dispositivos) at (11.8,0)
+        {\textbf{Dispositivos externos}\\[2pt]
+        I2C $\times2$: Standard mode\\
+        CAN FD $\times3$ no total\\até 8 Mbit/s em cada\\
+        RS232: 500 kbit/s; até 1 Mbit/s\\
+        RS485: $\sim$16--32 nós\\(dimensão de referência)\\[2pt]
+        Aquisição genérica de sensores};
+    \node[auxiliar,text width=2.8cm] (energia) at (1.6,-3.8)
+        {\textbf{Alimentação}\\Entrada de 5--60 V};
+    \node[bloco,text width=3.1cm] (pwm) at (6.4,-3.8)
+        {\textbf{PWM $\times3$ protegidos}\\50 Hz\\1100--1900 $\mu$s};
+    \node[opcional,text width=3.8cm] (sd) at (11.8,-3.8)
+        {\textbf{Registo local em microSD}\\Opcional};
+    \draw[duplo] (pc.east)--([yshift=8mm]core.west);
+    \draw[fluxo] (gps.east)--([yshift=-8mm]core.west);
+    \draw[duplo] (core.east)--(dispositivos.west);
+    \draw[fluxo] (core.south)--(pwm.north);
+    \draw[fluxo] (energia.east)--(3.8,-3.8)--(3.8,-2.1)--(core.south west);
+    \draw[fluxo,dashed] (core.south east) |- (11.8,-2.6) -- (sd.north);
+\end{tikzpicture}

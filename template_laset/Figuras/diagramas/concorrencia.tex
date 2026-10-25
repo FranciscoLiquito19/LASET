@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+    \node[bloco,text width=2.6cm] (a) at (1.5,0) {Interface A};
+    \node[bloco,text width=2.6cm] (b) at (1.5,-1.3) {Interface B};
+    \node[bloco,text width=2.6cm] (c) at (1.5,-2.6) {Outras interfaces};
+    \node[nucleo,text width=4cm,minimum height=2.2cm] (buffer) at (6.7,-1.3)
+        {\textbf{Espera temporária}\\Capacidade e prioridades\\a dimensionar};
+    \node[bloco,text width=2.6cm] (saida) at (12.3,-1.3)
+        {\textbf{Saída}\\Capacidade de transmissão};
+    \draw[fluxo] (a.east) -- ([yshift=6mm]buffer.west);
+    \draw[fluxo] (b) -- (buffer);
+    \draw[fluxo] (c.east) -- ([yshift=-6mm]buffer.west);
+    \draw[fluxo] (buffer) -- (saida);
+    \node[auxiliar,text width=13cm,font=\sffamily\footnotesize] at (6.9,-3.9)
+        {Entrada superior à saída de forma sustentada $\Rightarrow$ um buffer finito satura.\\
+        Carga admissível, duração da sobrecarga e resposta à saturação: em aberto.};
+\end{tikzpicture}

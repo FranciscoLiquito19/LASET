@@ -10,6 +10,8 @@ O único relatório oficial tem como ficheiro principal
 `template_laset/Modelo_LaSET.tex`.
 Instalar uma distribuição LaTeX com os pacotes usados nesse ficheiro, além de
 `latexmk` e BibTeX. A bibliografia mantém o estilo `unsrt` do template.
+Os diagramas vetoriais são compilados diretamente com TikZ/PGF, usando
+os estilos comuns de `template_laset/Outros/Estilo_Visual.tex`.
 
 ```sh
 cd template_laset
@@ -29,8 +31,8 @@ para resolver as citações e os índices.
 No VS Code, a receita existente do LaTeX Workshop usa
 `"latex-workshop.latex.outDir": "%DIR%/build"` e passa esse diretório ao
 `latexmk` através de `-outdir=%OUTDIR%`. Ao compilar o ficheiro principal,
-o resultado fica no mesmo caminho indicado acima. O diretório `build/`
-e os ficheiros auxiliares de compilação são ignorados pelo Git.
+o resultado fica no mesmo caminho indicado acima. O PDF oficial é versionado;
+os ficheiros auxiliares de compilação em `build/` são ignorados pelo Git.
 
 A fase de Análise de Requisitos está configurada em
 `template_laset/Outros/Identificacao.tex`: `\Requisitostrue`, `\Projectofalse`
@@ -45,10 +47,14 @@ pelo que não gera um capítulo vazio nesta fase.
 - `template_laset/Capitulos/`: conteúdo organizado pelos capítulos oficiais.
 - `template_laset/Outros/Identificacao.tex`: fase, título e autores.
 - `template_laset/Figuras/`: imagens utilizadas no relatório.
+- `template_laset/Figuras/diagramas/`: fontes TikZ dos esquemas e gráficos temporais.
 - `template_laset/Anexos/`: conteúdo dos anexos.
 - `template_laset/bibliografia.bib`: referências bibliográficas em BibTeX.
-- `template_laset/build/`: PDF e auxiliares gerados localmente, não versionados.
+- `template_laset/build/`: PDF oficial versionado e auxiliares de compilação ignorados pelo Git.
 - `.vscode/settings.json`: configuração de compilação do LaTeX Workshop.
+
+As [notas da revisão](docs/revisao_final.md) incluem os resultados de
+validação e um roteiro para leitura conjunta do PDF.
 
 ## Trabalhar em conjunto
 

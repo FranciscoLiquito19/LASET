@@ -4,26 +4,22 @@
 \chapter{Análise de Requisitos}
 \label{cap:requisitos}
 
-Os requisitos partem das necessidades P01--P04 e dos casos UC01--UC07
-(Secção~\ref{sec:cenarios-aplicacao}). O Estado da Arte fornece conhecimento
-sobre características, limites e alternativas, sem constituir um catálogo
-de funcionalidades a adotar. O levantamento é validado com o docente,
-mas a justificação técnica de cada requisito está ligada ao problema
-ou à utilização, como mostram as tabelas de rastreabilidade.
+Os requisitos derivam de P01--P04 e UC01--UC07, segundo a cadeia da
+Figura~\ref{fig:cadeia-requisitos}. O Estado da Arte fundamenta a análise;
+as quantidades e restrições validadas com o docente delimitam o âmbito,
+sem serem deduzidas dos recursos de uma plataforma.
 
-Mantêm-se as condições confirmadas: dois I2C independentes, pelo menos
-dois CAN, RS232, RS485, Ethernet nominal de pelo menos 100~Mbit/s,
-acesso do PC por RS232, CAN e Ethernet, três PWM protegidos, sincronização,
-RTOS e alimentação entre 5~V e 60~V. As quantidades delimitam o âmbito
-validado; não se deduzem apenas de um exemplo de utilização nem dos
-periféricos disponíveis num MCU. A terceira CAN e a microSD permanecem
-pendentes ou opcionais.
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{rastreabilidade}
+    \caption[Cadeia de rastreabilidade dos requisitos.]{Ligação entre necessidades, utilização, requisitos, verificação prevista e arquitetura.}
+    \label{fig:cadeia-requisitos}
+\end{figure}
 
-A cadeia de análise é problema/caso, requisito, validação/critério e
-arquitetura. A Tabela~\ref{tab:parametros-aceitacao} distingue valores
-confirmados de parâmetros \enquote{A definir}. As questões da
-Secção~\ref{sec:questoes-validacao} devem completar estes critérios antes
-dos ensaios. As formas de validação são previstas, não resultados obtidos.
+A Tabela~\ref{tab:parametros-aceitacao} reúne os valores confirmados,
+as opções e os parâmetros em aberto. As DP01--DP17 reservam decisões
+para projeto; os métodos de validação constituem um plano de ensaios,
+sem resultados experimentais nem valores por omissão presumidos.
 
 \section{Requisitos Funcionais}
 
@@ -37,63 +33,71 @@ sentidos em todos os barramentos, nem utilização simultânea das três
 alternativas de ligação pelo PC.
 
 \begin{description}
-    \item[RF01 --- Dois barramentos I2C independentes:] \hfill\newline
+    \item[RF01. Dois barramentos I2C independentes:] \hfill\\*
     O sistema deve disponibilizar exatamente dois barramentos I2C
     independentes para aquisição e comando de dispositivos locais
-    (UC01--UC02). Papéis, modos e frequências de operação serão definidos
-    em QV01 e QV17, sem selecionar periféricos, pinos ou componentes.
+    (UC01--UC02), ambos com suporte de Standard mode. Não se exigem outros
+    modos. Os papéis e níveis elétricos serão definidos em DP01 e DP16,
+    sem selecionar periféricos, pinos ou componentes.
 
-    \item[RF02 --- Suporte para RS232:] \hfill\newline
+    \item[RF02. Suporte para RS232:] \hfill\\*
     O sistema deve suportar RS232 para acesso do PC e operações com
-    dispositivos segundo UC01--UC02. Baud rate e configuração de palavra
-    ficam a definir em QV17; protocolos em QV02 e QV05.
+    dispositivos segundo UC01--UC02, com funcionamento operacional a
+    500~kbit/s e capacidade da interface até 1~Mbit/s. A capacidade deve
+    permitir também comunicação a 1~Mbit/s; este valor não substitui a
+    taxa operacional requerida. Configuração de palavra e controlo de
+    fluxo ficam a definir em DP16; protocolos em DP02 e DP04.
 
-    \item[RF03 --- Suporte para RS485:] \hfill\newline
+    \item[RF03. Suporte para RS485:] \hfill\\*
     O sistema deve suportar RS485 para comunicação com dispositivos
-    externos de UC01--UC02. Baud rate, número de nós e protocolo superior
-    serão definidos em QV17, QV08 e QV02; não é uma ligação obrigatória
-    PC--unidade.
+    externos de UC01--UC02, considerando aproximadamente 16--32 nós como
+    dimensão de referência. O número exato não é crítico e 32 não constitui
+    um limite rígido. Baud rate e protocolo superior serão definidos em
+    DP16 e DP02; não é uma ligação obrigatória PC--unidade.
 
-    \item[RF04 --- Pelo menos dois barramentos CAN:] \hfill\newline
-    O sistema deve disponibilizar pelo menos duas interfaces/barramentos
-    CAN. A necessidade de uma terceira permanece por confirmar (QV08).
-    CAN deve poder servir a comunicação com o PC e com nós externos;
-    a distribuição dos canais por estes papéis será definida em QV01.
-    Variante, bitrate, número de nós e protocolos superiores serão
-    especificados em QV04, QV08 e QV02. UC01--UC02 justificam os papéis
+    \item[RF04. Três barramentos CAN FD:] \hfill\\*
+    O sistema deve disponibilizar exatamente três barramentos CAN FD,
+    cada um com capacidade até 8~Mbit/s, conforme indicação do docente.
+    CAN FD deve poder servir a comunicação com o PC e com nós externos;
+    a distribuição dos canais por estes papéis será definida em DP01.
+    A indicação de 8~Mbit/s não fixa separadamente os bitrates das fases
+    de arbitragem e de dados. A configuração detalhada das duas fases
+    pertence ao projeto, sem valores de timing, sample point ou comprimento
+    de barramento impostos nesta fase. Número de nós e protocolos superiores
+    serão especificados em DP07 e DP02. UC01--UC02 justificam os papéis
     de comando e aquisição, mantendo a quantidade validada.
 
-    \item[RF05 --- Suporte para Ethernet:] \hfill\newline
+    \item[RF05. Suporte para Ethernet:] \hfill\\*
     O sistema deve disponibilizar uma interface Ethernet com capacidade
     nominal mínima de 100~Mbit/s, como uma das alternativas de comunicação
     com o computador ou sistema central. Este valor não constitui uma garantia
     de débito útil ou de latência.
 
-    \item[RF06 --- Escrita e transmissão:] \hfill\newline
+    \item[RF06. Escrita e transmissão:] \hfill\\*
     O sistema deve permitir operações de escrita ou transmissão de dados
     através de cada uma das cinco tecnologias de comunicação previstas, de acordo com as
     características da respetiva tecnologia.
 
-    \item[RF07 --- Leitura e receção:] \hfill\newline
+    \item[RF07. Leitura e receção:] \hfill\\*
     O sistema deve permitir operações de leitura ou receção de dados
     através de cada uma das cinco tecnologias de comunicação previstas, de acordo com as
     características da respetiva tecnologia.
 
-    \item[RF08 --- Processamento e adaptação:] \hfill\newline
+    \item[RF08. Processamento e adaptação:] \hfill\\*
     O sistema deve processar a informação recebida e efetuar as adaptações
     necessárias à operação de destino, de acordo com as configurações e
     os protocolos envolvidos. As operações suportadas devem explicitar
     os dados de entrada, as transformações e os resultados esperados.
 
-    \item[RF09 --- Comunicação bidirecional PC--unidade embebida:] \hfill\newline
+    \item[RF09. Comunicação bidirecional PC--unidade embebida:] \hfill\\*
     O computador deve conseguir enviar comandos ou dados e receber
     dados ou feedback da unidade embebida através de cada uma das
     alternativas RS232, CAN e Ethernet. Não se exige que o PC as utilize
     simultaneamente. A interface preferencial, se existir, e os
-    protocolos e formatos externos permanecem por definir (QV05);
+    protocolos e formatos externos permanecem por definir (DP04);
     não se pressupõem redundância ou comutação automática entre ligações.
 
-    \item[RF10 --- Preservação da informação necessária:] \hfill\newline
+    \item[RF10. Preservação da informação necessária:] \hfill\\*
     O processamento e o encaminhamento devem preservar os dados e metadados
     necessários à operação da interface ou protocolo de destino, mantendo
     o seu significado de acordo com o mapeamento definido. Esses elementos
@@ -101,7 +105,7 @@ alternativas de ligação pelo PC.
     operação, permitindo comparar a informação de origem com o resultado
     no destino.
 
-    \item[RF11 --- Acesso externo e seleção do destino:] \hfill\newline
+    \item[RF11. Acesso externo e seleção do destino:] \hfill\\*
     Através da ligação ao PC utilizada, o sistema deve permitir solicitar
     uma operação, indicando a interface e o canal ou barramento de destino,
     o dispositivo, endereço
@@ -109,64 +113,73 @@ alternativas de ligação pelo PC.
     Os dados e feedback devolvidos ao sistema central devem permitir
     identificar a respetiva origem.
 
-    \item[RF12 --- Comunicações concorrentes:] \hfill\newline
+    \item[RF12. Comunicações concorrentes:] \hfill\\*
     O sistema deve manter diferentes interfaces ativas e gerir operações
     de comunicação concorrentes, incluindo receção em várias interfaces.
     A espera por uma interface não deve impedir o progresso das operações
     nas restantes, nas condições de funcionamento e carga a definir.
 
-    \item[RF13 --- Gestão de diferenças de taxa:] \hfill\newline
+    \item[RF13. Gestão de diferenças de taxa:] \hfill\\*
     O sistema deve gerir diferenças entre as taxas de entrada e saída,
     assegurando armazenamento temporário da informação que aguarda
     transmissão quando necessário. Os limites de carga, duração da
     sobrecarga e capacidade de armazenamento, bem como o comportamento
-    quando forem excedidos, serão definidos através de QV10.
+    quando forem excedidos, serão definidos através de DP09.
 
-    \item[RF14 --- Gestão de prioridades:] \hfill\newline
+    \item[RF14. Gestão de prioridades:] \hfill\\*
     Quando existam comunicações concorrentes a disputar recursos, o sistema
     deve gerir o seu atendimento segundo uma política de prioridades a
     definir. A política concreta e a possibilidade de a configurar durante
-    a utilização permanecem por validar.
+    a utilização permanecem em aberto para a fase de projeto.
 
-    \item[RF15 --- Três saídas PWM protegidas:] \hfill\newline
+    \item[RF15. Três saídas PWM protegidas:] \hfill\\*
     O sistema deve disponibilizar exatamente três saídas/canais PWM para
-    comando de cargas ou atuadores físicos, com proteção elétrica
-    apropriada em todos os três canais. Luzes e uma garra são exemplos
+    comando de cargas ou atuadores físicos, com frequência de 50~Hz,
+    largura de impulso útil entre 1100~$\mu$s e 1900~$\mu$s e proteção
+    elétrica obrigatória em todos os três canais. Luzes e uma garra são exemplos
     de equipamentos comandados; a garra utiliza um dos canais e não
-    acrescenta um quarto PWM. Níveis, tensão e corrente das cargas,
-    frequência, resolução e natureza da proteção serão definidos em QV13
+    acrescenta um quarto PWM. A resolução PWM permanece em aberto para
+    a fase de projeto. Níveis, tensão e corrente das cargas,
+    resolução e natureza da proteção serão definidos em DP12
     para UC03 e UC06. O tipo de carga e o comportamento em curto-circuito
-    ou sobrecarga, quando aplicáveis, precisam de confirmação; não se
+    ou sobrecarga, quando aplicáveis, serão especificados no projeto; não se
     pressupõe um mecanismo de proteção específico.
 
-    \item[RF16 --- Sincronização temporal com o PC:] \hfill\newline
-    A unidade embebida deve manter uma referência temporal coerente e
-    sincronizada com o computador, permitindo associar temporalmente
-    comandos, dados e eventos (UC05). Precisão, erro máximo, resolução
-    temporal, referência absoluta
-    ou relativa, método, interface, periodicidade e recuperação após
-    perda de comunicação ou reinício serão definidos em QV15. Não se
-    seleciona protocolo nem se pressupõe relógio de tempo real (RTC).
+    \item[RF16. Sincronização temporal por PPS e informação GPS:] \hfill\\*
+    O sistema deve permitir sincronizar o relógio da unidade com uma
+    referência externa baseada em PPS (\textit{Pulse Per Second}), com
+    um impulso por segundo, e informação temporal GPS recebida em
+    mensagens entre os impulsos PPS. Esta informação deve ser associada
+    à referência para permitir a associação temporal de dados, comandos
+    e eventos com resolução da ordem dos microssegundos (UC05).
+    A aquisição de diferentes sensores e a sua combinação no PC com
+    dados de outras fontes, para localização, fusão ou processamento,
+    justificam esta resolução. O erro de sincronização deve ser medido e
+    reportado; não se garante uma precisão absoluta de $\pm1~\mu$s.
+    Os pontos de marcação temporal, as condições de medição e a recuperação
+    após perda de referência ou reinício permanecem em DP14. Não se
+    selecionam recetor GPS, hardware, protocolo de mensagens ou periféricos
+    do MCU.
 
-    \item[RF17 --- Disponibilização e encaminhamento de dados:] \hfill\newline
+    \item[RF17. Disponibilização e encaminhamento de dados:] \hfill\\*
     O sistema deve disponibilizar os dados adquiridos pelas interfaces
     de comunicação previstas e encaminhar comandos e dados entre o PC
     e os dispositivos externos segundo as operações especificadas.
     Deve suportar os percursos bidirecionais Ethernet com CAN, RS485,
     RS232 e I2C; RF09 especifica separadamente as três alternativas de
-    acesso ao PC. Outros percursos permanecem sujeitos a QV01 ou a extensão,
+    acesso ao PC. Outros percursos permanecem sujeitos a DP01 ou a extensão,
     sem exigir conversão entre todos os pares.
     Cada operação deve identificar origem, destino, configuração,
     protocolo e mapeamento necessários; só pode ser executada quando
     esses elementos permitirem determinar uma ação compatível.
     O armazenamento persistente local em microSD é uma opção a validar
-    em QV16, não uma condição obrigatória para disponibilizar os dados.
+    em DP15, não uma condição obrigatória para disponibilizar os dados.
 \end{description}
 
 RF09 exige suporte às três alternativas de comunicação PC--unidade:
 RS232, CAN e Ethernet. RF17 estabelece separadamente os quatro percursos
 de encaminhamento Ethernet confirmados. As operações, os percursos
-adicionais e a distribuição dos canais CAN serão especificados em QV01,
+adicionais e a distribuição dos canais CAN serão especificados em DP01,
 sem impor conversão entre todos os pares. RS485 mantém-se no âmbito,
 sem ser uma ligação obrigatória PC--unidade. As quantidades de RF01 e RF04
 não são multiplicadas pela representação de papéis na arquitetura.
@@ -189,69 +202,74 @@ observabilidade e comportamento temporal decorrentes do âmbito funcional.
 RNF07 define a restrição técnica de execução sobre RTOS e RNF08 regista
 a gama elétrica confirmada da alimentação, sem duplicar os requisitos
 funcionais de proteção PWM ou sincronização.
-Os critérios de aceitação ainda não confirmados serão validados com o docente; os
-métodos previstos encontram-se na secção de rastreabilidade.
+Os critérios qualitativos e os métodos de ensaio encontram-se na secção
+de rastreabilidade. Os limites quantitativos ainda não especificados
+permanecem em aberto para a fase de projeto e para a caracterização
+experimental, sem constituírem garantias de desempenho nesta fase.
 
 \begin{description}
-    \item[RNF01 --- Modularidade:] \hfill\newline
+    \item[RNF01. Modularidade:] \hfill\\*
     A organização do sistema deverá distinguir as responsabilidades
     associadas às interfaces de comunicação e à atuação PWM das funções
     de processamento, encaminhamento e sincronização, com fronteiras
     e dependências identificadas
     na arquitetura e na implementação.
 
-    \item[RNF02 --- Manutenção:] \hfill\newline
+    \item[RNF02. Manutenção:] \hfill\\*
     A documentação deverá identificar as responsabilidades, as entradas,
     as saídas e as dependências das funções implementadas, bem como as
     configurações necessárias para reproduzir as operações de comunicação.
 
-    \item[RNF03 --- Extensibilidade:] \hfill\newline
+    \item[RNF03. Extensibilidade:] \hfill\\*
     A arquitetura deverá permitir incorporar novos casos de encaminhamento
     e configuração através de pontos de extensão e dependências
     identificados, sem impor uma organização interna específica.
 
-    \item[RNF04 --- Fiabilidade:] \hfill\newline
+    \item[RNF04. Fiabilidade:] \hfill\\*
     Nas condições de funcionamento e carga a definir, o sistema deverá
     produzir os resultados previstos para as operações suportadas,
     incluindo quando existam comunicações concorrentes e diferenças
     de taxa entre interfaces.
 
-    \item[RNF05 --- Observabilidade e diagnóstico:] \hfill\newline
+    \item[RNF05. Observabilidade e diagnóstico:] \hfill\\*
     O sistema deverá permitir observar as mensagens tratadas, os resultados
     das operações e os erros detetados, associando-os às interfaces e às
     operações correspondentes. A forma de acesso a essa informação
     permanece por definir; não se pressupõe uma interface de diagnóstico
     específica nem registo persistente de todas as mensagens.
 
-    \item[RNF06 --- Comportamento temporal:] \hfill\newline
+    \item[RNF06. Comportamento temporal:] \hfill\\*
     O desempenho temporal do gateway deverá ser caracterizado, com o
     objetivo de minimizar a latência introduzida pelo processamento e
-    encaminhamento. Este requisito é preliminar e requer quantificação:
-    os limites máximos aceitáveis sob carga individual e concorrente serão
-    definidos após a resolução de QV07. A utilização obrigatória de RTOS
+    encaminhamento. As cargas de ensaio e os pontos de medição serão
+    definidos na fase de projeto (DP06). A avaliação deve medir e reportar
+    o desempenho observado; não está especificado um limite máximo de
+    latência. A utilização obrigatória de RTOS
     não estabelece uma garantia de tempo real estrito
-    (\textit{hard real-time}); o erro de sincronização de RF16 é avaliado
-    separadamente em QV15.
+    (\textit{hard real-time}). A resolução temporal da ordem dos
+    microssegundos de RF16 é distinta da latência e do erro absoluto de
+    sincronização, que deve ser medido e reportado nas condições de DP14,
+    sem um limite absoluto de erro especificado.
 
-    \item[RNF07 --- Execução sobre sistema operativo de tempo real:] \hfill\newline
+    \item[RNF07. Execução sobre sistema operativo de tempo real:] \hfill\\*
     A solução deve executar sobre um RTOS. FreeRTOS é candidato
     explicitamente mencionado pelo docente, sem ser obrigatório.
     O RTOS concreto, a organização das tarefas e atividades, as
     prioridades, o escalonamento e os restantes mecanismos de execução
-    ficam para a fase de projeto, segundo os critérios a definir em QV03.
+    ficam para a fase de projeto, segundo os critérios a definir em DP03.
     Esta restrição validada suporta a coordenação de múltiplas interfaces,
     prioridades e temporização de UC04; o caso exige o comportamento
     concorrente, sem determinar por si só uma implementação de RTOS.
 
-    \item[RNF08 --- Gama de alimentação de entrada:] \hfill\newline
+    \item[RNF08. Gama de alimentação de entrada:] \hfill\\*
     O sistema deve aceitar tensão de alimentação de entrada entre
     5~V e 60~V, incluindo os limites. A corrente e potência máximas,
     as condições de carga, a polaridade, os transientes, a proteção da
-    entrada e a eficiência requerida serão definidos em QV14 antes
+    entrada e a eficiência requerida serão definidos em DP13 antes
     do dimensionamento e da validação elétrica de UC06. A gama não
     especifica a tensão das cargas PWM. Perturbações e condições ambientais
-    serão avaliadas separadamente; pressão e ambiente especial permanecem
-    condições a confirmar em QV18.
+    serão avaliadas separadamente segundo o contexto de instalação a
+    esclarecer em DP17.
 \end{description}
 
 \section{Rastreabilidade dos Requisitos}
@@ -261,23 +279,46 @@ e~\ref{tab:rastreabilidade-rnf} ligam cada requisito a P01--P04 ou
 UC01--UC07 e a uma validação com critério explícito. O docente valida
 o levantamento; a necessidade de utilização é a justificação técnica.
 Quantidades e restrições confirmadas são assinaladas, sem inventar
-valores para taxas, carga, proteção ou desempenho. Os critérios
-\enquote{A definir} precisam de resposta às QV antes da aceitação.
+valores adicionais para taxas, carga, proteção ou desempenho. Os critérios
+\enquote{Em aberto} serão concretizados na fase de projeto. Quando não
+existe um limite de aceitação especificado, o ensaio tem caráter de
+caracterização: mede e reporta o comportamento, sem demonstrar uma
+garantia quantitativa ainda não estabelecida.
 As propostas RNF01--RNF03 e RNF05 não passam a confirmações adicionais
 apenas por constarem desta rastreabilidade.
 
+Nos ensaios quantitativos, o procedimento identificará a grandeza medida,
+os pontos de observação, as configurações, as cargas e as repetições.
+Os resultados serão apresentados com unidades e com a avaliação da
+incerteza de medição, considerando a instrumentação e a referência
+utilizadas, segundo os princípios do GUM~\cite[sec.~7]{jcgm_gum_2008}.
+Em RF16, o desvio observado face à referência e a incerteza da sua
+medição serão distinguidos da resolução das marcas temporais.
+
+Os valores nominais de RF15 orientam as medições de frequência e largura
+de impulso. Como não foram estabelecidas tolerâncias numéricas, esta
+fase não define uma regra de decisão completa para esses ensaios.
+Tolerâncias e regra de aceitação deverão ser documentadas no projeto,
+antes dos ensaios de conformidade; não se deduzem da resolução do
+instrumento nem substituem os valores confirmados. Até essa definição,
+as medições caracterizam o comportamento obtido, sem demonstrar
+uma tolerância não especificada.
+
 \begingroup
 \small
+\setstretch{1.05}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.12}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.40\textwidth}>{\raggedright\arraybackslash}p{0.41\textwidth}@{}}
 \caption{Rastreabilidade e aceitação prevista dos requisitos funcionais.}\label{tab:rastreabilidade-requisitos}\\
 \toprule
+\rowcolor{LasetTint}
 Requisito & Problema / Caso de utilização & Validação / Aceitação \\
 \midrule
 \endfirsthead
-\multicolumn{3}{c}{\tablename~\thetable{} -- continuação}\\
+\multicolumn{3}{c}{\tablename~\thetable{} (continuação)}\\
 \toprule
+\rowcolor{LasetTint}
 Requisito & Problema / Caso de utilização & Validação / Aceitação \\
 \midrule
 \endhead
@@ -286,55 +327,58 @@ Requisito & Problema / Caso de utilização & Validação / Aceitação \\
 \endfoot
 \bottomrule
 \endlastfoot
-RF01 & P01; UC01--UC02: comando e aquisição locais; quantidade validada. & Inspecionar e comunicar em ambos os canais. Critério: exatamente dois barramentos independentes; modos/frequências a definir (QV17). \\
+RF01 & P01; UC01--UC02: comando e aquisição locais; quantidade e modo confirmados. & Ensaiar transmissão/receção em Standard mode nos dois barramentos e verificar a sua independência. Critério: dados e resultados esperados em ambos; níveis elétricos a definir (DP16). \\
 \addlinespace
-RF02 & P01; UC01: acesso série do PC; UC02: aquisição. & Ensaiar transmissão/receção RS232. Critério: dados/resultados esperados na configuração e protocolo a definir (QV02, QV05, QV17). \\
+RF02 & P01; UC01: acesso série do PC; UC02: aquisição; taxas confirmadas. & Transmitir e receber dados conhecidos a 500~kbit/s e a 1~Mbit/s com equipamento compatível; comparar os dados recebidos com os enviados. Critério: comunicação correta em ambos os ensaios; palavra/protocolo a definir (DP02, DP04, DP16). \\
 \addlinespace
-RF03 & P01; UC01--UC02: dispositivos externos RS485. & Comunicar com os dispositivos de ensaio. Critério: operações esperadas; baud rate, protocolo e nós a definir (QV02, QV08, QV17). \\
+RF03 & P01; UC01--UC02: dispositivos externos RS485; dimensão de referência de aproximadamente 16--32 nós, sem número exato crítico. & Ensaiar operações na rede de referência e registar a configuração e o número de nós usados. Critério: resultados esperados, sem impor 32 como limite rígido; baud rate/protocolo a definir (DP02, DP16). \\
 \addlinespace
-RF04 & P01; UC01--UC02: PC e nós CAN; mínimo validado. & Inspecionar canais e comunicar em cada um. Critério: pelo menos dois CAN; terceiro pendente; bitrate/variante/nós a definir (QV04, QV08). \\
+RF04 & P01; UC01--UC02: PC e nós CAN; três CAN FD até 8~Mbit/s confirmados. & Inspecionar exatamente três barramentos e transmitir/receber dados conhecidos em cada um, verificando a capacidade de 8~Mbit/s. Critério: dados corretos nos três; registar a configuração das duas fases definida no projeto, sem a presumir nesta especificação. \\
 \addlinespace
 RF05 & P01; UC01 e UC07: ligação Ethernet; mínimo validado. & Verificar capacidade e ligação com equipamento compatível. Critério: capacidade nominal de pelo menos 100~Mbit/s; débito útil/latência não garantidos. \\
 \addlinespace
-RF06 & P01; UC01: enviar comandos; UC07: disponibilizar dados. & Ensaiar transmissão nas cinco tecnologias. Critério: destino e resultado correspondentes à operação de ensaio a especificar (QV01--QV02). \\
+RF06 & P01; UC01: enviar comandos; UC07: disponibilizar dados. & Ensaiar transmissão nas cinco tecnologias. Critério: destino e resultado correspondentes à operação de ensaio a especificar (DP01--DP02). \\
 \addlinespace
-RF07 & P01; UC02: adquirir dados; UC01: receber feedback. & Ensaiar receção nas cinco tecnologias. Critério: dados e origem esperados nos casos de ensaio a definir (QV01--QV02). \\
+RF07 & P01; UC02: adquirir dados; UC01: receber feedback. & Ensaiar receção nas cinco tecnologias. Critério: dados e origem esperados nos casos de ensaio a definir (DP01--DP02). \\
 \addlinespace
-RF08 & P01; UC01--UC02: adaptar informação entre operações. & Comparar entrada, transformação e saída. Critério: resultado conforme mapeamento da operação, ainda a definir (QV01--QV02). \\
+RF08 & P01; UC01--UC02: adaptar informação entre operações. & Comparar entrada, transformação e saída. Critério: resultado conforme mapeamento da operação, ainda a definir (DP01--DP02). \\
 \addlinespace
-RF09 & P01; UC01: acesso bidirecional do PC pelas três alternativas. & Ensaiar cada alternativa, separadamente se necessário. Critério: enviar e receber por RS232, CAN e Ethernet; formatos a definir (QV05). \\
+RF09 & P01; UC01: acesso bidirecional do PC pelas três alternativas. & Ensaiar cada alternativa, separadamente se necessário. Critério: enviar e receber por RS232, CAN e Ethernet; formatos a definir (DP04). \\
 \addlinespace
-RF10 & P01; UC01--UC02 e UC07: preservar significado e origem. & Comparar informação na origem e no destino. Critério: preservação dos dados/metadados exigidos pelo mapeamento a definir (QV01--QV02). \\
+RF10 & P01; UC01--UC02 e UC07: preservar significado e origem. & Comparar informação na origem e no destino. Critério: preservação dos dados/metadados exigidos pelo mapeamento a definir (DP01--DP02). \\
 \addlinespace
-RF11 & P01; UC01--UC02: selecionar destino e identificar origem. & Variar interface, canal e destino dos pedidos. Critério: ação no destino solicitado e origem identificável; formato a definir (QV05). \\
+RF11 & P01; UC01--UC02: selecionar destino e identificar origem. & Variar interface, canal e destino dos pedidos. Critério: ação no destino solicitado e origem identificável; formato a definir (DP04). \\
 \addlinespace
-RF12 & P02; UC04: manter progresso sob concorrência. & Aplicar carga concorrente e observar progresso. Critério: operações não bloqueadas indevidamente; carga e limites de espera a definir (QV07--QV08). \\
+RF12 & P02; UC04: manter progresso sob concorrência. & Aplicar carga concorrente e observar progresso. Critério: operações não bloqueadas indevidamente; carga e limites de espera a definir (DP06--DP07). \\
 \addlinespace
-RF13 & P02; UC02, UC04 e UC07: absorver diferenças de taxa. & Aplicar entrada temporariamente superior à saída e saturação. Critério: capacidade, duração admissível e resposta à sobrecarga a definir (QV10). \\
+RF13 & P02; UC02, UC04 e UC07: absorver diferenças de taxa. & Aplicar entrada temporariamente superior à saída e saturação. Critério: capacidade, duração admissível e resposta à sobrecarga a definir (DP09). \\
 \addlinespace
-RF14 & P02; UC04: atender operações que disputam recursos. & Observar atendimento sob concorrência. Critério: conformidade com política e garantias de progresso a definir (QV09). \\
+RF14 & P02; UC04: atender operações que disputam recursos. & Observar atendimento sob concorrência. Critério: conformidade com política e garantias de progresso a definir (DP08). \\
 \addlinespace
-RF15 & P03--P04; UC03 e UC06: atuar sobre cargas; três canais protegidos validados. & Medir sinais e ensaiar acionamento dos três canais. Critério: exatamente três PWM protegidos; parâmetros e ensaios elétricos a definir (QV13). \\
+RF15 & P03--P04; UC03 e UC06: atuar sobre cargas; três canais protegidos e temporização confirmados. & Medir 50~Hz em cada saída e comandar impulsos de 1100~$\mu$s, 1900~$\mu$s e valores intermédios. Critério: funcionamento dos três PWM protegidos na gama; registar medições sem tolerâncias adicionais presumidas. Resolução e ensaios de proteção a definir (DP12). \\
 \addlinespace
-RF16 & P03; UC05, apoiando UC01--UC02: associação temporal. & Medir desvio PC--unidade e recuperação após falha/reinício. Critério: erro máximo, resolução e condições de recuperação a definir (QV15). \\
+RF16 & P03; UC02 e UC05: combinar no PC dados de sensores e de outras fontes para localização, fusão ou processamento. & Verificar PPS a 1~Hz, processamento das mensagens temporais GPS entre impulsos e sincronização do relógio. Verificar resolução da ordem dos microssegundos e medir/reportar o erro face à referência. Não há limite absoluto garantido; medição e recuperação a definir (DP14). \\
 \addlinespace
-RF17 & P01--P02; UC01, UC02 e UC07: encaminhar e disponibilizar dados. & Ensaiar os quatro pares Ethernet nos dois sentidos. Critério: dados/resultados esperados em todos os pares; operações a definir (QV01). Registo local só se selecionado (QV16). \\
+RF17 & P01--P02; UC01, UC02 e UC07: encaminhar e disponibilizar dados. & Ensaiar os quatro pares Ethernet nos dois sentidos. Critério: dados/resultados esperados em todos os pares; operações a definir (DP01). Registo local só se selecionado (DP15). \\
 \addlinespace
 \end{longtable}
 \endgroup
 
 \begingroup
 \small
+\setstretch{1.05}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.12}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.40\textwidth}>{\raggedright\arraybackslash}p{0.41\textwidth}@{}}
 \caption{Rastreabilidade e aceitação prevista dos requisitos não funcionais.}\label{tab:rastreabilidade-rnf}\\
 \toprule
+\rowcolor{LasetTint}
 Requisito & Problema / Caso de utilização & Validação / Aceitação \\
 \midrule
 \endfirsthead
-\multicolumn{3}{c}{\tablename~\thetable{} -- continuação}\\
+\multicolumn{3}{c}{\tablename~\thetable{} (continuação)}\\
 \toprule
+\rowcolor{LasetTint}
 Requisito & Problema / Caso de utilização & Validação / Aceitação \\
 \midrule
 \endhead
@@ -343,21 +387,21 @@ Requisito & Problema / Caso de utilização & Validação / Aceitação \\
 \endfoot
 \bottomrule
 \endlastfoot
-RNF01 & P01; UC01--UC03: separar responsabilidades para integrar dispositivos; proposta de qualidade. & Inspecionar fronteiras e dependências. Critério qualitativo: responsabilidades identificadas; critérios detalhados de revisão a acordar. \\
+RNF01 & P01; UC01--UC03: separar responsabilidades para integrar dispositivos; proposta de qualidade. & Inspecionar fronteiras e dependências. Critério qualitativo: responsabilidades e dependências identificadas na arquitetura e na documentação. \\
 \addlinespace
-RNF02 & P01; UC01--UC02: reproduzir e manter configurações de operação. & Reproduzir operações a partir da documentação. Critério: funções, entradas, saídas e configurações documentadas; casos a acordar. \\
+RNF02 & P01; UC01--UC02: reproduzir e manter configurações de operação. & Reproduzir operações a partir da documentação. Critério: funções, entradas, saídas e configurações documentadas para os casos definidos no projeto. \\
 \addlinespace
-RNF03 & P01; UC01--UC02 e UC07: evolução da integração; proposta de qualidade. & Analisar uma extensão acordada. Critério: pontos de extensão/dependências identificados; extensão e critérios detalhados a definir. \\
+RNF03 & P01; UC01--UC02 e UC07: evolução da integração; proposta de qualidade. & Analisar uma extensão definida no projeto. Critério: pontos de extensão e dependências identificados; documentar as alterações necessárias para incorporar o caso. \\
 \addlinespace
-RNF04 & P02; UC04: resultados corretos sob carga. & Repetir ensaios e comparar resultados esperados. Critério: cargas, falhas, repetições e aceitação quantitativa a definir (QV07). \\
+RNF04 & P02; UC04: resultados corretos sob carga. & Repetir ensaios com cargas e condições documentadas, comparando resultados esperados e observados. Registar falhas e repetições; caracterização sem meta quantitativa de fiabilidade especificada (DP06). \\
 \addlinespace
 RNF05 & P01--P02; UC04 e UC07: observar origem, resultados e erros; proposta. & Provocar erros em condições controladas. Critério: associação à operação/interface; acesso, cobertura e critérios detalhados a definir. \\
 \addlinespace
-RNF06 & P02--P03; UC01, UC02 e UC04: responder em tempo útil. & Medir latência nos pontos acordados. Critério: latência máxima, cargas e eventuais prazos a definir (QV07); distinto do erro temporal de RF16. \\
+RNF06 & P02--P03; UC01, UC02 e UC04: responder em tempo útil. & Medir e reportar a latência com pontos e cargas documentados (DP06), sem limite máximo garantido especificado. Avaliar separadamente a resolução temporal e o erro de sincronização de RF16. \\
 \addlinespace
-RNF07 & P02; UC04: coordenação concorrente e temporização; RTOS como restrição validada. & Inspecionar software e execução concorrente. Critério: execução sobre RTOS; seleção e organização a definir (QV03), sem garantia de tempo real estrito. \\
+RNF07 & P02; UC04: coordenação concorrente e temporização; RTOS como restrição validada. & Inspecionar software e execução concorrente. Critério: execução sobre RTOS; seleção e organização a definir (DP03), sem garantia de tempo real estrito. \\
 \addlinespace
-RNF08 & P04; UC06: funcionar com alimentação variável. & Ensaiar 5~V, 60~V e valores intermédios. Critério: funcionamento na gama 5--60~V; cargas, potência, proteção e eficiência a especificar (QV14). \\
+RNF08 & P04; UC06: funcionar com alimentação variável. & Ensaiar 5~V, 60~V e valores intermédios. Critério: funcionamento na gama 5--60~V; cargas, potência, proteção e eficiência a especificar (DP13). \\
 \addlinespace
 \end{longtable}
 \endgroup
@@ -365,27 +409,33 @@ RNF08 & P04; UC06: funcionar com alimentação variável. & Ensaiar 5~V, 60~V e 
 \section{Parâmetros e Critérios de Aceitação}
 \label{sec:parametros-aceitacao}
 
-A Tabela~\ref{tab:parametros-aceitacao} reúne valores confirmados e lacunas.
-\enquote{A definir} designa parâmetros ainda sem valor ou critério fechado;
-\enquote{A confirmar} indica que a própria aplicabilidade está pendente.
-A ausência de um valor não autoriza usar o limite de um componente como
-requisito. Os critérios de proteção devem distinguir entrada de alimentação,
+A Tabela~\ref{tab:parametros-aceitacao} reúne a especificação disponível.
+\enquote{Confirmado} identifica os valores estabelecidos para o sistema;
+\enquote{Em aberto} identifica parâmetros de configuração, dimensionamento
+ou aplicabilidade reservados à fase de projeto; \enquote{A medir}
+identifica grandezas a caracterizar experimentalmente. As opções
+assinaladas como tal não são funcionalidades obrigatórias. A referência
+a uma norma ou modo de operação não substitui a definição dos parâmetros
+de configuração próprios da aplicação. Os critérios de proteção distinguem entrada de alimentação,
 interfaces de comunicação e saídas PWM. Só estas últimas têm proteção
 explicitamente obrigatória no âmbito já confirmado; os níveis e restantes
 necessidades devem ser especificados antes do dimensionamento.
 
 \begingroup
 \small
+\setstretch{1.05}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.05}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
-\caption{Parâmetros confirmados e critérios pendentes.}\label{tab:parametros-aceitacao}\\
+\caption{Parâmetros especificados e definições em aberto.}\label{tab:parametros-aceitacao}\\
 \toprule
+\rowcolor{LasetTint}
 Parâmetro & Estado & Valor / Critério & Origem / Caso \\
 \midrule
 \endfirsthead
-\multicolumn{4}{c}{\tablename~\thetable{} -- continuação}\\
+\multicolumn{4}{c}{\tablename~\thetable{} (continuação)}\\
 \toprule
+\rowcolor{LasetTint}
 Parâmetro & Estado & Valor / Critério & Origem / Caso \\
 \midrule
 \endhead
@@ -397,44 +447,49 @@ Parâmetro & Estado & Valor / Critério & Origem / Caso \\
 Alimentação: tensão & Confirmado & 5~V a 60~V, incluindo limites. & UC06; RNF08 \\
 Ethernet: taxa nominal & Confirmado & Pelo menos 100~Mbit/s; Gigabit desejável. & UC01, UC07; RF05 \\
 I2C: quantidade & Confirmado & Exatamente dois barramentos independentes. & UC01, UC02; RF01 \\
-CAN: quantidade & Parcial & Pelo menos dois; terceiro a confirmar. & UC01, UC02; RF04; QV08 \\
+CAN FD: quantidade & Confirmado & Exatamente três barramentos. & UC01, UC02; RF04 \\
 PWM: quantidade & Confirmado & Exatamente três saídas protegidas. & UC03, UC06; RF15 \\
 PC--unidade: alternativas & Confirmado & RS232, CAN e Ethernet; sem simultaneidade exigida. & UC01; RF09 \\
-Execução e sincronização & Confirmado & RTOS e sincronização obrigatórios; solução e métricas a definir. & UC04, UC05; RNF07, RF16 \\
-I2C: frequência e modos & A definir & Frequência(s), modos, papéis e níveis elétricos. & UC01, UC02; QV01, QV17 \\
-CAN: bitrate e variante & A definir & Bitrate(s); Classical CAN, CAN FD ou ambos; protocolo superior. & UC01, UC02; QV02, QV04 \\
-RS232: configuração & A definir & Baud rate, palavra, protocolo e papéis. & UC01, UC02; QV02, QV05, QV17 \\
-RS485: configuração & A definir & Baud rate e protocolo superior. & UC01, UC02; QV02, QV17 \\
-Nós e canais ativos & A definir & Número de nós CAN e RS485; combinações simultâneas e carga. & UC02, UC04; QV08 \\
-PC: protocolos e formatos & A definir & Protocolos sobre RS232, CAN e Ethernet; formato/API e preferência. & UC01; QV05 \\
-PWM: temporização & A definir & Frequência e resolução por canal. & UC03; QV13 \\
-PWM: condições elétricas & A definir & Níveis, tensão, corrente máxima e natureza das cargas. & UC03, UC06; QV13 \\
-PWM: proteção & A definir & Natureza, níveis e critérios; curto/sobrecarga se aplicáveis. & UC03, UC06; QV13 \\
-Sincronização: qualidade & A definir & Erro máximo, precisão e resolução temporal. & UC05; QV15 \\
-Sincronização: continuidade & A definir & Periodicidade, marcas temporais, perda de ligação e recuperação. & UC05; QV15 \\
-Latência e fiabilidade & A definir & Latência máxima, prazos, carga, falhas e aceitação. & UC01, UC02, UC04; QV07 \\
-Armazenamento temporário & A definir & Capacidade, duração, diferenças de taxa e resposta à saturação. & UC02, UC04, UC07; QV10 \\
-Prioridades & A definir & Política, limites de espera e garantias de progresso. & UC04; QV09 \\
-Alimentação: carga & A definir & Corrente/potência máximas, polaridade e condições de ensaio. & UC06; QV14 \\
-Alimentação: proteção & A definir & Perturbações, transientes e critérios de proteção da entrada. & UC06; QV14 \\
-Comunicações: proteção & A definir & Níveis de ESD/surto, diferenças de potencial e isolamento necessário. & UC06; QV11 \\
-Ambiente e temperatura & A confirmar & Condições ambientais, temperatura, humidade e grau de proteção, se aplicáveis. & UC06; QV18 \\
-Pressão & A confirmar & Necessidade, gama, referência e condições de ensaio, se aplicáveis. & UC06; QV18 \\
-Consumo e eficiência & A definir & Objetivos/limites se exigidos; baixo consumo continua desejável. & UC06; QV12, QV14 \\
-Registo local & Opcional & Necessidade de microSD, retenção, capacidade e taxa de escrita. & UC07; QV16 \\
+Execução & Confirmado & RTOS obrigatório; seleção e organização para projeto. & UC04; RNF07 \\
+I2C: modo & Confirmado & Standard mode em ambos os barramentos; validar comunicação nesse modo. & UC01, UC02; RF01 \\
+I2C: configuração restante & Em aberto & Papéis e níveis elétricos, mantendo Standard mode. & UC01, UC02; DP01, DP16 \\
+CAN FD: capacidade & Confirmado & Até 8~Mbit/s em cada um dos três barramentos; verificar por comunicação. & UC01, UC02; RF04 \\
+CAN FD: configuração & Em aberto & Configuração das duas fases sem bitrates separados presumidos; protocolo superior em DP02. & UC01, UC02; RF04 \\
+RS232: taxa operacional & Confirmado & 500~kbit/s; ensaiar transmissão e receção. & UC01, UC02; RF02 \\
+RS232: capacidade & Confirmado & Até 1~Mbit/s; verificar também comunicação a 1~Mbit/s. & UC01, UC02; RF02 \\
+RS232: configuração restante & Em aberto & Palavra, paridade, controlo de fluxo, protocolo e papéis. & UC01, UC02; DP02, DP04, DP16 \\
+RS485: dimensão de rede & Confirmado & Aproximadamente 16--32 nós como referência; número exato não crítico, sem limite rígido de 32. & UC01, UC02; RF03 \\
+RS485: configuração & Em aberto & Baud rate e protocolo superior. & UC01, UC02; DP02, DP16 \\
+Nós CAN e canais ativos & Em aberto & Número de nós CAN; combinações simultâneas e carga. & UC02, UC04; DP07 \\
+PC: protocolos e formatos & Em aberto & Protocolos sobre RS232, CAN e Ethernet; formato/API e preferência. & UC01; DP04 \\
+PWM: frequência & Confirmado & 50~Hz nos três canais; medir em cada saída. & UC03; RF15 \\
+PWM: largura de impulso & Confirmado & 1100--1900~$\mu$s; ensaiar extremos e valores intermédios nos três canais. & UC03; RF15 \\
+PWM: resolução & Em aberto & Resolução de comando da largura de impulso, sem valor confirmado. & UC03; DP12 \\
+PWM: condições elétricas & Em aberto & Níveis, tensão, corrente máxima e natureza das cargas. & UC03, UC06; DP12 \\
+PWM: proteção & Em aberto & Natureza, níveis e critérios; curto/sobrecarga se aplicáveis. & UC03, UC06; DP12 \\
+Sincronização: referência & Confirmado & PPS a 1~Hz e mensagens com informação temporal GPS entre impulsos, associadas à referência para sincronizar o relógio. & UC02, UC05; RF16 \\
+Sincronização: resolução & Confirmado & Ordem dos microssegundos na associação temporal dos dados; verificar a resolução obtida. & UC02, UC05; RF16 \\
+Sincronização: erro & A medir & Medir e reportar erro face à referência; sem precisão absoluta garantida nem limite máximo confirmado. & UC05; RF16, DP14 \\
+Sincronização: continuidade & Em aberto & Pontos de marcação, condições de medição, perda de PPS/informação GPS e recuperação após falha/reinício. & UC05; DP14 \\
+Latência e fiabilidade & Em aberto & Latência máxima, prazos, carga, falhas e aceitação. & UC01, UC02, UC04; DP06 \\
+Armazenamento temporário & Em aberto & Capacidade, duração, diferenças de taxa e resposta à saturação. & UC02, UC04, UC07; DP09 \\
+Prioridades & Em aberto & Política, limites de espera e garantias de progresso. & UC04; DP08 \\
+Alimentação: carga & Em aberto & Corrente/potência máximas, polaridade e condições de ensaio. & UC06; DP13 \\
+Alimentação: proteção & Em aberto & Perturbações, transientes e critérios de proteção da entrada. & UC06; DP13 \\
+Comunicações: proteção & Em aberto & Níveis de ESD/surto, diferenças de potencial e isolamento necessário. & UC06; DP10 \\
+Ambiente e temperatura & Em aberto & Condições ambientais, temperatura, humidade e grau de proteção, se aplicáveis. & UC06; DP17 \\
+Consumo e eficiência & Em aberto & Objetivos/limites se exigidos; baixo consumo continua desejável. & UC06; DP11, DP13 \\
+Registo local & Opcional & Necessidade de microSD, retenção, capacidade e taxa de escrita. & UC07; DP15 \\
 \end{longtable}
 \endgroup
 
-As capacidades contáveis já têm critérios concretos; os requisitos de
-concorrência, prioridades, buffering, fiabilidade, sincronização e
-proteção ainda não permitem aceitação quantitativa completa. As propostas
-de modularidade, manutenção, extensibilidade e diagnóstico exigem critérios
-qualitativos de revisão a acordar. Pressão e ambiente especial são condições
-a confirmar, sem requisito obrigatório de pressão, temperatura ou grau
-de proteção. RTOS é uma restrição de solução validada para UC04, não uma
-conclusão de que a concorrência só possa ser implementada com essa tecnologia.
-As quantidades de interfaces e PWM são condições do âmbito, não resultados
-deduzidos automaticamente dos exemplos dos casos.
+Os valores confirmados têm ensaios concretos. Grandezas sem limite
+especificado serão medidas e reportadas como caracterização experimental,
+sem uma garantia quantitativa presumida. A resolução temporal e o erro
+de sincronização são avaliados separadamente. Os critérios qualitativos
+de modularidade, manutenção e extensibilidade constam da
+Tabela~\ref{tab:rastreabilidade-rnf}; diagnóstico, ambiente e limites
+de carga permanecem nas definições de projeto.
 
 \section{Características Desejáveis}
 
@@ -444,166 +499,86 @@ mínimos de eficiência ou máximos de consumo confirmados. O armazenamento
 persistente em microSD é uma opção, não obrigatório; o encaminhamento
 direto dos dados pode satisfazer RF17. O encaminhamento autónomo mais
 geral entre dispositivos externos constitui uma possível extensão.
-Estas opções serão avaliadas em QV12 e QV16, sem presumir a sua inclusão
+Estas opções serão avaliadas em DP11 e DP15, sem presumir a sua inclusão
 na primeira versão nem substituir a entrada obrigatória de 5~V a 60~V.
 
 \section{Restrições do Projeto}
 
-As condições confirmadas são dois I2C independentes, pelo menos dois
-CAN, suporte RS232 e RS485, Ethernet com mínimo nominal de 100~Mbit/s,
-acesso bidirecional do PC por RS232, CAN e Ethernet, exatamente três
-PWM protegidos, execução sobre RTOS, sincronização temporal com o PC
-e entrada de alimentação entre 5~V e 60~V. As últimas duas condições
-não fixam precisão temporal, tensão de cargas ou potência da alimentação.
+As quantidades e capacidades de RF01--RF05, o acesso do PC de RF09,
+os PWM de RF15, a sincronização de RF16, o RTOS de RNF07 e a gama
+elétrica de RNF08 delimitam a solução. Os valores são consolidados na
+Tabela~\ref{tab:parametros-aceitacao}; não se acrescentam tolerâncias,
+bitrates separados CAN FD ou precisão absoluta de sincronização.
 
-A seleção da unidade de processamento concreta, RTOS, PCB, transceivers,
-estágios de acionamento, memória e componentes de alimentação e proteção
-permanece aberta. FreeRTOS é candidato, sem escolha efetuada. A terceira
-CAN, os protocolos superiores, os restantes canais eventualmente repetidos,
-o número de nós e os limites de carga e desempenho devem ser confirmados.
+Plataforma, RTOS concreto, PCB, protocolos superiores e componentes ficam
+para projeto. A proteção PWM é obrigatória; isolamento e proteção das
+restantes interfaces serão avaliados conforme as condições. MicroSD,
+PoE e encaminhamento autónomo mais geral são opções, sem garantia de
+tempo real estrito decorrente do RTOS.
 
-A proteção elétrica dos três PWM é obrigatória, mas a sua natureza depende
-da especificação das cargas. O isolamento e a proteção das interfaces
-de comunicação e da alimentação devem ser avaliados segundo as condições
-elétricas; não se impõe isolamento galvânico universal. Não se exige
-microSD, SPI, Linux, redundância, comutação automática de ligação ou
-condições ambientais especiais como obrigatórias nesta fase. A possível
-operação sob pressão ou em ambiente específico deve ser confirmada e
-quantificada em QV18. RTOS não constitui uma garantia de tempo real estrito.
+\section{Definições em Aberto para a Fase de Projeto}
+\label{sec:definicoes-projeto}
 
-\section{Requisitos a Validar com os Docentes}
-\label{sec:questoes-validacao}
+A Tabela~\ref{tab:decisoes-projeto} reúne as DP01--DP17: decisões de
+configuração, integração e dimensionamento a documentar no projeto.
+Mantêm-se os requisitos estabelecidos. Os ensaios verificam os valores
+confirmados e caracterizam as grandezas sem limite de aceitação definido.
 
-As questões seguintes completam a especificação sem reabrir o núcleo
-confirmado. As duas interfaces I2C, o mínimo de duas CAN, os três PWM,
-a gama de alimentação e a obrigatoriedade de RTOS e sincronização
-já estão estabelecidos; falta concretizar os critérios abaixo.
-
-\begin{description}
-    \item[QV01 --- Operações e papéis dos canais:] \hfill\newline
-    Que operações concretizam RF17 e que percursos adicionais se pretendem
-    pelas alternativas de acesso PC--unidade de RF09? Como são distribuídos
-    os canais CAN entre ligação ao PC e nós externos? Que papéis e
-    configurações terão os dois I2C e as restantes interfaces? Que
-    encaminhamentos autónomos entre dispositivos são extensões desejadas?
-
-    \item[QV02 --- Protocolos dos dispositivos externos:] \hfill\newline
-    Que protocolos de aplicação serão suportados em RS232 e RS485 e
-    que protocolos superiores são necessários em CAN e nas restantes
-    interfaces? Como serão interpretados endereços, identificadores
-    e mapeamentos para preservar o significado dos dados?
-
-    \item[QV03 --- Seleção de plataforma e RTOS:] \hfill\newline
-    Qual unidade de processamento e qual RTOS serão selecionados e
-    que critérios justificam a escolha, incluindo recursos, suporte
-    de interfaces e requisitos temporais? FreeRTOS é candidato;
-    o uso de um RTOS já está confirmado (RNF07). Como serão organizadas as
-    atividades concorrentes após definição das cargas e dos prazos?
-
-    \item[QV04 --- Variante e configuração de CAN:] \hfill\newline
-    Será necessário Classical CAN, CAN FD ou ambos? Qual bitrate de
-    arbitragem e, se aplicável, de dados deve ser suportado em cada
-    canal? Que configurações serão utilizadas e que implicações
-    terão para os protocolos superiores definidos em QV02 e QV05?
-
-    \item[QV05 --- Comunicação PC--unidade embebida:] \hfill\newline
-    Que protocolos e formatos serão utilizados sobre RS232, CAN e
-    Ethernet, incluindo transporte sobre Ethernet? Haverá formato
-    comum ou APIs distintas para pedidos, dados, feedback e erros?
-    Existe uma interface preferencial? Não se presume utilização
-    simultânea pelo PC, redundância ou comutação automática.
-
-    \item[QV06 --- Placa de circuito impresso:] \hfill\newline
-    É necessário desenvolver uma PCB própria? Que condicionantes
-    de integração, dimensões e conectores devem ser consideradas?
-
-    \item[QV07 --- Desempenho e fiabilidade:] \hfill\newline
-    Qual latência máxima é admissível em cada operação, em que pontos
-    será medida e sob que carga? Existem prazos obrigatórios? Quais são
-    as cargas de ensaio e os critérios quantitativos de fiabilidade? Que falhas e
-    repetições devem ser avaliadas? Mantém-se Ethernet nominal de
-    pelo menos 100~Mbit/s, sem garantia confirmada de tempo real estrito.
-
-    \item[QV08 --- Quantidades pendentes e nós:] \hfill\newline
-    É necessária uma terceira interface CAN além das duas obrigatórias?
-    Quantos nós devem ser suportados em cada CAN e em RS485? Existem
-    outras interfaces repetidas e que combinações de canais devem operar
-    simultaneamente? Os dois I2C independentes e os três PWM já estão
-    confirmados.
-
-    \item[QV09 --- Prioridades:] \hfill\newline
-    Qual será a política de atendimento das comunicações concorrentes?
-    Que critérios e garantias de progresso devem ser observados e
-    as prioridades terão de ser configuráveis durante a utilização?
-
-    \item[QV10 --- Armazenamento temporário:] \hfill\newline
-    Que diferenças de taxa e durações de tráfego devem ser absorvidas?
-    Qual capacidade de armazenamento temporário é necessária, que
-    sobrecarga e duração deve absorver e qual o comportamento ao
-    atingir o limite? Que controlo de fluxo permitem os protocolos?
-    O armazenamento temporário distingue-se do registo persistente.
-
-    \item[QV11 --- Isolamento e proteção das comunicações:] \hfill\newline
-    Que interfaces necessitam de isolamento galvânico? Que níveis
-    elétricos e diferenças de potencial devem ser admitidos? Que tipos,
-    níveis, duração e condições de ensaio de ESD, surtos ou transientes
-    orientam a proteção e os critérios de aprovação de cada interface?
-
-    \item[QV12 --- Características desejáveis:] \hfill\newline
-    Gigabit Ethernet ou PoE devem integrar a primeira versão?
-    Há um consumo máximo exigido ou apenas um objetivo de redução?
-    Em que cargas e estados será avaliado?
-    Como será compatibilizado eventual PoE com a entrada de 5~V a 60~V?
-
-    \item[QV13 --- PWM, cargas e proteção elétrica:] \hfill\newline
-    Para os três canais, quais são frequência, resolução, níveis
-    dos sinais, tensão das cargas e corrente máxima? Que tipos de
-    cargas e características de luzes ou garra devem ser suportados?
-    As cargas são resistivas, indutivas ou de outra natureza? É necessário
-    especificar comportamento em curto-circuito ou sobrecarga? Que natureza
-    de proteção elétrica, níveis, duração e condições de ensaio
-    são necessárias em cada saída? Não estão selecionados mecanismos
-    ou componentes de proteção.
-
-    \item[QV14 --- Alimentação e condições elétricas:] \hfill\newline
-    Na gama confirmada de 5~V a 60~V, quais são corrente e potência
-    máximas, polaridade e cargas de funcionamento? Que tipo, nível e
-    duração de perturbações/transientes devem ser admitidos e com que
-    critério de aprovação da proteção de entrada? Existe eficiência
-    mínima exigida e em que condições? Que
-    condições serão utilizadas nos ensaios dos limites e valores
-    intermédios da gama?
-
-    \item[QV15 --- Sincronização e associação temporal:] \hfill\newline
-    Qual erro máximo admissível e qual resolução temporal são necessários,
-    em que eventos e condições de carga? A referência será absoluta ou relativa? Que método, protocolo e interface serão
-    usados e com que periodicidade de sincronização? Onde se obtêm
-    as marcas temporais de comandos, dados e eventos, e como se
-    recupera após perda de ligação ou reinício? Não se pressupõem
-    RTC, GPS, NTP, PTP ou mensagens próprias.
-
-    \item[QV16 --- Armazenamento persistente:] \hfill\newline
-    É necessário armazenamento local persistente em microSD ou basta
-    disponibilizar e encaminhar os dados pelas interfaces no decurso
-    da operação, respeitando os limites temporais a definir?
-    Se houver registo local, que retenção, capacidade, taxa de escrita
-    e recuperação após interrupção são exigidas? MicroSD mantém-se
-    opcional até confirmação da estratégia.
-
-    \item[QV17 --- Parâmetros de comunicação local:] \hfill\newline
-    Para cada um dos dois I2C, quais frequências, modos de operação e
-    níveis elétricos são necessários? Qual baud rate e configuração
-    de palavra, paridade e controlo de fluxo se exigem em RS232?
-    Qual baud rate e configuração se exigem em RS485? O protocolo
-    superior RS485 e os números de nós são fechados em QV02 e QV08.
-    As taxas devem resultar dos dados, carga e utilização previstos,
-    não do máximo anunciado de um periférico.
-
-    \item[QV18 --- Ambiente e eventual pressão:] \hfill\newline
-    O sistema tem de operar sob pressão ou num ambiente específico?
-    Se sim, quais valores/gamas de pressão, referência de medição,
-    temperatura e humidade são necessários? Que grau de proteção,
-    duração, cargas e condições de ensaio e aprovação são exigidos?
-    A aplicabilidade e os valores permanecem a confirmar; não se
-    presume pressão, temperatura ou classificação de proteção concreta.
-\end{description}
+\begingroup
+\small
+\setstretch{1.05}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.08\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.62\textwidth}@{}}
+\caption{Decisões reservadas à fase de projeto.}\label{tab:decisoes-projeto}\\
+\toprule
+\rowcolor{LasetTint}
+ID & Tema & Definição a documentar \\
+\midrule
+\endfirsthead
+\multicolumn{3}{c}{\tablename~\thetable{} (continuação)}\\
+\toprule
+\rowcolor{LasetTint}
+ID & Tema & Definição a documentar \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{Continua na página seguinte}\\
+\endfoot
+\bottomrule
+\endlastfoot
+DP01 & Operações e papéis & Distribuição dos três CAN FD entre PC e nós externos, papéis I2C e mapeamentos de RF17. Os percursos obrigatórios mantêm-se; outros encaminhamentos são extensões a avaliar. \\
+\addlinespace
+DP02 & Protocolos externos & Protocolos superiores, endereços, identificadores e mapeamentos dos dispositivos. Documentar significado dos dados e configurações que permitam reproduzir cada operação. \\
+\addlinespace
+DP03 & Plataforma e RTOS & Unidade de processamento, RTOS e organização das atividades, segundo recursos e cargas. O RTOS é obrigatório; FreeRTOS é apenas candidato (RNF07). \\
+\addlinespace
+DP04 & Acesso do PC & Protocolos, transporte Ethernet e formatos de pedidos, dados, feedback e erros. Mantêm-se RS232, CAN e Ethernet, sem preferência, redundância ou simultaneidade exigida (RF09). \\
+\addlinespace
+DP05 & Integração / PCB & Necessidade de PCB própria, dimensões e conectores, em função da solução e das condições elétricas. \\
+\addlinespace
+DP06 & Desempenho e fiabilidade & Pontos de medição, cargas, falhas e repetições para caracterizar latência e fiabilidade. Não estão especificados limites máximos ou metas quantitativas; mantém-se RF05. \\
+\addlinespace
+DP07 & Nós e canais ativos & Número de nós CAN, combinações simultâneas e carga de tráfego. Mantêm-se as quantidades de RF01, RF04 e RF15 e a dimensão indicativa RS485 de RF03. \\
+\addlinespace
+DP08 & Prioridades & Política de atendimento, garantias de progresso e eventual configuração durante a utilização. Documentar a política e verificar progresso nas cargas de ensaio. \\
+\addlinespace
+DP09 & Espera temporária & Capacidade dos buffers, diferenças de taxa e durações admissíveis; comportamento em saturação e controlo de fluxo. Dimensionar e ensaiar, sem absorção ilimitada de tráfego. \\
+\addlinespace
+DP10 & Proteção das comunicações & Necessidade de isolamento, diferenças de potencial e níveis e ensaios de ESD, surtos e transientes. Sem isolamento universal ou classificação de imunidade presumidos. \\
+\addlinespace
+DP11 & Opções desejáveis & Avaliação de Gigabit e PoE; baixo consumo como objetivo sem limite especificado. Compatibilizar eventual PoE com a entrada obrigatória de RNF08. \\
+\addlinespace
+DP12 & PWM e cargas & Resolução, níveis, tensão, corrente e natureza das cargas. Dimensionar a proteção obrigatória dos três PWM e os ensaios, incluindo curto/sobrecarga quando aplicáveis; manter RF15. \\
+\addlinespace
+DP13 & Alimentação & Corrente, potência, polaridade, eficiência, proteção, perturbações e condições de ensaio. Mantém-se toda a gama de RNF08, incluindo extremos e valores intermédios. \\
+\addlinespace
+DP14 & Marcação e sincronização & Pontos de marcação, escala temporal, associação mensagem/impulso, cargas, medição do erro e da sua incerteza, perda de referência e recuperação. Verificar RF16 sem limite absoluto de erro presumido. Recetor, hardware, protocolo e periféricos em aberto. \\
+\addlinespace
+DP15 & Registo persistente & Necessidade de microSD opcional. Se selecionada, definir retenção, capacidade, taxa de escrita e recuperação após interrupção da alimentação ou operação. O envio direto satisfaz RF17. \\
+\addlinespace
+DP16 & Configuração local & Níveis I2C; palavra, paridade e fluxo RS232; baud rate e configuração RS485. Selecionar segundo dispositivos/protocolos, mantendo RF01--RF03 e sem baud rate RS485 por omissão. \\
+\addlinespace
+DP17 & Ambiente & Condições de instalação e aplicabilidade de ensaios específicos. Sem gamas de temperatura/humidade ou grau de proteção estabelecidos; documentar condições adicionais antes da validação. \\
+\end{longtable}
+\endgroup

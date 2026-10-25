@@ -1,266 +1,158 @@
-%-----------------------------------------------------------
-%   Capítulo 4 - Arquitetura de Alto Nível
-%-----------------------------------------------------------
+% Capítulo 4 - Arquitetura de Alto Nível
 \chapter{Arquitetura de Alto Nível}
 \label{cap:arquitectura}
 
 \section{Visão Geral do Sistema}
 
-A arquitetura é consequência de P01--P04, UC01--UC07 e dos requisitos
-rastreáveis do Capítulo~\ref{cap:requisitos}. Os critérios confirmados
-impõem capacidades; os parâmetros da Tabela~\ref{tab:parametros-aceitacao}
-ainda a definir condicionam o dimensionamento. Não se escolhem primeiro
-componentes para depois transformar os seus recursos em requisitos.
-
-O sistema é concebido como uma unidade embebida multiprotocolo com
-funções de \textit{gateway} e atuação, executadas sobre um RTOS.
-O computador ou sistema central comunica por RS232, CAN ou Ethernet,
-devendo o sistema suportar as três alternativas. Não se exige utilização
-simultânea pelo PC, não existe interface preferencial definida e não
-se presumem redundância ou comutação automática de ligação. O sistema comunica
-com dispositivos externos, processa e encaminha informação e mantém
-uma referência temporal sincronizada com o PC. A seleção da unidade
-de processamento e do RTOS concreto permanece para projeto.
-
-A Figura~\ref{fig:gateway-caixa-preta} atualiza a visão de caixa preta,
-concretizando RF01--RF17 e RNF07--RNF08. Mostra os dois I2C independentes,
-pelo menos dois CAN, RS232 e RS485, três PWM protegidos e alimentação
-de 5~V a 60~V. A terceira CAN e o armazenamento persistente em microSD
-são opções pendentes, não capacidades garantidas. As funções indicadas
-no bloco são responsabilidades conceptuais, não componentes ou tarefas.
+A arquitetura organiza as funções exigidas por P01--P04, UC01--UC07 e
+pelos requisitos do Capítulo~\ref{cap:requisitos}. A
+Figura~\ref{fig:gateway-caixa-preta} mostra as fronteiras externas;
+a seleção da unidade de processamento, do RTOS e dos restantes
+componentes permanece para projeto.
 
 \begin{figure}[htbp]
     \centering
-    \small
-    \fbox{\parbox{0.75\linewidth}{\centering
-        \textbf{PC / sistema central}}}
-    \par\smallskip
-    $\updownarrow$\quad RS232 ou CAN ou Ethernet
-    \par\smallskip
-    \fbox{\parbox{0.85\linewidth}{\centering
-        \textbf{Sistema embebido multiprotocolo}\\
-        Execução sobre RTOS\\
-        Processamento e encaminhamento\\
-        Gestão de comunicações e referência temporal sincronizada\\
-        Registo local em microSD: opcional}}
-    \par\smallskip
-    \begin{tabular}{@{}c@{\quad}l@{}}
-        $\longleftrightarrow$ & I2C \#1 e I2C \#2 independentes \\
-        $\longleftrightarrow$ & CAN: pelo menos dois canais no total \\
-                            & Terceiro CAN: por confirmar \\
-        $\longleftrightarrow$ & RS232 e RS485: dispositivos externos \\
-        $\longrightarrow$ & PWM \#1, \#2 e \#3 protegidos: cargas \\
-        $\longleftarrow$ & Alimentação de entrada: 5~V a 60~V
-    \end{tabular}
-    \caption{Sistema multiprotocolo com três alternativas de ligação ao PC e atuação PWM.}
+    \Diagrama{interfaces}
+    \caption[Interfaces e capacidades da unidade.]{Interfaces e capacidades confirmadas da unidade. CAN FD tem três canais no total, incluindo os papéis de ligação ao PC e a nós externos.}
     \label{fig:gateway-caixa-preta}
 \end{figure}
 
-CAN pode ter os papéis de ligação ao PC e a nós externos. A representação
-de ambos não duplica os canais físicos: a distribuição dos pelo menos
-dois CAN será especificada em QV01 e a terceira interface em QV08.
-O mesmo princípio aplica-se à representação de RS232 em papéis distintos;
-a quantidade necessária será esclarecida, sem pressupor portas dedicadas.
-As setas bidirecionais representam possibilidade de comunicação, não
-transmissão simultânea obrigatória; PWM tem sentido de comando da carga.
+O PC dispõe das alternativas RS232, CAN e Ethernet, sem simultaneidade,
+preferência, redundância ou comutação automática exigidas. A representação
+de CAN e RS232 em papéis distintos não cria portas dedicadas adicionais;
+a distribuição dos três CAN FD e a quantidade necessária de RS232 serão
+especificadas em DP01 e DP04. As setas indicam o sentido das funções,
+sem impor transmissão simultânea nos dois sentidos.
 
 \section{Interfaces Externas}
 
-Os dois barramentos I2C independentes destinam-se à troca de informação
-com dispositivos locais. RS232 permite comunicação série ponto a ponto,
-e RS485 mantém a ligação diferencial multiponto a equipamentos externos.
-Pelo menos dois CAN suportam os papéis a definir de ligação ao PC e a
-nós externos. Ethernet é uma alternativa de comunicação com o PC,
-com capacidade nominal mínima de 100~Mbit/s. Estes recursos correspondem
-a RF01--RF05 e às tecnologias estudadas no Estado da Arte.
+As capacidades elétricas e de comunicação são resumidas na
+Tabela~\ref{tab:caracteristicas-preliminares}. Para cada operação importa
+definir também papéis, configuração e significado dos dados: RS232 e
+RS485 não fixam um protocolo de aplicação; CAN FD não fixa o protocolo
+superior nem os bitrates separados das duas fases; Ethernet não implica
+TCP. Os formatos de acesso do PC serão definidos em DP04.
 
-As três saídas PWM são interfaces de comando de cargas, não interfaces
-bidirecionais de comunicação. Todas têm proteção elétrica; os níveis,
-a frequência, a resolução e o acionamento dependem da especificação
-de QV13. A alimentação entre 5~V e 60~V corresponde a RNF08, com corrente,
-potência e proteção da entrada ainda por definir em QV14. O registo
-persistente em microSD só será incluído se selecionado após QV16.
-
-Para cada operação será necessário definir o papel do sistema, a
-configuração e o significado dos dados. RS232 e RS485 não determinam
-o protocolo de aplicação; CAN não seleciona Classical CAN, CAN FD ou
-protocolo superior; Ethernet não implica TCP nem um serviço específico.
-Os formatos externos podem ser comuns ou distintos para RS232, CAN e
-Ethernet. A sincronização temporal usa uma dessas ligações ou um método
-a definir em QV15, sem exigir uma interface física adicional.
+Os PWM são saídas de comando, com proteção obrigatória nos três canais;
+cargas, níveis e resolução permanecem em DP12. A entrada de 5--60~V
+não determina a tensão dessas cargas (DP13). A sincronização usa PPS e
+informação temporal GPS para datar dados com resolução da ordem dos
+microssegundos; o erro absoluto será medido, sem seleção de recetor,
+protocolo ou hardware nesta fase (DP14).
 
 \section{Funcionalidades de Alto Nível}
 
-UC01, UC02 e UC07 justificam acesso ao PC, aquisição, tratamento e
-encaminhamento; UC03 justifica comando dos três PWM protegidos; UC04
-justifica gestão de concorrência, prioridades e armazenamento temporário,
-com RTOS como restrição RNF07. UC05 justifica a referência temporal
-sincronizada e UC06 enquadra alimentação e condições elétricas.
-As condições ambientais, incluindo pressão, continuam a confirmar
-em QV18, sem um bloco ou componente imposto nesta fase.
+A Tabela~\ref{tab:funcoes-arquitetura} associa as responsabilidades da
+unidade aos requisitos. Trata-se de uma decomposição funcional, sem
+atribuir uma tarefa de software ou um componente a cada linha.
 
-As capacidades observáveis do sistema organizam-se nas seguintes funções:
+\begin{table}[htbp]
+    \centering\small\setstretch{1.05}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{Responsabilidades funcionais e requisitos associados.}
+    \label{tab:funcoes-arquitetura}
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.22\textwidth}@{}}
+        \toprule
+\rowcolor{LasetTint}
+        Responsabilidade & Resultado esperado & Requisitos \\
+        \midrule
+        Comunicação e acesso & Ler, escrever, selecionar destino e identificar origem. & RF01--RF07, RF09, RF11 \\
+        \addlinespace
+        Tratamento e encaminhamento & Adaptar dados, preservar o significado e executar os percursos definidos. & RF08, RF10, RF17 \\
+        \addlinespace
+        Coordenação & Gerir concorrência, prioridades e espera temporária sobre RTOS. & RF12--RF14, RNF07 \\
+        \addlinespace
+        Atuação e referência temporal & Comandar os PWM protegidos e associar marcas temporais aos dados e eventos. & RF15--RF16 \\
+        \addlinespace
+        Operação e diagnóstico & Funcionar na gama de alimentação; observar resultados e erros segundo a proposta de diagnóstico. & RNF08; proposta RNF05 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
-\begin{itemize}
-    \item \textbf{Leitura e receção:} obter informação de dispositivos ou
-    redes através de cada interface, segundo as operações definidas
-    (RF07).
-    \item \textbf{Escrita e transmissão:} enviar dados ou comandos através
-    de cada interface, respeitando a tecnologia e o protocolo selecionados
-    (RF06).
-    \item \textbf{Processamento:} interpretar ou transformar informação
-    de acordo com entradas e resultados esperados especificados (RF08).
-    \item \textbf{Acesso ao PC e encaminhamento:} comunicar com o PC
-    por RS232, CAN ou Ethernet e transferir comandos e dados nos percursos
-    confirmados entre Ethernet e CAN, RS485, RS232 e I2C. As alternativas
-    de acesso ao PC correspondem a RF09; o encaminhamento corresponde a
-    RF17, preservando e adaptando a informação necessária (RF10).
-    Percursos adicionais continuam sujeitos a QV01 ou a extensão.
-    \item \textbf{Acesso externo:} permitir selecionar a interface e o
-    destino da operação e identificar a origem dos dados devolvidos,
-    segundo os parâmetros de cada tecnologia (RF11).
-    \item \textbf{Gestão das comunicações sobre RTOS:} coordenar
-    atividades concorrentes, diferenças de taxa e prioridades; manter
-    temporariamente informação que aguarda transmissão (RF12--RF14 e
-    RNF07), sem determinar tarefas ou mecanismos internos concretos.
-    \item \textbf{Atuação PWM:} comandar cargas através dos três canais
-    protegidos segundo a especificação elétrica (RF15).
-    \item \textbf{Referência temporal sincronizada:} manter coerência
-    temporal com o PC e associar comandos, dados e eventos (RF16),
-    com precisão e recuperação ainda por definir.
-    \item \textbf{Disponibilização dos dados:} enviar os dados pelas
-    interfaces previstas (RF17). Um serviço de registo persistente
-    poderá ser acrescentado se a opção microSD for selecionada.
-    \item \textbf{Diagnóstico previsto:} permitir observar resultados e
-    associar falhas às operações em que foram detetadas. Esta capacidade
-    decorre da proposta RNF05; a sua forma de acesso e os critérios de
-    aceitação permanecem por validar.
-\end{itemize}
+A disponibilização pelas interfaces é obrigatória. O registo microSD
+continua opcional; condições ambientais adicionais e diagnóstico
+detalhado permanecem em DP17 e RNF05, respetivamente.
 
 \section{Tipos de Operação}
 
-As funções de comunicação permitem manter quatro tipos conceptuais de
-operação, sem definir uma máquina de estados ou impor modos exclusivos:
+Os quatro tipos conceptuais de operação distinguem o destino funcional
+dos dados, sem constituir modos exclusivos ou uma máquina de estados:
+\begin{enumerate}
+    \item \textbf{Leitura/receção:} obter os dados, terminando a operação.
+    \item \textbf{Leitura com processamento:} obter e transformar dados,
+    sem transmissão noutra interface.
+    \item \textbf{Leitura com processamento e encaminhamento:} obter,
+    transformar e transmitir para o destino especificado.
+    \item \textbf{Escrita/transmissão direta:} transmitir dados fornecidos
+    à operação, sem exigir receção prévia noutra interface.
+\end{enumerate}
 
-\begin{itemize}
-    \item \textbf{Leitura/receção:} a operação termina com a obtenção dos
-    dados, sem transformação ou encaminhamento posterior.
-    \item \textbf{Leitura com processamento:} os dados recebidos são
-    interpretados ou transformados, sem transmissão noutra interface.
-    \item \textbf{Leitura com processamento e encaminhamento:} a
-    informação é tratada e enviada para o destino especificado, segundo
-    as configurações e adaptações necessárias à operação.
-    \item \textbf{Escrita/transmissão direta:} o sistema transmite
-    informação fornecida à operação sem exigir uma receção prévia
-    noutra interface.
-\end{itemize}
-
-O sistema deve gerir operações concorrentes em diferentes interfaces.
-As combinações de canais, as condições de carga e a política de prioridades
-serão especificadas. Acrescentam-se operações de comando PWM e de
-sincronização temporal, distintas dos percursos de comunicação.
-A execução concorrente é gerida por RTOS, sem fixar número de tarefas,
-prioridades, períodos, pilhas ou filas específicas.
+Acrescentam-se comando PWM e sincronização, distintos destes percursos.
+As combinações de canais, cargas e prioridades serão especificadas no
+projeto, sem fixar tarefas, períodos, pilhas ou filas do RTOS.
 
 \section{Percurso Funcional de Encaminhamento}
 
-A Figura~\ref{fig:arquitetura-preliminar} acrescenta um segundo nível de
-detalhe à visão de caixa preta. Representa as funções envolvidas numa
-operação com encaminhamento, sem estabelecer componentes, tarefas de
-software ou uma organização física. Nos percursos PC--dispositivos,
-a ligação ao PC pode ser RS232, CAN ou Ethernet; o outro extremo é
-uma interface e um canal externos definidos para a operação. O percurso
-aplica-se nos dois sentidos e a disponibilização pode terminar na
-ligação ao PC, sem exigir armazenamento persistente.
+A Figura~\ref{fig:arquitetura-preliminar} representa uma operação desde
+a origem até ao destino. Em cada sentido, as interfaces assumem os
+papéis de entrada e saída; a ligação ao PC pode ser RS232, CAN ou
+Ethernet, nos percursos definidos para a operação.
 
 \begin{figure}[htbp]
     \centering
-    \small
-    \fbox{\parbox{0.80\linewidth}{\centering
-        \textbf{Interface de origem}\\
-        I2C, RS232, RS485, CAN ou Ethernet}}
-    \par\smallskip
-    $\downarrow$
-    \par\smallskip
-    \fbox{\parbox{0.80\linewidth}{\centering
-        \textbf{Módulos de interface}\\
-        Leitura / receção}}
-    \par\smallskip
-    $\downarrow$
-    \par\smallskip
-    \fbox{\parbox{0.80\linewidth}{\centering
-        \textbf{Processamento / normalização}\\
-        Segundo a operação definida; associação temporal quando aplicável}}
-    \par\smallskip
-    $\downarrow$
-    \par\smallskip
-    \fbox{\parbox{0.80\linewidth}{\centering
-        \textbf{Decisão de encaminhamento}\\
-        Conforme a operação e o destino}}
-    \par\smallskip
-    $\downarrow$
-    \par\smallskip
-    \fbox{\parbox{0.80\linewidth}{\centering
-        \textbf{Módulos de interface}\\
-        Escrita / transmissão}}
-    \par\smallskip
-    $\downarrow$
-    \par\smallskip
-    \fbox{\parbox{0.80\linewidth}{\centering
-        \textbf{Interface de destino selecionada}\\
-        Conforme a operação de encaminhamento}}
-    \par\smallskip
-    \textit{Coordenação por RTOS; armazenamento temporário e prioridades.}
-    \caption{Percurso funcional de encaminhamento e disponibilização de dados.}
+    \Diagrama{encaminhamento}
+    \caption[Percurso funcional de encaminhamento.]{Percurso de uma operação com processamento e encaminhamento. Os passos são responsabilidades funcionais.}
     \label{fig:arquitetura-preliminar}
 \end{figure}
 
-Os módulos de interface asseguram as operações de receção e transmissão.
-A sua representação em dois pontos do diagrama distingue as funções
-de entrada e saída; não impõe duplicação de componentes.
+A adaptação depende do protocolo e pode exigir delimitação de tramas,
+segmentação e controlo de fluxo. Uma trama de entrada não corresponde
+necessariamente a uma trama de saída. A normalização e uma representação
+intermédia comum são possibilidades de projeto. Se destino, configuração
+e mapeamento não permitirem determinar uma operação compatível, esta
+não deve ser executada.
 
-O processamento interpreta ou transforma a informação segundo a operação
-definida. A normalização só se aplica quando necessária: uma representação
-intermédia comum é uma possibilidade a avaliar, sem constituir uma decisão
-de arquitetura. A decisão de encaminhamento usa a interface e o destino
-selecionados, os parâmetros de comunicação e o mapeamento quando necessário.
-Se estes elementos não permitirem determinar uma operação válida,
-esta não deve ser executada.
+RF17 confirma os quatro pares da Figura~\ref{fig:percursos-obrigatorios}.
+Estes percursos distinguem-se das três alternativas de acesso do PC de
+RF09; a extensão a outros pares depende de DP01. O buffering é
+dimensionado para a espera temporária e não é substituído pelo registo
+persistente opcional.
 
-O percurso não pressupõe uma correspondência de uma trama de entrada
-para uma trama de saída. Como resulta da síntese do Estado da Arte,
-poderão ser necessários delimitação de tramas (\textit{framing}),
-segmentação, controlo de fluxo e interpretação de protocolos superiores.
-O armazenamento temporário (\textit{buffering}) é exigido quando a
-informação tiver de aguardar transmissão; a capacidade e o comportamento
-em saturação serão definidos. A distribuição destes mecanismos e a
-gestão das comunicações concorrentes sobre RTOS serão tratadas na fase
-de projeto. A representação de funções não atribui uma tarefa a cada
-interface. O comando PWM termina na atuação sobre o canal selecionado;
-a eventual observação física da carga exige meios de aquisição definidos.
-Um registo microSD opcional não altera este percurso obrigatório nem
-elimina a necessidade de dimensionar o armazenamento temporário.
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{percursos}
+    \caption[Percursos obrigatórios entre interfaces.]{Percursos de encaminhamento obrigatórios no gateway. As ligações não pressupõem equivalência semântica entre protocolos.}
+    \label{fig:percursos-obrigatorios}
+\end{figure}
 
-\section{Características Preliminares do Sistema}
+O comando PWM termina na carga selecionada; observar o efeito físico
+exige meios de aquisição definidos. A coerência temporal, o progresso
+sob concorrência e a política de atendimento são transversais às
+operações, nas condições a especificar.
+
+\section{Características Especificadas do Sistema}
 
 A Tabela~\ref{tab:caracteristicas-preliminares} reúne a informação
-atualmente disponível para uma folha de características preliminar.
-Distingue capacidades previstas de propostas e decisões pendentes;
-não constitui uma especificação final nem apresenta resultados medidos.
+disponível para a especificação do sistema. Apresenta as capacidades
+estabelecidas, as opções e os parâmetros em aberto para a fase de projeto.
+Os valores indicados constituem requisitos e não resultados medidos.
 
 \begingroup
 \small
+\setstretch{1.05}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.12}
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.29\textwidth}>{\raggedright\arraybackslash}p{0.67\textwidth}@{}}
-\caption{Características preliminares do sistema multiprotocolo.}\label{tab:caracteristicas-preliminares}\\
+\caption{Características especificadas e definições de projeto do sistema.}\label{tab:caracteristicas-preliminares}\\
 \toprule
-Característica & Capacidade prevista ou estado da definição \\
+\rowcolor{LasetTint}
+Característica & Especificação ou definição de projeto \\
 \midrule
 \endfirsthead
-\multicolumn{2}{c}{\tablename~\thetable{} -- continuação}\\
+\multicolumn{2}{c}{\tablename~\thetable{} (continuação)}\\
 \toprule
-Característica & Capacidade prevista ou estado da definição \\
+\rowcolor{LasetTint}
+Característica & Especificação ou definição de projeto \\
 \midrule
 \endhead
 \midrule
@@ -269,24 +161,25 @@ Característica & Capacidade prevista ou estado da definição \\
 \bottomrule
 \endlastfoot
 Tipo de sistema & Sistema embebido multiprotocolo com funções de gateway e atuação. \\
-I2C & Dois barramentos independentes (RF01); configurações por definir. \\
-CAN & Pelo menos dois canais (RF04); terceiro por confirmar (QV08). Distribuição entre PC e nós externos por definir (QV01). \\
-RS232 e RS485 & Suporte de ambas (RF02--RF03); RS485 não é acesso obrigatório do PC. \\
-Ligação ao PC & RS232, CAN e Ethernet, bidirecionais (RF09). Sem simultaneidade exigida pelo PC; preferência e protocolos por definir (QV05). \\
+I2C & Exatamente dois barramentos independentes em Standard mode (RF01); papéis e níveis elétricos por definir. \\
+CAN FD & Três CAN FD, cada um até 8~Mbit/s (RF04). Distribuição dos canais e configuração das fases para projeto (DP01). \\
+RS232 & Operação a 500~kbit/s e capacidade até 1~Mbit/s (RF02); palavra, fluxo e protocolo por definir. \\
+RS485 & Referência de aproximadamente 16--32 nós, sem número exato crítico ou limite rígido de 32 (RF03). Baud rate/protocolo em aberto. \\
+Ligação ao PC & RS232, CAN e Ethernet, bidirecionais (RF09). Sem simultaneidade exigida pelo PC; preferência e protocolos por definir (DP04). \\
 Ethernet & Mínimo nominal de 100~Mbit/s (RF05); Gigabit desejável. \\
 Leitura e escrita & Nas cinco tecnologias de comunicação (RF06--RF07). \\
-Processamento e dados & Adaptação e preservação (RF08 e RF10); disponibilização e percursos bidirecionais Ethernet com CAN, RS485, RS232 e I2C (RF17). Operações, mapeamentos e percursos adicionais a especificar (QV01--QV02). \\
+Processamento e dados & Adaptação e preservação (RF08, RF10); percursos de RF17 na Figura~\ref{fig:percursos-obrigatorios}. Operações e mapeamentos em DP01--DP02. \\
 Seleção de destino & Interface, canal e endereço ou identificador aplicável (RF11). \\
 Concorrência & RTOS, prioridades e armazenamento temporário quando necessário (RF12--RF14 e RNF07); carga e limites por definir. \\
-PWM & Exatamente três canais protegidos (RF15); cargas, níveis, frequência, resolução e proteção por definir (QV13). \\
-Sincronização & Referência temporal coerente com o PC (RF16); precisão, método, interface e recuperação por definir (QV15). \\
-Alimentação & Entrada entre 5~V e 60~V (RNF08); potência, proteção e eficiência por definir (QV14). \\
-RTOS e plataforma & RTOS obrigatório (RNF07); FreeRTOS candidato. RTOS e unidade de processamento por selecionar (QV03). \\
-Diagnóstico & Proposta RNF05; acesso e critérios por validar. \\
-PCB própria & Necessidade por confirmar (QV06). \\
-Desempenho & Latência e cargas por definir (QV07); sem garantia de tempo real estrito. \\
-Ambiente e pressão & Aplicabilidade e valores a confirmar (UC06; QV18); sem classificação de proteção presumida. \\
-Armazenamento local & MicroSD opcional (QV16); envio pelas interfaces pode dispensar registo persistente. \\
-Opções desejáveis & Gigabit Ethernet, PoE, consumo reduzido e encaminhamento autónomo mais geral; por avaliar (QV01 e QV12). \\
+PWM & Exatamente três canais protegidos a 50~Hz, com impulsos de 1100--1900~$\mu$s (RF15); resolução PWM, cargas, níveis e proteção concreta por definir (DP12). \\
+Sincronização & PPS a 1~Hz e informação GPS; resolução da ordem dos microssegundos (RF16). Erro a medir; marcação e recuperação em DP14. \\
+Alimentação & Entrada entre 5~V e 60~V (RNF08); potência, proteção e eficiência por definir (DP13). \\
+RTOS e plataforma & RTOS obrigatório (RNF07); FreeRTOS candidato. RTOS e unidade de processamento por selecionar (DP03). \\
+Diagnóstico & Proposta RNF05; acesso e critérios detalhados reservados ao projeto. \\
+PCB própria & Decisão de integração em aberto (DP05). \\
+Desempenho & Latência e cargas por definir (DP06); sem garantia de tempo real estrito. \\
+Ambiente de instalação & Condições e aplicabilidade de ensaios específicos em aberto (UC06; DP17); sem classificação de proteção estabelecida. \\
+Armazenamento local & MicroSD opcional (DP15); envio pelas interfaces pode dispensar registo persistente. \\
+Opções desejáveis & Gigabit Ethernet, PoE, consumo reduzido e encaminhamento autónomo mais geral; por avaliar (DP01 e DP11). \\
 \end{longtable}
 \endgroup

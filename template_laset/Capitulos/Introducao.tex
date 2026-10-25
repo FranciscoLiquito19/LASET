@@ -1,294 +1,155 @@
-%-----------------------------------------------------------
-%   Capítulo 1 - Introdução
-%-----------------------------------------------------------
+% Capítulo 1 - Introdução
 \chapter{Introdução}
 \label{cap:introducao}
 
 \section{Enquadramento e Motivação}
 
-O projeto de um sistema de leitura e escrita multiprotocolo insere-se
-no contexto dos sistemas embebidos e autónomos em que coexistem diferentes
-tecnologias de comunicação. O trabalho abrange I2C, RS232, RS485, CAN e
-Ethernet e é apresentado neste relatório numa fase preliminar de definição,
-centrada no enquadramento do problema e na organização do estudo e do
-desenvolvimento.
-% TODO: confirmar com os docentes o enquadramento deste trabalho nas
-% atividades do LSA/LaSET/INESC TEC ou num projeto associado; a identificação
-% institucional do template não estabelece esse vínculo específico.
+Sensores, atuadores e equipamentos de supervisão podem usar interfaces
+incompatíveis entre si. Este projeto pretende permitir a um PC centralizar
+comando, aquisição e atuação através de uma unidade embebida com I2C,
+RS232, RS485, CAN e Ethernet. A unidade deve identificar a origem e o
+destino das operações, preservar o significado dos dados e gerir
+comunicações concorrentes com taxas diferentes.
+% TODO: confirmar com os docentes o enquadramento nas atividades do
+% LSA/LaSET/INESC TEC; a identificação do template não estabelece esse vínculo.
 
-Os sistemas autónomos e os sistemas embebidos integram funções de
-perceção, processamento, controlo e atuação que dependem da troca de
-informação entre os seus elementos. A aquisição de dados de sensores,
-o envio de comandos a atuadores e a comunicação com controladores ou
-equipamentos de supervisão podem envolver tecnologias de comunicação
-distintas numa mesma instalação. Esta coexistência resulta das
-características dos dispositivos e das funções que desempenham, bem
-como da necessidade de integrar equipamentos desenvolvidos em momentos
-ou contextos diferentes.
+A associação temporal é igualmente necessária: o PC pode combinar os
+dados adquiridos com outras fontes em algoritmos de localização, fusão
+ou processamento. A atuação por PWM e a alimentação variável acrescentam
+condições elétricas que têm de ser consideradas no projeto.
 
-Neste contexto, sensores, atuadores, controladores e outros equipamentos
-podem disponibilizar interfaces como I2C, RS232, RS485, CAN e Ethernet.
-Estas tecnologias apresentam diferenças nas características elétricas,
-na \mbox{organização} das ligações e nos mecanismos de comunicação que
-suportam. Por conseguinte, a ligação de um novo equipamento exige a
-análise da compatibilidade da interface e da forma como os dados são
-transmitidos e recebidos, além da compreensão do seu significado para
-a aplicação.
-
-O problema concreto é permitir a um computador centralizar o comando,
-a aquisição e a atuação sobre sensores, dispositivos e cargas que
-utilizam ligações distintas. A unidade embebida deve encaminhar comandos
-para o destino correto, devolver dados e feedback ao PC e associar
-comandos, dados e eventos a uma referência temporal coerente. A aquisição
-num barramento e a atuação noutro podem coexistir, com taxas diferentes
-e disputando recursos; uma operação em espera não deve bloquear
-indevidamente as restantes. O funcionamento tem ainda de respeitar a
-alimentação variável e as condições elétricas das interfaces e cargas.
-
-Deste problema identificam-se quatro necessidades, usadas como origens
-na rastreabilidade dos requisitos:
+Estas necessidades organizam o problema e a rastreabilidade:
 \begin{description}
-    \item[P01 --- Integração e identificação das operações:] \hfill\newline
-    aceder pelo
-    PC a dispositivos heterogéneos, identificar origem e destino e
-    preservar o significado de comandos, dados e feedback.
-    \item[P02 --- Continuidade sob concorrência e diferenças de taxa:] \hfill\newline
-    coordenar operações em várias interfaces, gerir prioridades e
-    informação temporariamente em espera, dentro de limites a definir.
-    \item[P03 --- Coerência temporal e atuação física:] \hfill\newline
-    relacionar
-    temporalmente aquisições, comandos e eventos e comandar cargas
-    através das saídas PWM previstas, com proteção elétrica adequada.
-    \item[P04 --- Funcionamento elétrico e contexto de instalação:] \hfill\newline
-    operar com entrada de 5~V a 60~V e especificar as cargas e perturbações
-    elétricas relevantes. Pressão, temperatura, humidade e condições
-    ambientais especiais são possibilidades a confirmar, não condições
-    de funcionamento já exigidas.
+    \item[P01. Integração e identificação das operações:] \hfill\\*
+    Aceder a dispositivos heterogéneos pelo PC, identificar origem e
+    destino e preservar comandos, dados e feedback.
+    \item[P02. Continuidade sob concorrência e diferenças de taxa:] \hfill\\*
+    Coordenar operações, prioridades e informação temporariamente em
+    espera, respeitando os limites de carga a definir.
+    \item[P03. Coerência temporal e atuação física:] \hfill\\*
+    Associar temporalmente dados, comandos e eventos e comandar cargas
+    pelas saídas PWM com proteção elétrica.
+    \item[P04. Funcionamento elétrico e contexto de instalação:] \hfill\\*
+    Operar com entrada de 5--60~V e especificar cargas e perturbações.
+    A aplicabilidade de condições ambientais adicionais permanece em aberto.
 \end{description}
-
-A análise segue a sequência problema, casos de utilização, requisitos,
-critérios de aceitação e arquitetura. Os casos descrevem necessidades
-observáveis; as quantidades de interfaces e as restrições já validadas
-com o docente delimitam o âmbito. A disponibilidade de periféricos num
-componente não constitui origem de requisitos. Os valores ainda não
-confirmados ficam a definir antes da escolha da implementação e dos
-ensaios de aceitação. O armazenamento local só será necessário se a
-utilização exigir retenção para além da disponibilização dos dados.
-
-O sistema pretendido assume a função de um \textit{gateway} embebido
-multiprotocolo. O computador ou sistema central deve comunicar com a
-unidade embebida por RS232, CAN ou Ethernet, dispondo das três alternativas,
-sem se exigir a sua utilização simultânea pelo PC nem fixar uma interface
-preferencial. A unidade comunica também com dispositivos externos através
-de I2C, RS232, RS485 e CAN e disponibiliza Ethernet com capacidade nominal
-mínima de 100~Mbit/s. CAN pode servir a ligação ao PC e a ligação a nós
-externos; a distribuição dos canais por estes papéis será especificada.
-
-O âmbito confirmado inclui dois barramentos I2C independentes, pelo menos
-dois barramentos CAN, três saídas de modulação por largura de impulso
-(PWM) com proteção elétrica para comando de cargas ou atuadores e uma
-entrada de alimentação entre 5~V e 60~V. A necessidade de um terceiro
-CAN permanece por confirmar. A execução utiliza um sistema operativo de
-tempo real (RTOS), ainda por selecionar, e a unidade embebida deve manter
-uma referência temporal sincronizada com o PC para associar comandos,
-dados e eventos. Estes requisitos não estabelecem uma garantia de tempo
-real estrito nem a precisão da sincronização.
-
-Pretende-se um acesso tão uniforme quanto possível, mantendo explícitos
-os parâmetros necessários a cada interface e protocolo. O encaminhamento
-deve preservar o significado da informação e pode exigir adaptação às
-características da origem e do destino; não se pressupõe correspondência
-de uma trama recebida para uma trama transmitida. A gestão de comunicações
-concorrentes, prioridades e diferenças de taxa faz parte do problema.
-A disponibilização dos dados pode fazer-se pelas interfaces de comunicação;
-o armazenamento persistente em microSD é uma opção a avaliar. A conversão
-entre todos os pares de interfaces não é um requisito.
 
 \section{Cenários de aplicação}
 \label{sec:cenarios-aplicacao}
 
-Os casos UC01--UC07 concretizam as necessidades P01--P04 sem fixar
-uma aplicação final ou protocolos superiores. As capacidades de interface,
-quantidades e restrições confirmadas delimitam estes casos; não são
-inferidas da disponibilidade de hardware. Os fluxos são funcionais,
-não uma especificação detalhada de software.
+A Figura~\ref{fig:contexto-utilizacao} permite ler o âmbito pelos atores
+que interagem com a unidade. Os casos UC01--UC07 descrevem os resultados
+esperados; os valores e critérios completos constam do
+Capítulo~\ref{cap:requisitos}. As quantidades confirmadas delimitam o
+âmbito e não são deduzidas dos periféricos de um componente.
+
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{contexto}
+    \caption[Atores e casos de utilização.]{Atores e casos de utilização da unidade multiprotocolo. As ligações representam funções, não portas físicas adicionais.}
+    \label{fig:contexto-utilizacao}
+\end{figure}
 
 \begin{description}
-    \item[UC01 --- Comando de dispositivo pelo PC:] \hfill\newline
-    \textbf{Ator:} computador/sistema central.
-    \textbf{Objetivo:} comandar um dispositivo externo e obter o resultado.
-    \textbf{Fluxo principal:} o PC envia uma operação por RS232, CAN ou
-    Ethernet; a unidade identifica interface, canal e destino, adapta
-    a informação segundo o mapeamento definido e transmite-a ao
-    dispositivo. Quando previsto na operação, devolve feedback ao PC.
-    \textbf{Resultado esperado:} comando entregue ao destino correto,
-    com resultado associado à respetiva operação.
-    \textbf{Interfaces/funções:} acesso bidirecional ao PC, seleção de
-    destino, escrita, adaptação e encaminhamento. As três alternativas
-    são suportadas, sem utilização simultânea exigida pelo PC. Os quatro
-    percursos Ethernet confirmados e os adicionais são distinguidos em RF17.
+    \item[UC01. Comando de dispositivo pelo PC:] \hfill\\*
+    O PC envia uma operação por RS232, CAN ou Ethernet. A unidade
+    seleciona interface, canal e destino, adapta a informação e devolve
+    feedback quando previsto. Espera-se o resultado correto, associado
+    à operação. As três alternativas são suportadas, sem simultaneidade
+    exigida pelo PC; os percursos obrigatórios são os de RF17.
 
-    \item[UC02 --- Aquisição de dados de sensor:] \hfill\newline
-    \textbf{Ator:} sensor/dispositivo externo, com o PC como destinatário.
-    \textbf{Objetivo:} adquirir dados identificáveis e disponibilizá-los.
-    \textbf{Fluxo principal:} o dispositivo fornece dados por um dos dois
-    I2C independentes, CAN, RS485 ou outra interface suportada, segundo
-    a operação definida. A unidade recebe, identifica a origem, associa
-    informação temporal quando necessário, processa e envia os dados ao
-    PC ou ao destino previsto. Se a saída não acompanhar a entrada,
-    aplica armazenamento temporário dentro dos limites especificados.
-    \textbf{Resultado esperado:} dados e origem preservados, com associação
-    temporal quando aplicável. \textbf{Interfaces/funções:} receção,
-    processamento, sincronização e encaminhamento, incluindo os canais
-    CAN previstos para nós externos.
+    \item[UC02. Aquisição de dados de sensor:] \hfill\\*
+    Um dispositivo fornece dados por uma interface suportada. A unidade
+    identifica a origem, associa informação temporal quando aplicável,
+    processa e disponibiliza os dados ao PC ou ao destino previsto.
+    Gere espera temporária se a saída não acompanhar a entrada.
+    A aquisição é genérica, sem uma grandeza de medição obrigatória.
 
-    \item[UC03 --- Comando de atuador por PWM:] \hfill\newline
-    \textbf{Ator:} PC/sistema central.
-    \textbf{Objetivo:} comandar uma carga através de um dos três canais PWM.
-    \textbf{Fluxo principal:} a unidade recebe uma ordem pela ligação
-    selecionada, identifica o canal e aplica o comando nas condições
-    elétricas e temporais que vierem a ser especificadas.
-    \textbf{Resultado esperado:} atuação pelo canal solicitado, com
-    proteção elétrica da saída. \textbf{Interfaces/funções:} acesso ao
-    PC e exatamente três PWM protegidos. Luzes e garra são exemplos de
-    cargas; a garra usa um destes canais. Frequência, resolução, tensão,
-    corrente e proteção concreta estão por definir; não se pressupõe
-    feedback físico sem meios de aquisição especificados.
+    \item[UC03. Comando de atuador por PWM:] \hfill\\*
+    O PC solicita atuação num dos três PWM protegidos. A unidade comanda
+    o canal a 50~Hz, com impulso de 1100--1900~$\mu$s, nas condições
+    elétricas a especificar. Luzes e garra são exemplos; a garra usa
+    um dos três canais. Resolução, cargas e proteção concreta estão
+    em aberto; feedback físico exige meios de aquisição definidos.
 
-    \item[UC04 --- Operação concorrente:] \hfill\newline
-    \textbf{Atores:} PC e dispositivos que geram operações concorrentes.
-    \textbf{Objetivo:} manter o progresso da aquisição, comando e
-    disponibilização quando várias interfaces estão ativas.
-    \textbf{Fluxo principal:} chegam pedidos e dados concorrentes; a
-    unidade coordena processamento e transmissão, atende-os segundo
-    prioridades e mantém temporariamente dados que aguardam saída.
-    \textbf{Resultado esperado:} progresso das operações nas cargas
-    admissíveis, respeitando limites de latência e saturação a definir.
-    \textbf{Interfaces/funções:} múltiplas interfaces, gestão de recursos,
-    prioridades e armazenamento temporário. O RTOS é uma restrição
-    validada para suportar esta execução; o caso não determina um RTOS
-    concreto nem implica uma tarefa por interface.
+    \item[UC04. Operação concorrente:] \hfill\\*
+    Pedidos do PC e dados de dispositivos disputam processamento e
+    transmissão. A unidade gere prioridades e espera temporária sobre
+    RTOS, mantendo o progresso nas cargas admissíveis. Cargas, latência,
+    saturação e política de atendimento ficam para projeto, sem impor
+    um RTOS concreto ou uma tarefa por interface.
 
-    \item[UC05 --- Sincronização temporal com o PC:] \hfill\newline
-    \textbf{Ator:} PC/sistema central.
-    \textbf{Objetivo:} relacionar temporalmente comandos, dados e eventos
-    da unidade com a referência do PC.
-    \textbf{Fluxo principal:} PC e unidade estabelecem e atualizam a
-    relação entre as suas referências temporais pelo método a selecionar;
-    os eventos relevantes são associados a marcas temporais nos pontos
-    especificados. Após perda de ligação ou reinício, aplica-se a
-    recuperação a definir.
-    \textbf{Resultado esperado:} associação temporal com erro e resolução
-    aceitáveis, ambos ainda a quantificar. \textbf{Interfaces/funções:}
-    sincronização e associação temporal; protocolo, periodicidade e
-    interface por definir, sem pressupor NTP, PTP ou RTC.
+    \item[UC05. Sincronização por PPS e informação temporal GPS:] \hfill\\*
+    A unidade recebe PPS a um impulso por segundo e informação temporal
+    GPS entre impulsos, associando-os para sincronizar o relógio.
+    Os dados podem assim ser combinados pelo PC com outras fontes,
+    com resolução da ordem dos microssegundos. O erro será medido e
+    reportado; recuperação, recetor, protocolo e hardware ficam em aberto,
+    sem precisão absoluta garantida de $\pm1~\mu$s.
 
-    \item[UC06 --- Funcionamento elétrico e ambiental:] \hfill\newline
-    \textbf{Ator:} operador/responsável pela instalação.
-    \textbf{Objetivo:} utilizar a unidade nas condições elétricas e de
-    instalação especificadas.
-    \textbf{Fluxo principal:} a unidade é alimentada dentro de 5~V a 60~V
-    e realiza aquisição e atuação com as cargas definidas. A avaliação
-    considera separadamente perturbações na entrada, nas comunicações
-    e nas saídas PWM. Se forem confirmadas condições ambientais especiais,
-    o funcionamento é avaliado nessas condições.
-    \textbf{Resultado esperado:} operações corretas dentro da gama e
-    condições validadas. \textbf{Interfaces/funções:} alimentação,
-    interfaces externas e proteção dos três PWM. Níveis de perturbação,
-    isolamento, temperatura, humidade, pressão e grau de proteção estão
-    por especificar ou confirmar; não são garantidos por este cenário.
+    \item[UC06. Funcionamento elétrico e ambiental:] \hfill\\*
+    O responsável pela instalação alimenta a unidade dentro de 5--60~V
+    e utiliza as cargas especificadas. Avaliam-se separadamente a entrada,
+    as comunicações e as saídas PWM. Perturbações, isolamento e eventuais
+    condições ambientais serão especificados conforme a instalação;
+    não estão estabelecidas temperatura, humidade ou classificação de proteção.
 
-    \item[UC07 --- Disponibilização ou registo de dados:] \hfill\newline
-    \textbf{Ator:} PC/sistema que utiliza os dados adquiridos.
-    \textbf{Objetivo:} obter os dados durante a operação e, se necessário,
-    conservá-los localmente.
-    \textbf{Fluxo principal:} a unidade recebe e trata dados, identifica
-    a origem e disponibiliza-os pela interface definida, gerindo espera
-    temporária quando necessária. Se a aplicação exigir retenção local,
-    é avaliada a opção de armazenamento persistente.
-    \textbf{Resultado esperado:} dados disponíveis segundo a operação;
-    retenção e recuperação apenas quando essa opção for selecionada.
-    \textbf{Interfaces/funções:} comunicação, encaminhamento e buffering;
-    microSD opcional, distinta do armazenamento temporário e sem
-    capacidade ou duração de retenção já fixadas.
+    \item[UC07. Disponibilização ou registo de dados:] \hfill\\*
+    O PC obtém dados identificados pelas interfaces previstas, com gestão
+    da espera temporária. Se for necessária retenção local, avalia-se a
+    opção microSD, incluindo retenção e recuperação. O registo persistente
+    é opcional e distingue-se do armazenamento temporário de RF13.
 \end{description}
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Resolver o problema de integração do comando, aquisição e atuação entre
-um PC e dispositivos heterogéneos através de uma unidade embebida
-multiprotocolo. Pretende-se preservar a informação das operações,
-coordenar comunicações concorrentes e relacionar temporalmente comandos,
-dados e eventos, com atuação protegida e funcionamento nas condições
-elétricas especificadas. As interfaces e restrições confirmadas delimitam
-a solução, que será validada por critérios de aceitação mensuráveis.
+Integrar comando, aquisição e atuação entre um PC e dispositivos
+heterogéneos, preservando a informação, coordenando operações concorrentes
+e relacionando temporalmente dados e eventos, nas condições elétricas
+especificadas. A solução será validada pelos critérios de aceitação do
+Capítulo~\ref{cap:requisitos}.
 
 \subsection{Objetivos Específicos}
 
-A partir das necessidades P01--P04 e dos casos UC01--UC07, estabelecem-se
-os seguintes objetivos específicos:
-
+\begingroup
+\setstretch{1.15}
 \begin{enumerate}
+\setlength{\itemsep}{2pt}
     \item \label{obj:estudo-tecnologias}
-    Estudar as características de I2C, RS232, RS485, CAN e Ethernet
-    relevantes para a realização de operações de comunicação, bem como
-    os fundamentos de RTOS, PWM, sincronização e alimentação.
-
+    Estudar I2C, RS232, RS485, CAN e Ethernet, bem como RTOS, PWM,
+    sincronização e alimentação, no contexto dos casos de utilização.
     \item \label{obj:analise-limitacoes}
-    Analisar as diferenças e limitações das cinco tecnologias perante
-    as operações dos casos de utilização, identificando os parâmetros
-    quantitativos e critérios de aceitação que ainda falta definir.
-
+    Identificar limitações, parâmetros de dimensionamento e critérios
+    de aceitação das operações previstas.
     \item \label{obj:arquitetura}
-    Definir uma arquitetura de integração das cinco tecnologias de
-    comunicação, com acesso do PC por RS232, CAN ou Ethernet, dois
-    barramentos I2C independentes, pelo menos dois CAN e três saídas PWM
-    protegidas, identificando os blocos e as respetivas ligações.
-    A necessidade de um terceiro CAN deve ser esclarecida.
-
+    Definir os blocos e ligações da arquitetura, incluindo as três
+    alternativas de acesso do PC, PWM e referência temporal PPS/GPS.
     \item \label{obj:comunicacao}
-    Implementar as funções de comunicação necessárias à transmissão
-    e receção de dados através de cada uma das cinco interfaces,
-    incluindo a gestão de comunicações concorrentes, prioridades e
-    diferenças de taxa sobre um RTOS ainda por selecionar.
-
+    Implementar leitura e escrita nas cinco tecnologias e a gestão
+    concorrente de prioridades e diferenças de taxa sobre RTOS.
     \item \label{obj:processamento-encaminhamento}
-    Definir e implementar operações de processamento e encaminhamento
-    entre o PC e os dispositivos externos pelas ligações previstas,
-    explicitando a seleção de destino, as adaptações necessárias e
-    a informação a preservar, sem impor uma matriz universal de conversão.
-
+    Definir e implementar seleção de destino, processamento e
+    encaminhamento, preservando a informação segundo os mapeamentos
+    das operações, sem conversão universal entre todos os pares.
     \item \label{obj:atuacao-alimentacao}
-    Implementar o comando através de exatamente três saídas PWM com
-    proteção elétrica e a alimentação de entrada entre 5~V e 60~V,
-    após definição das cargas e dos critérios elétricos de validação.
-
+    Implementar os três PWM protegidos e a alimentação de 5--60~V,
+    após especificar cargas e critérios elétricos.
     \item \label{obj:sincronizacao}
-    Implementar a sincronização temporal entre o PC e a unidade embebida,
-    definindo a referência, os eventos a associar e os critérios de
-    precisão e recuperação antes da seleção do mecanismo.
-
+    Sincronizar o relógio por PPS e informação GPS, associar dados
+    com resolução da ordem dos microssegundos e medir o erro obtido.
     \item \label{obj:validacao}
-    Validar experimentalmente as operações de transmissão e receção
-    em cada interface e as operações de processamento e encaminhamento
-    definidas, o acesso do PC pelas três alternativas, a atuação PWM,
-    a alimentação e a sincronização temporal, de acordo com os critérios
-    de aceitação que venham a ser consolidados.
+    Ensaiar as interfaces, os percursos definidos, o acesso do PC,
+    os PWM, a alimentação e a sincronização, documentando as condições.
 \end{enumerate}
+\endgroup
 
 \section{Estrutura do Relatório}
 
-Nesta fase de Análise de Requisitos, o relatório inclui quatro capítulos.
-O Capítulo~\ref{cap:introducao} apresenta o enquadramento, a motivação,
-os casos de utilização e os objetivos do trabalho.
-O Capítulo~\ref{cap:estado-arte} analisa as tecnologias abrangidas e as
-soluções existentes, comparando as suas características e limitações.
-O Capítulo~\ref{cap:requisitos} define os requisitos preliminares,
-relaciona-os com problema, casos, métricas e critérios de aceitação e
-identifica as decisões a esclarecer com os docentes.
-O Capítulo~\ref{cap:arquitectura} apresenta a visão conceptual do sistema,
-as interfaces externas, as funcionalidades e os tipos de operação,
-bem como o percurso funcional de encaminhamento e as características
-preliminares. A bibliografia reúne as fontes citadas.
+O Capítulo~\ref{cap:estado-arte} compara tecnologias e soluções existentes.
+O Capítulo~\ref{cap:requisitos} apresenta os requisitos, a rastreabilidade,
+os ensaios e as decisões em aberto. O Capítulo~\ref{cap:arquitectura}
+organiza funções, interfaces e percursos numa arquitetura conceptual.
+A bibliografia reúne as fontes citadas. Componentes e implementação
+concreta permanecem para a fase de projeto.

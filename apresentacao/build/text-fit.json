@@ -1,0 +1,422 @@
+﻿[
+    {
+        "available":  21.810945510864258,
+        "bound":  113.505043,
+        "shape":  "TextBox 5",
+        "text":  "Sistema de escrita e leitura\nmultiprotocolo",
+        "slide":  1
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 6",
+        "text":  "Estado da arte, requisitos e arquitetura",
+        "slide":  1
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 7",
+        "text":  "Francisco Liquito e Pedro Ribeiro",
+        "slide":  1
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  41.27504,
+        "shape":  "TextBox 8",
+        "text":  "Mestrado de Sistemas Autónomos\nLaSET",
+        "slide":  1
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Problema e objetivo",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  74.81,
+        "shape":  "TextBox 3",
+        "text":  "Um PC, várias interfaces de comunicação",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  98.09504,
+        "shape":  "TextBox 4",
+        "text":  "Integrar comando, aquisição e atuação sobre dispositivos heterogéneos.",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 5",
+        "text":  "Origem e destino identificados",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 6",
+        "text":  "Preservar o significado dos dados",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 7",
+        "text":  "Comunicações concorrentes",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 8",
+        "text":  "Gerir prioridades e diferenças de taxa",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 9",
+        "text":  "Referência temporal comum",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 10",
+        "text":  "Associar dados e eventos",
+        "slide":  2
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Estado da arte: tecnologias",
+        "slide":  3
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 4",
+        "text":  "A interface física não define o protocolo de aplicação.",
+        "slide":  3
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Estado da arte: plataformas",
+        "slide":  4
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 4",
+        "text":  "A seleção da plataforma permanece para a fase de projeto.",
+        "slide":  4
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Casos de utilização",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 3",
+        "text":  "Operações com dispositivos",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  27.18504,
+        "shape":  "TextBox 4",
+        "text":  "UC01. Comando pelo PC",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 5",
+        "text":  "Selecionar o destino e obter feedback.",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  27.18504,
+        "shape":  "TextBox 6",
+        "text":  "UC02. Aquisição de sensores",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 7",
+        "text":  "Identificar a origem e disponibilizar dados.",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  27.18504,
+        "shape":  "TextBox 8",
+        "text":  "UC03. Atuação por PWM",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 9",
+        "text":  "Comandar um dos três canais protegidos.",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 10",
+        "text":  "Condições de execução",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 11",
+        "text":  "UC04. Operação concorrente",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 13",
+        "text":  "UC05. Sincronização PPS/GPS",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 15",
+        "text":  "UC06. Operação elétrica e ambiental",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 17",
+        "text":  "UC07. Disponibilização ou registo",
+        "slide":  5
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Requisitos de comunicação",
+        "slide":  6
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Atuação, sincronização e operação",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 3",
+        "text":  "Atuação PWM",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  42.0150375,
+        "shape":  "TextBox 4",
+        "text":  "3 canais",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  115.895042,
+        "shape":  "TextBox 5",
+        "text":  "50 Hz\n1100 a 1900 µs\nProteção elétrica obrigatória",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 6",
+        "text":  "Sincronização",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "TextBox 7",
+        "text":  "PPS a 1 Hz",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  82.4,
+        "shape":  "TextBox 8",
+        "text":  "GPS entre impulsos\nResolução da ordem dos µs\nErro absoluto a medir",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  54.17504,
+        "shape":  "TextBox 9",
+        "text":  "Execução e alimentação",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "TextBox 10",
+        "text":  "5 a 60 V",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  110.625038,
+        "shape":  "TextBox 11",
+        "text":  "RTOS obrigatório\nFreeRTOS candidato\nPlataforma por selecionar",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 12",
+        "text":  "Cargas, resolução PWM, tolerâncias e condições de ensaio ficam para projeto.",
+        "slide":  7
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Arquitetura de alto nível",
+        "slide":  8
+    },
+    {
+        "available":  60,
+        "bound":  70.62504,
+        "shape":  "Referência temporal",
+        "text":  "Referência temporal\nPPS a 1 Hz e GPS",
+        "slide":  8
+    },
+    {
+        "available":  54,
+        "bound":  70.62504,
+        "shape":  "Alimentação",
+        "text":  "Alimentação\nEntrada de 5 a 60 V",
+        "slide":  8
+    },
+    {
+        "available":  54,
+        "bound":  70.62504,
+        "shape":  "Registo em microSD",
+        "text":  "Registo em microSD\nOpcional",
+        "slide":  8
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Encaminhamento e validação",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 3",
+        "text":  "Percursos de RF17",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  46.43504,
+        "shape":  "TextBox 13",
+        "text":  "Quatro pares obrigatórios nos dois sentidos\nMapeamentos e protocolos por definir",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  28.42,
+        "shape":  "TextBox 14",
+        "text":  "Ensaios previstos",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 15",
+        "text":  "Comunicações",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 17",
+        "text":  "PWM e alimentação",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 19",
+        "text":  "Sincronização",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  25.95,
+        "shape":  "TextBox 21",
+        "text":  "Conformidade",
+        "slide":  9
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  39.54504,
+        "shape":  "Título",
+        "text":  "Estado atual e próximos passos",
+        "slide":  10
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  29.6550388,
+        "shape":  "TextBox 3",
+        "text":  "Documentado",
+        "slide":  10
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  145.465042,
+        "shape":  "TextBox 4",
+        "text":  "Estado da arte e limitações\n7 casos de utilização\n17 RF e 8 RNF\nCritérios de ensaio e rastreabilidade\nArquitetura funcional",
+        "slide":  10
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  29.6550388,
+        "shape":  "TextBox 5",
+        "text":  "A definir no projeto",
+        "slide":  10
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  145.465042,
+        "shape":  "TextBox 6",
+        "text":  "Plataforma e RTOS concreto\nProtocolos e mapeamentos\nCargas, proteção e tolerâncias\nDimensionamento e PCB\nMedições de desempenho",
+        "slide":  10
+    },
+    {
+        "available":  21.810945510864258,
+        "bound":  24.71504,
+        "shape":  "TextBox 9",
+        "text":  "Próxima etapa: fechar as decisões DP01 a DP17 e preparar a implementação e os ensaios.",
+        "slide":  10
+    }
+]

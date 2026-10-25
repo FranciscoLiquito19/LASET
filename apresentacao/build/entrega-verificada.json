@@ -1,0 +1,42 @@
+{
+  "slides": 10,
+  "native_table_slides": [
+    3,
+    4,
+    6
+  ],
+  "editable_diagram_slides": [
+    8,
+    9
+  ],
+  "speaker_notes_with_sources": 10,
+  "logos_embedded_unchanged": [
+    true,
+    true
+  ],
+  "slide_word_counts": {
+    "1": 27,
+    "2": 42,
+    "3": 67,
+    "4": 68,
+    "5": 81,
+    "6": 96,
+    "7": 60,
+    "8": 70,
+    "9": 54,
+    "10": 77
+  },
+  "text_fit_findings": 0,
+  "integrity": "pass",
+  "layout_warnings": 0,
+  "font_policy": {
+    "basis": "design",
+    "families": [
+      "Arial"
+    ]
+  },
+  "native_powerpoint_open_and_render": true,
+  "artifact_tool_available": false,
+  "final_path": "C:\\Users\\Pedro Ribeiro\\LASET\\apresentacao\\output\\Apresentacao_LaSET.pptx",
+  "sha256": "67ae98fd4bba2f30539672c8920080a3af2cb5a76b9410ce3efcea207d0e14cd"
+}
