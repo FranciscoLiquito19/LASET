@@ -23,3 +23,7 @@ build/*
 
 # VS Code local files
 .vscode/*.log
+
+# Private presentation build and review files, and Office lock files
+/apresentacao/build/
+~$*

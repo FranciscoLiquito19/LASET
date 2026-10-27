@@ -1,7 +1,8 @@
 # Revisão final do relatório LaSET
 
-Revisão de 23 de outubro de 2026, sobre a branch `template-migration`, com
-HEAD em `a777d68`. As alterações permanecem locais, sem commit nem push.
+Revisão consolidada de 27 de outubro de 2026, sobre a branch
+`template-migration`, com base no commit `a3c2227`. Inclui a revisão de
+conteúdo e apresentação de 23 de outubro e a clarificação de RF17 descrita abaixo.
 
 O relatório foi revisto quanto à coerência técnica, rastreabilidade,
 parâmetros confirmados, decisões em aberto, referências e apresentação.
@@ -12,8 +13,9 @@ nota serve de apoio à leitura conjunta dos autores.
 
 O PDF passou de 74 para 49 páginas, com 9 figuras em vez de 2. A introdução,
 a síntese e a arquitetura foram encurtadas para evitar repetir os mesmos
-valores em várias secções. Os 17 RF e os 8 RNF preservam o texto normativo;
-as linhas dos critérios de rastreabilidade também se mantêm.
+valores em várias secções. A reorganização preservou o texto normativo e
+os critérios de rastreabilidade. A clarificação de 27 de outubro atualiza
+RF17 e o respetivo ensaio, mantendo os restantes RF e RNF.
 
 - Mapa de atores e dos sete casos de utilização.
 - Esquemas comparados das topologias de comunicação.
@@ -21,7 +23,7 @@ as linhas dos critérios de rastreabilidade também se mantêm.
 - Formas de onda PWM e linha temporal PPS/GPS, ambas esquemáticas.
 - Cadeia visual entre necessidades, utilização, requisitos e verificação.
 - Diagramas renovados das interfaces e do encaminhamento; mapa dos quatro
-  pares Ethernet obrigatórios.
+  pares Ethernet mínimos obrigatórios.
 - Tabela compacta das DP01-DP17 e tabela de responsabilidades da arquitetura.
 - Margens horizontais simétricas de 27,5 mm, mantendo letra de 11 pt e entrelinha 1,5 no
   corpo do texto. Tabelas e diagramas usam espaçamento próprio.
@@ -37,13 +39,14 @@ cabeçalhos, da numeração e da descrição do PDF versionado no README.
 
 **Revisão de conteúdo académico**
 
-A comparação dos fontes anteriores à reorganização visual confirma que as
+Na comparação dos fontes anteriores à reorganização visual, verificou-se que as
 definições dos 17 RF e dos 8 RNF e as linhas das duas tabelas de
 rastreabilidade foram preservadas, descontando apenas a alteração de quebra
 de linha que mantém o título junto do texto e a normalização da pontuação
 dos identificadores. Foram sintetizadas repetições
 e explicações de contexto; mantêm-se os quatro problemas, os sete casos de
-utilização e as 17 decisões de projeto.
+utilização e as 17 decisões de projeto. A revisão de RF17 abaixo constitui
+uma clarificação posterior, limitada ao âmbito do encaminhamento e à sua validação.
 
 - O desenho PWM usa agora larguras proporcionais ao período. A amplitude
   continua sem valor especificado; não se representa uma medição real.
@@ -97,6 +100,20 @@ a informação técnica mantêm-se.
 A compilação final não apresenta avisos `Underfull` ou `Overfull`. A
 verificação formal da bibliografia não equivale a uma auditoria integral
 de todas as fontes externas.
+
+**Clarificação de RF17, em 27 de outubro**
+
+- Os quatro pares Ethernet com CAN, RS485, RS232 e I2C, nos dois sentidos,
+  constituem o mínimo obrigatório.
+- Outros percursos, como CAN para RS485, podem ser definidos e implementados
+  em projeto, com operações, protocolos e mapeamentos compatíveis. Ethernet
+  não tem de intermediar todo o encaminhamento.
+- RF17, DP01, a arquitetura, a Figura 4.3 e a rastreabilidade usam esta distinção.
+  Os ensaios abrangem os pares mínimos e cada percurso adicional efetivamente definido.
+- A operação autónoma sem intervenção do PC continua opcional e distingue-se
+  da definição de percursos adicionais.
+- A apresentação atualizada e o guião seguem a mesma formulação. Mantêm-se
+  os 10 slides e a divisão: Pedro nos slides 1 a 5, Francisco Liquito nos slides 6 a 10.
 
 **Pontos de atenção para a vossa análise**
 

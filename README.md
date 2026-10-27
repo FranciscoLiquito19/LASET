@@ -56,6 +56,15 @@ pelo que não gera um capítulo vazio nesta fase.
 As [notas da revisão](docs/revisao_final.md) incluem os resultados de
 validação e um roteiro para leitura conjunta do PDF.
 
+## Apresentação e guião
+
+- [PowerPoint atualizado](apresentacao/output/Apresentacao_LaSET_Atualizada.pptx): 10 slides com estado da arte, casos de utilização, requisitos e arquitetura.
+- [Guião em PDF](apresentacao/output/Guiao_Apresentacao.pdf) e [fonte editável](apresentacao/Guiao_Apresentacao.md): divisão entre Pedro e Francisco Liquito, falas, tempos e perguntas de preparação.
+
+RF17 distingue os quatro pares mínimos obrigatórios com Ethernet dos
+percursos adicionais que podem ser definidos e implementados em projeto.
+Os critérios de ensaio abrangem todos os percursos efetivamente definidos.
+
 ## Trabalhar em conjunto
 
 Após receber acesso ao repositório, clonar o projeto:

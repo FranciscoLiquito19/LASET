@@ -162,13 +162,14 @@ alternativas de ligação pelo PC.
     do MCU.
 
     \item[RF17. Disponibilização e encaminhamento de dados:] \hfill\\*
-    O sistema deve disponibilizar os dados adquiridos pelas interfaces
-    de comunicação previstas e encaminhar comandos e dados entre o PC
-    e os dispositivos externos segundo as operações especificadas.
-    Deve suportar os percursos bidirecionais Ethernet com CAN, RS485,
-    RS232 e I2C; RF09 especifica separadamente as três alternativas de
-    acesso ao PC. Outros percursos permanecem sujeitos a DP01 ou a extensão,
-    sem exigir conversão entre todos os pares.
+    O sistema deve disponibilizar os dados adquiridos e encaminhar comandos
+    e dados entre interfaces suportadas, conforme as operações especificadas.
+    O âmbito mínimo obrigatório inclui os percursos bidirecionais entre
+    Ethernet e CAN, RS485, RS232 e I2C. RF09 especifica separadamente as três
+    alternativas de acesso ao PC. Outros percursos, como CAN para RS485,
+    podem ser definidos e implementados em projeto (DP01--DP02); Ethernet
+    não tem de intermediar todas as operações. Não se exige conversão
+    universal entre todos os pares.
     Cada operação deve identificar origem, destino, configuração,
     protocolo e mapeamento necessários; só pode ser executada quando
     esses elementos permitirem determinar uma ação compatível.
@@ -178,9 +179,9 @@ alternativas de ligação pelo PC.
 
 RF09 exige suporte às três alternativas de comunicação PC--unidade:
 RS232, CAN e Ethernet. RF17 estabelece separadamente os quatro percursos
-de encaminhamento Ethernet confirmados. As operações, os percursos
-adicionais e a distribuição dos canais CAN serão especificados em DP01,
-sem impor conversão entre todos os pares. RS485 mantém-se no âmbito,
+Ethernet como mínimo obrigatório. Os percursos adicionais entre interfaces
+serão definidos em DP01--DP02, conforme as operações, protocolos e
+mapeamentos, sem impor conversão universal. RS485 mantém-se no âmbito,
 sem ser uma ligação obrigatória PC--unidade. As quantidades de RF01 e RF04
 não são multiplicadas pela representação de papéis na arquitetura.
 
@@ -359,7 +360,7 @@ RF15 & P03--P04; UC03 e UC06: atuar sobre cargas; três canais protegidos e temp
 \addlinespace
 RF16 & P03; UC02 e UC05: combinar no PC dados de sensores e de outras fontes para localização, fusão ou processamento. & Verificar PPS a 1~Hz, processamento das mensagens temporais GPS entre impulsos e sincronização do relógio. Verificar resolução da ordem dos microssegundos e medir/reportar o erro face à referência. Não há limite absoluto garantido; medição e recuperação a definir (DP14). \\
 \addlinespace
-RF17 & P01--P02; UC01, UC02 e UC07: encaminhar e disponibilizar dados. & Ensaiar os quatro pares Ethernet nos dois sentidos. Critério: dados/resultados esperados em todos os pares; operações a definir (DP01). Registo local só se selecionado (DP15). \\
+RF17 & P01--P02; UC01, UC02 e UC07: encaminhar e disponibilizar dados. & Ensaiar os quatro pares mínimos Ethernet nos dois sentidos e cada percurso adicional definido em DP01--DP02. Critério: dados/resultados conforme os mapeamentos definidos. Registo local só se selecionado (DP15). \\
 \addlinespace
 \end{longtable}
 \endgroup
@@ -497,9 +498,10 @@ São desejáveis Gigabit Ethernet, alimentação por Ethernet
 (\textit{Power over Ethernet}, PoE) e consumo reduzido, sem valores
 mínimos de eficiência ou máximos de consumo confirmados. O armazenamento
 persistente em microSD é uma opção, não obrigatório; o encaminhamento
-direto dos dados pode satisfazer RF17. O encaminhamento autónomo mais
-geral entre dispositivos externos constitui uma possível extensão.
-Estas opções serão avaliadas em DP11 e DP15, sem presumir a sua inclusão
+direto dos dados pode satisfazer RF17. A operação autónoma sem intervenção
+do PC permanece uma opção a avaliar em DP01, distinta da definição de
+percursos adicionais em RF17. As restantes opções serão avaliadas em DP11
+e DP15, sem presumir a sua inclusão
 na primeira versão nem substituir a entrada obrigatória de 5~V a 60~V.
 
 \section{Restrições do Projeto}
@@ -513,7 +515,7 @@ bitrates separados CAN FD ou precisão absoluta de sincronização.
 Plataforma, RTOS concreto, PCB, protocolos superiores e componentes ficam
 para projeto. A proteção PWM é obrigatória; isolamento e proteção das
 restantes interfaces serão avaliados conforme as condições. MicroSD,
-PoE e encaminhamento autónomo mais geral são opções, sem garantia de
+PoE e operação autónoma sem intervenção do PC são opções, sem garantia de
 tempo real estrito decorrente do RTOS.
 
 \section{Definições em Aberto para a Fase de Projeto}
@@ -547,7 +549,7 @@ ID & Tema & Definição a documentar \\
 \endfoot
 \bottomrule
 \endlastfoot
-DP01 & Operações e papéis & Distribuição dos três CAN FD entre PC e nós externos, papéis I2C e mapeamentos de RF17. Os percursos obrigatórios mantêm-se; outros encaminhamentos são extensões a avaliar. \\
+DP01 & Operações e papéis & Distribuição dos três CAN FD entre PC e nós externos, papéis I2C e percursos de RF17. Manter os quatro pares mínimos Ethernet; definir os percursos adicionais, como CAN para RS485, e os respetivos protocolos e mapeamentos com DP02. \\
 \addlinespace
 DP02 & Protocolos externos & Protocolos superiores, endereços, identificadores e mapeamentos dos dispositivos. Documentar significado dos dados e configurações que permitam reproduzir cada operação. \\
 \addlinespace

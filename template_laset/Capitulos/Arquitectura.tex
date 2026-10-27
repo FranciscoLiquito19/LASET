@@ -112,16 +112,18 @@ intermédia comum são possibilidades de projeto. Se destino, configuração
 e mapeamento não permitirem determinar uma operação compatível, esta
 não deve ser executada.
 
-RF17 confirma os quatro pares da Figura~\ref{fig:percursos-obrigatorios}.
-Estes percursos distinguem-se das três alternativas de acesso do PC de
-RF09; a extensão a outros pares depende de DP01. O buffering é
+Os quatro pares da Figura~\ref{fig:percursos-obrigatorios} constituem o mínimo
+obrigatório de RF17 e distinguem-se das alternativas de acesso do PC de
+RF09. Outros percursos, como CAN para RS485, podem ser definidos e
+implementados em DP01--DP02; Ethernet não tem de intermediar todas as
+operações. O buffering é
 dimensionado para a espera temporária e não é substituído pelo registo
 persistente opcional.
 
 \begin{figure}[htbp]
     \centering
     \Diagrama{percursos}
-    \caption[Percursos obrigatórios entre interfaces.]{Percursos de encaminhamento obrigatórios no gateway. As ligações não pressupõem equivalência semântica entre protocolos.}
+    \caption[Percursos mínimos obrigatórios entre interfaces.]{Percursos mínimos obrigatórios de RF17. Outros encaminhamentos entre interfaces podem ser definidos em projeto. As ligações não pressupõem equivalência semântica entre protocolos.}
     \label{fig:percursos-obrigatorios}
 \end{figure}
 
@@ -168,7 +170,7 @@ RS485 & Referência de aproximadamente 16--32 nós, sem número exato crítico o
 Ligação ao PC & RS232, CAN e Ethernet, bidirecionais (RF09). Sem simultaneidade exigida pelo PC; preferência e protocolos por definir (DP04). \\
 Ethernet & Mínimo nominal de 100~Mbit/s (RF05); Gigabit desejável. \\
 Leitura e escrita & Nas cinco tecnologias de comunicação (RF06--RF07). \\
-Processamento e dados & Adaptação e preservação (RF08, RF10); percursos de RF17 na Figura~\ref{fig:percursos-obrigatorios}. Operações e mapeamentos em DP01--DP02. \\
+Processamento e dados & Adaptação e preservação (RF08, RF10); percursos mínimos de RF17 na Figura~\ref{fig:percursos-obrigatorios}. Percursos adicionais, operações e mapeamentos em DP01--DP02. \\
 Seleção de destino & Interface, canal e endereço ou identificador aplicável (RF11). \\
 Concorrência & RTOS, prioridades e armazenamento temporário quando necessário (RF12--RF14 e RNF07); carga e limites por definir. \\
 PWM & Exatamente três canais protegidos a 50~Hz, com impulsos de 1100--1900~$\mu$s (RF15); resolução PWM, cargas, níveis e proteção concreta por definir (DP12). \\
@@ -180,6 +182,6 @@ PCB própria & Decisão de integração em aberto (DP05). \\
 Desempenho & Latência e cargas por definir (DP06); sem garantia de tempo real estrito. \\
 Ambiente de instalação & Condições e aplicabilidade de ensaios específicos em aberto (UC06; DP17); sem classificação de proteção estabelecida. \\
 Armazenamento local & MicroSD opcional (DP15); envio pelas interfaces pode dispensar registo persistente. \\
-Opções desejáveis & Gigabit Ethernet, PoE, consumo reduzido e encaminhamento autónomo mais geral; por avaliar (DP01 e DP11). \\
+Opções desejáveis & Gigabit Ethernet, PoE, consumo reduzido e operação autónoma sem intervenção do PC; por avaliar (DP01 e DP11). \\
 \end{longtable}
 \endgroup
