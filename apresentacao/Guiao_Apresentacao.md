@@ -4,208 +4,227 @@ Sistema de escrita e leitura multiprotocolo
 
 Pedro Ribeiro e Francisco Liquito
 
-Guião para a apresentação de 10 slides, na versão com o design revisto. Objetivo de ensaio: cerca de 9 minutos, dentro da duração prevista de 7 a 10 minutos.
+Versão de 29 de outubro de 2026. Preparação para os 10 slides sobre integração de equipamentos em sistemas robóticos. Objetivo de ensaio: cerca de 9 minutos, dentro da duração prevista de 7 a 10 minutos.
 
 ## Divisão e tempos
 
-**Pedro apresenta os slides 1 a 5:** enquadramento, estado da arte e casos de utilização. **Francisco Liquito apresenta os slides 6 a 10:** requisitos, arquitetura, validação e próximos passos. Há uma única passagem de palavra, no fim do slide 5.
+**Pedro apresenta os slides 1 a 5:** aplicação, problema, fundamentos, estado da arte e exemplo de utilização. **Francisco Liquito apresenta os slides 6 a 10:** capacidades requeridas, atuação e tempo, arquitetura, verificação e contributo. Há uma única passagem de palavra, no fim do slide 5.
 
 | Slide | Tema | Orador | Tempo previsto | Tempo acumulado |
 | --- | --- | --- | --- | --- |
-| 1 | Abertura | Pedro | 0:25 | 0:25 |
-| 2 | Problema e objetivo | Pedro | 0:45 | 1:10 |
-| 3 | Estado da arte: tecnologias | Pedro | 0:55 | 2:05 |
-| 4 | Estado da arte: plataformas | Pedro | 0:55 | 3:00 |
-| 5 | Casos de utilização e passagem de palavra | Pedro | 1:10 | 4:10 |
-| 6 | Requisitos de comunicação | Liquito | 1:10 | 5:20 |
-| 7 | Atuação, sincronização e operação | Liquito | 1:10 | 6:30 |
-| 8 | Arquitetura de alto nível | Liquito | 1:00 | 7:30 |
-| 9 | Encaminhamento e validação | Liquito | 0:50 | 8:20 |
-| 10 | Estado atual e próximos passos | Liquito | 0:30 | 8:50 |
+| 1 | Abertura e aplicação | Pedro | 0:40 | 0:40 |
+| 2 | Integração num sistema robótico | Pedro | 0:50 | 1:30 |
+| 3 | Fundamentos das interfaces | Pedro | 0:55 | 2:25 |
+| 4 | Estado da arte: plataformas | Pedro | 0:50 | 3:15 |
+| 5 | Exemplo de comando e utilização | Pedro | 1:00 | 4:15 |
+| 6 | Capacidades de comunicação | Liquito | 1:05 | 5:20 |
+| 7 | Atuação, tempo e concorrência | Liquito | 1:15 | 6:35 |
+| 8 | Arquitetura de alto nível | Liquito | 0:55 | 7:30 |
+| 9 | Verificação das capacidades | Liquito | 0:55 | 8:25 |
+| 10 | Contributo e próxima fase | Liquito | 0:35 | 9:00 |
 
-**Total:** Pedro, 4 min 10 s. Liquito, 4 min 40 s. Apresentação, 8 min 50 s, com margem até aos 10 minutos. São referências para o ensaio, sem contar com perguntas do docente.
+**Total:** Pedro, 4 min 15 s. Liquito, 4 min 45 s. Apresentação, 9 minutos, sem contar com perguntas. Ajustem estes tempos no ensaio conjunto.
 
-### Como usar este guião
+### Ideia que orienta a apresentação
 
-Leiam as falas uma vez e ensaiem depois com o PowerPoint aberto. As falas sugeridas são uma base que podem adaptar à vossa forma de falar. As indicações «No slide» e «A reter» servem para preparação e não devem ser lidas em voz alta.
+Mostrar como a unidade poderá facilitar a integração de equipamentos com interfaces diferentes e preparar a sua reutilização em sistemas robóticos. Cada requisito deve ter uma função compreensível nesse contexto.
 
-**Ideia que deve ficar clara:** nesta fase temos a análise de requisitos e uma arquitetura conceptual. A seleção dos componentes, a implementação e os resultados experimentais pertencem à fase seguinte.
+As falas são uma base para explicar os slides. As indicações «No slide» e «A reter» servem para preparação. Nesta fase existem análise de requisitos e arquitetura conceptual. A implementação e os resultados experimentais pertencem à fase seguinte.
 
 <!-- pagebreak -->
 
-## Pedro: abertura e tecnologias
+## Pedro: aplicação e problema
 
 ### Slide 1. Sistema de escrita e leitura multiprotocolo
 
-**Pedro. 25 segundos.**
+**Pedro. 40 segundos.**
 
 **Fala sugerida**
 
-> Bom dia. Somos o Pedro Ribeiro e o Francisco Liquito. Vamos apresentar o trabalho desenvolvido no projeto de escrita e leitura multiprotocolo. Começamos pelo problema e pelo estado da arte, passamos aos casos de utilização e aos requisitos, e terminamos com a arquitetura de alto nível e o trabalho previsto para a fase de projeto.
-
-**No slide:** olhar para o público e apresentar os dois autores. Avançar quando terminar o enquadramento.
-
-**A reter:** a apresentação corresponde ao trabalho de análise e conceção já documentado.
-
-### Slide 2. Problema e objetivo
-
-**Pedro. 45 segundos.**
-
-**Fala sugerida**
-
-> O problema é integrar, a partir de um PC, dispositivos que usam interfaces de comunicação diferentes. A unidade embebida deverá permitir enviar comandos, adquirir dados de sensores e comandar atuadores.
+> Bom dia. Somos o Pedro Ribeiro e o Francisco Liquito.
 >
-> Para isso, cada operação tem de identificar a origem e o destino e preservar o significado da informação. Também é necessário gerir comunicações concorrentes, porque as interfaces podem produzir e transmitir dados a ritmos diferentes. Por fim, precisamos de uma referência temporal que permita relacionar os dados e os eventos com outras fontes de informação.
+> Num sistema robótico, motores, baterias e sensores podem utilizar interfaces de comunicação diferentes. O nosso objetivo é desenvolver uma unidade que concentre o acesso a esses equipamentos, permitindo ao PC enviar comandos e receber dados através das interfaces previstas. Pretendemos facilitar a integração e preparar a reutilização da unidade em diferentes sistemas.
+>
+> Hoje apresentamos o problema, os requisitos e a arquitetura prevista.
 
-**No slide:** acompanhar os três pontos da direita com o olhar. Usá-los como sequência da explicação.
+**No slide:** apresentar os autores e começar logo pela aplicação. A abertura deve tornar clara a utilidade pretendida.
 
-**A reter:** integração de interfaces, concorrência e associação temporal são necessidades do sistema.
+**A reter:** a reutilização é um objetivo. Cada aplicação exige protocolos, configurações e mapeamentos compatíveis.
 
-### Slide 3. Estado da arte: tecnologias
+### Slide 2. Integração num sistema robótico
+
+**Pedro. 50 segundos.**
+
+**Fala sugerida**
+
+> Consideremos um sistema com um motor em CAN, uma bateria em RS485 e um sensor em I2C ou RS232. São exemplos de equipamentos referidos pelo docente. O PC precisa de lhes aceder para enviar comandos e recolher informação.
+>
+> A dificuldade envolve identificar o destino de cada pedido, interpretar os dados e gerir operações que decorrem com ritmos diferentes. Também precisamos de relacionar os instantes das medições com outras fontes de informação.
+>
+> A unidade que propomos concentra estas ligações. Os equipamentos concretos e os respetivos mapeamentos serão definidos para a aplicação.
+
+**No slide:** apontar para os equipamentos da direita e explicar as dificuldades da esquerda. As ligações representam necessidades funcionais de acesso.
+
+**A reter:** o esquema é ilustrativo. A ligação física aos barramentos requer a adaptação apropriada. Não se promete compatibilidade automática entre quaisquer robôs.
+
+<!-- pagebreak -->
+
+## Pedro: fundamentos e soluções existentes
+
+### Slide 3. Fundamentos das interfaces de comunicação
 
 **Pedro. 55 segundos.**
 
 **Fala sugerida**
 
-> No estado da arte começámos por comparar a organização das cinco tecnologias. I2C permite partilhar um barramento local. RS232 estabelece uma ligação ponto a ponto, enquanto RS485 permite uma rede multiponto, cuja configuração exige atenção à topologia e à terminação.
+> Para integrar estes equipamentos, começámos por estudar as diferenças entre as cinco tecnologias. I2C partilha um barramento local. RS232 estabelece uma ligação ponto a ponto e RS485 permite uma rede multiponto, cujo protocolo de aplicação tem de ser definido.
 >
-> CAN FD utiliza arbitragem e obriga a definir a configuração das suas fases. Em Ethernet, distinguimos a taxa nominal da ligação do débito útil efetivamente obtido.
+> CAN FD utiliza arbitragem e identificadores de trama e exige configurar as fases de transmissão. Em Ethernet, temos de distinguir a taxa nominal do débito útil e definir o formato das mensagens.
 >
-> Esta análise também mostra que temos de especificar os protocolos de aplicação e o significado dos dados. A presença das interfaces físicas, por si só, não resolve a integração entre dispositivos.
+> Estas diferenças explicam a necessidade de mapeamentos: cada operação deve preservar o significado do comando ou dos dados ao passar entre protocolos. Esse tratamento será parte do projeto.
 
-**No slide:** percorrer a primeira coluna e destacar a implicação de cada tecnologia. Evitar ler todas as células.
+**No slide:** escolher as diferenças que explicam o trabalho de integração. Terminar com a conclusão sobre o significado dos dados.
 
-**A reter:** os protocolos e os mapeamentos continuam a exigir decisões de projeto.
-
-<!-- pagebreak -->
-
-## Pedro: plataformas e utilização
+**A reter:** a interface física não define o protocolo de aplicação. O identificador CAN não equivale automaticamente a um endereço de nó. Nenhum transporte concreto está selecionado.
 
 ### Slide 4. Estado da arte: plataformas
 
-**Pedro. 55 segundos.**
+**Pedro. 50 segundos.**
 
 **Fala sugerida**
 
-> Comparámos também quatro exemplos de plataformas e gateways. GoWired e IOT-GATE-iMX7 ilustram soluções programáveis. Na comparação do relatório, as características do GoWired são anunciadas e o desempenho está por verificar. No IOT-GATE-iMX7, a opção CAN substitui RS485, o que mostra a importância de verificar as combinações de interfaces.
+> Analisámos plataformas programáveis e conversores dedicados para perceber como outras soluções fazem esta integração.
 >
-> MGate e Anybus mostram integrações entre protocolos específicos, com funções e mapeamentos definidos. Estes exemplos ajudam a perceber os modelos de integração e as suas limitações. A seleção da nossa plataforma continua para a fase de projeto e terá de considerar o conjunto dos requisitos.
+> GoWired anuncia recursos de comunicação cujo desempenho não avaliámos. No IOT-GATE-iMX7, a opção CAN substitui RS485, mostrando que é necessário verificar as combinações disponíveis. MGate e Anybus integram protocolos e papéis específicos, com mapeamentos definidos.
+>
+> Para o nosso projeto, esta comparação mostra que a seleção terá de considerar o conjunto das interfaces e as operações pretendidas. A plataforma permanece por selecionar. Ainda não demonstrámos que uma destas soluções satisfaça todos os requisitos.
 
-**No slide:** comparar os dois primeiros exemplos com os dois últimos. Destacar a substituição de RS485 por CAN no IOT-GATE-iMX7.
+**No slide:** usar um exemplo de plataforma e um de conversor para explicar a conclusão. Evitar ler todas as células.
 
-**A reter:** a comparação ainda não demonstra que uma destas soluções satisfaça todos os requisitos do projeto.
+**A reter:** não afirmar ausência de solução comercial compatível, redução de custos ou superioridade de desempenho sem evidência.
 
-### Slide 5. Casos de utilização
+<!-- pagebreak -->
 
-**Pedro. 1 minuto e 10 segundos, incluindo a passagem de palavra.**
+## Pedro e Liquito: utilização e capacidades pedidas
+
+### Slide 5. Um comando do PC até ao dispositivo
+
+**Pedro. 1 minuto, incluindo a passagem de palavra.**
 
 **Fala sugerida**
 
-> Organizámos a utilização do sistema em sete casos. Os três primeiros correspondem às operações mais diretas: comandar um dispositivo pelo PC, adquirir dados de sensores e atuar através de PWM. Por exemplo, um pedido do PC deve chegar ao destino escolhido e devolver feedback quando a operação o prevê.
+> Retomemos o motor em CAN. Neste exemplo, o PC envia uma operação por Ethernet. A unidade identifica o canal e o destino e aplica o mapeamento necessário para enviar o comando ao dispositivo. Quando a operação prevê feedback, a resposta regressa ao PC.
 >
-> Os restantes casos cobrem a execução concorrente, a sincronização por PPS e GPS, o funcionamento elétrico e ambiental e a disponibilização ou o registo de dados. Em particular, a aquisição de sensores permanece genérica e o armazenamento em microSD é opcional.
+> A aquisição de sensores e a atuação por PWM completam as operações principais. Os restantes casos de utilização cobrem concorrência, sincronização, condições de funcionamento e disponibilização de dados, com registo local opcional.
 >
-> Estes cenários orientam os requisitos e os ensaios previstos. O Francisco vai agora apresentar as capacidades exigidas ao sistema e a arquitetura que as organiza.
+> Este percurso mostra a função da unidade. O Francisco vai agora apresentar as capacidades pedidas pelos docentes e a arquitetura que as organiza.
 
-**No slide:** começar pela coluna da esquerda e depois passar à da direita. Fazer uma pausa curta antes de entregar a palavra.
+**No slide:** percorrer o esquema da esquerda para a direita e explicar o retorno. Relacionar os restantes casos com essa operação.
 
-**A reter:** a garra, quando usada como exemplo, ocupa um dos três PWM. As condições ambientais quantitativas ainda estão por definir.
+**A reter:** o exemplo usa Ethernet, mas o PC também deve poder aceder por RS232 e CAN. UC01 a UC07 mantêm o âmbito do relatório.
 
 ### Passagem para o Liquito
 
-**Pedro termina:** «O Francisco vai agora apresentar as capacidades exigidas ao sistema e a arquitetura que as organiza.»
+**Pedro termina:** «O Francisco vai agora apresentar as capacidades pedidas pelos docentes e a arquitetura que as organiza.»
 
-**Liquito começa, já no slide 6:** «A partir destes casos de utilização, definimos as capacidades de comunicação que estão resumidas nesta tabela.»
+**Liquito começa, no slide 6:** «Estas são as quantidades e capacidades confirmadas pelos docentes para a unidade.»
 
-O Pedro avança para o slide 6 e deixa o Liquito começar. A partir daí, o Liquito pode assumir o controlo dos slides. Se usarem apenas um comando, combinem antes quem avança.
+### Slide 6. Capacidades de comunicação requeridas
 
-<!-- pagebreak -->
-
-## Liquito: requisitos do sistema
-
-### Slide 6. Requisitos de comunicação
-
-**Liquito. 1 minuto e 10 segundos.**
+**Liquito. 1 minuto e 5 segundos.**
 
 **Fala sugerida**
 
-> A partir destes casos de utilização, definimos as capacidades de comunicação que estão resumidas nesta tabela.
+> Estas são as quantidades e capacidades confirmadas pelos docentes para a unidade.
 >
-> Exigimos dois barramentos I2C independentes em Standard mode. Em RS232, a operação é a 500 kbit/s, com capacidade e ensaio também a 1 Mbit/s. Para RS485, usamos aproximadamente 16 a 32 nós como referência, sem estabelecer 32 como limite rígido. A taxa e o protocolo ainda estão em aberto.
+> São dois I2C independentes em Standard mode. RS232 deve operar a 500 kbit/s, com capacidade e ensaio também a 1 Mbit/s. RS485 usa aproximadamente 16 a 32 nós como referência, sem teto rígido de 32. A taxa e o protocolo estão em aberto.
 >
-> O sistema deve ter três barramentos CAN FD, cada um com capacidade até 8 Mbit/s. Em Ethernet, o mínimo nominal é 100 Mbit/s e Gigabit é desejável.
+> Exigem-se três CAN FD no total, cada um com capacidade até 8 Mbit/s. Ethernet deve suportar pelo menos 100 Mbit/s nominais, com Gigabit desejável.
 >
-> O PC dispõe das alternativas RS232, CAN e Ethernet, todas bidirecionais, sem obrigatoriedade de as usar simultaneamente. As configurações restantes serão definidas no projeto.
+> O PC terá as alternativas RS232, CAN e Ethernet, todas bidirecionais, sem utilização simultânea obrigatória. A configuração e o dimensionamento ficam para projeto.
 
-**No slide:** seguir a tabela de cima para baixo e terminar na frase sobre RF09. Fazer uma pausa entre a taxa operacional RS232 e a capacidade máxima.
+**No slide:** destacar as quantidades e separar a operação RS232 da capacidade máxima. Os valores têm origem nos requisitos recebidos.
 
-**A reter:** 100 Mbit/s é uma capacidade nominal. Os 8 Mbit/s de CAN FD não fixam separadamente as taxas das fases de arbitragem e de dados.
-
-### Slide 7. Atuação, sincronização e operação
-
-**Liquito. 1 minuto e 10 segundos.**
-
-**Fala sugerida**
-
-> Além das comunicações, exigimos três saídas PWM eletricamente protegidas, a 50 Hz, com largura de impulso entre 1100 e 1900 microssegundos. A resolução PWM, as cargas e os detalhes da proteção ficam para projeto.
->
-> A sincronização utiliza PPS a um impulso por segundo e informação temporal GPS entre impulsos. A associação temporal dos dados deve ter resolução da ordem dos microssegundos. Vamos medir o erro absoluto e avaliar a incerteza da medição. Esta resolução não garante, por si só, uma exatidão absoluta de um microssegundo.
->
-> A alimentação de entrada deve aceitar de 5 a 60 volts, incluindo os limites. O RTOS é obrigatório, mas FreeRTOS é apenas candidato. A plataforma e o dimensionamento continuam por selecionar.
-
-**No slide:** explicar as três colunas da esquerda para a direita. Dar ênfase à distinção entre resolução temporal e erro absoluto.
-
-**A reter:** 1100 a 1900 µs é largura de impulso, não frequência. A gama de 5 a 60 V corresponde à entrada de alimentação e não determina a tensão das cargas PWM.
+**A reter:** o cenário ilustrativo não fundamenta numericamente estas quantidades. Os 8 Mbit/s não fixam as taxas separadas das fases CAN FD.
 
 <!-- pagebreak -->
 
-## Liquito: arquitetura, validação e fecho
+## Liquito: funções e arquitetura
+
+### Slide 7. Atuação, referência temporal e concorrência
+
+**Liquito. 1 minuto e 15 segundos.**
+
+**Fala sugerida**
+
+> A unidade também deve atuar sobre cargas. Exigimos três PWM eletricamente protegidos, a 50 Hz, com impulsos entre 1100 e 1900 microssegundos. As cargas e a proteção concreta serão definidas no projeto.
+>
+> Para relacionar dados no tempo, usamos PPS a um impulso por segundo e informação temporal GPS entre impulsos. Esta associação deve permitir resolução da ordem dos microssegundos. Mediremos o erro e avaliaremos a incerteza, porque a resolução não garante igual exatidão absoluta.
+>
+> A concorrência exige gerir filas e prioridades entre operações com ritmos diferentes. O RTOS é obrigatório e FreeRTOS é candidato. As cargas admissíveis e a política de atendimento serão especificadas.
+>
+> A entrada de alimentação deve aceitar de 5 a 60 volts, incluindo os limites.
+
+**No slide:** ligar cada coluna à necessidade de utilização. Os esquemas temporais são ilustrativos e não estão à escala.
+
+**A reter:** definir resolução PWM, cargas, tolerâncias e recuperação temporal. O RTOS não garante sozinho cumprimento de prazos. A alimentação de entrada não determina a tensão das cargas PWM.
 
 ### Slide 8. Arquitetura de alto nível
 
-**Liquito. 1 minuto.**
+**Liquito. 55 segundos.**
 
 **Fala sugerida**
 
-> A arquitetura organiza estas funções numa unidade embebida central. À esquerda temos o PC, a referência PPS e GPS e a alimentação. À direita estão os dispositivos externos.
+> A arquitetura organiza estas funções numa unidade embebida central. O PC acede pelas interfaces previstas e a unidade trata operações e mapeamentos, gere filas e prioridades sobre RTOS e associa informação temporal.
 >
-> A unidade concentra as comunicações, o processamento e o encaminhamento, com coordenação por RTOS e associação temporal. Na base surgem os três PWM protegidos e a opção de registo em microSD.
+> À direita estão os equipamentos externos. A referência PPS e GPS alimenta a sincronização do relógio. Os PWM comandam as cargas e a microSD permanece uma opção de registo.
 >
-> Os três CAN FD são o total do sistema, incluindo os papéis de ligação ao PC e aos nós externos. A sua representação em pontos diferentes do diagrama não acrescenta canais. Nesta fase, os blocos representam responsabilidades funcionais. A distribuição pelos componentes e pelas tarefas de software será definida no projeto.
+> Os três CAN FD são o total do sistema, incluindo os diferentes papéis de ligação. Os blocos representam responsabilidades funcionais. A distribuição por componentes e tarefas será definida no projeto.
 
-**No slide:** apontar primeiro para o centro, depois para as ligações externas e, por fim, para PWM e microSD. Identificar o tracejado como opção.
+**No slide:** seguir o percurso do comando apresentado no slide 5 e mostrar as funções que o suportam.
 
-**A reter:** o diagrama não escolhe componentes nem tarefas. Ethernet não tem de intermediar todos os percursos.
+**A reter:** Ethernet não tem de intermediar todos os percursos. O desenho não acrescenta portas dedicadas nem seleciona componentes ou tarefas de software.
 
-### Slide 9. Encaminhamento e validação
+<!-- pagebreak -->
 
-**Liquito. 50 segundos.**
+## Liquito: verificação e contributo
+
+### Slide 9. Verificação das capacidades previstas
+
+**Liquito. 55 segundos.**
 
 **Fala sugerida**
 
-> RF17 exige, como mínimo, os quatro pares Ethernet com CAN, RS485, RS232 e I2C, nos dois sentidos. Outros percursos, como CAN para RS485, podem ser definidos e implementados em projeto, com operações, protocolos e mapeamentos compatíveis. Ethernet não tem de intermediar tudo.
+> Para demonstrar estas capacidades, os ensaios vão retomar os percursos e as condições definidos na especificação.
 >
-> Nos ensaios, verificaremos os pares mínimos e os percursos adicionais definidos, comparando dados conhecidos. Mediremos também PWM, alimentação e sincronização, distinguindo resolução, erro e incerteza.
+> RF17 exige, como mínimo, os quatro pares Ethernet com CAN, RS485, RS232 e I2C, nos dois sentidos. Outros percursos, como CAN para RS485, podem ser definidos em projeto, com operações, protocolos e mapeamentos compatíveis.
+>
+> Verificaremos cada percurso definido com dados conhecidos e avaliaremos a concorrência nas cargas especificadas. Mediremos os PWM, o funcionamento elétrico e a sincronização, distinguindo resolução, erro e incerteza.
 >
 > As condições e as tolerâncias serão definidas antes dos ensaios de conformidade. Ainda não existem resultados experimentais.
 
-**No slide:** apresentar o esquema da esquerda e depois o plano de ensaios da direita. Usar verbos no futuro para os ensaios.
+**No slide:** apresentar o mínimo obrigatório à esquerda e ligar os ensaios às capacidades à direita. Usar verbos no futuro.
 
-### Slide 10. Estado atual e próximos passos
+**A reter:** todos os percursos adicionais efetivamente definidos também serão ensaiados. A representação com Ethernet não limita todas as operações a essa interface.
 
-**Liquito. 30 segundos.**
+### Slide 10. Contributo pretendido e próxima fase
+
+**Liquito. 35 segundos.**
 
 **Fala sugerida**
 
-> Temos documentados o estado da arte, sete casos de utilização, 17 requisitos funcionais e oito não funcionais, com os estados de proposta identificados. Temos também a rastreabilidade, o plano de ensaios e a arquitetura funcional.
+> O contributo pretendido é uma unidade que concentre o acesso aos equipamentos e possa ser reutilizada em diferentes sistemas, com os protocolos e mapeamentos apropriados.
 >
-> O próximo passo é fechar as decisões de projeto, selecionar a plataforma e preparar a implementação e a validação experimental. Obrigado. Estamos disponíveis para questões.
+> Temos os requisitos e a arquitetura documentados. Seguem-se a seleção da plataforma, o dimensionamento, a implementação e os ensaios.
+>
+> O funcionamento em óleo e sob pressão surge como possibilidade futura, cujas condições e validação permanecem por definir. Obrigado. Estamos disponíveis para questões.
 
-**No slide:** destacar o que está documentado e depois a coluna de decisões em aberto. Terminar a olhar para o público.
+**No slide:** terminar na utilidade pretendida e explicar o estado de desenvolvimento. Apresentar pressão como possibilidade futura.
 
-**A reter:** RNF01 a RNF03 e RNF05 são propostas. MicroSD e PoE são opcionais. Gigabit Ethernet é desejável.
+**A reter:** RNF01 a RNF03 e RNF05 são propostas. MicroSD e PoE são opcionais. Gigabit é desejável. Não há resistência à pressão demonstrada.
 
 <!-- pagebreak -->
+
 
 ## Perguntas para ensaiar: enquadramento e âmbito
 
@@ -215,7 +234,7 @@ As respostas seguintes servem de base ao ensaio. O orador indicado responde prim
 
 **Pedro responde.**
 
-«O trabalho reúne e organiza os requisitos de comunicação, atuação, sincronização e alimentação deste sistema. O estado da arte ajuda-nos a avaliar modelos de integração e limitações. A escolha e a avaliação da solução concreta pertencem à fase de projeto.»
+«Pretendemos concentrar o acesso a equipamentos com interfaces diferentes e preparar a reutilização da unidade em sistemas robóticos, com os protocolos e mapeamentos apropriados. O estado da arte esclarece possibilidades e limitações. A escolha e a avaliação da solução concreta pertencem à fase de projeto.»
 
 **Cuidado:** a comparação feita ainda não permite afirmar que não exista uma solução comercial compatível ou que tenhamos demonstrado superioridade de desempenho.
 
@@ -241,15 +260,17 @@ As respostas seguintes servem de base ao ensaio. O orador indicado responde prim
 
 **Referência:** RF17 e DP01 a DP02. Distinguir o mínimo obrigatório dos percursos adicionais. Cada percurso definido terá de ser ensaiado, sem prometer conversão semântica automática.
 
-### 5. Porque ficaram parâmetros por definir?
+### 5. De onde vêm os valores e porque ficaram parâmetros por definir?
 
 **Pedro responde e o Liquito complementa, se necessário.**
 
-«Identificámos esses parâmetros nas decisões DP01 a DP17. Serão definidos na fase de projeto, em função da plataforma, dos dispositivos, das cargas e das condições de ensaio. Mantemos os valores já confirmados e documentaremos as decisões restantes antes de dimensionar e validar a solução.»
+«As quantidades e os valores confirmados provêm das indicações dos docentes. Identificámos os parâmetros restantes nas decisões DP01 a DP17. Serão definidos na fase de projeto, em função da plataforma, dos dispositivos, das cargas e das condições de ensaio. Mantemos os valores já confirmados e documentaremos as decisões restantes antes de dimensionar e validar a solução.»
 
 **Cuidado:** evitar apresentar um valor por omissão como requisito confirmado. Uma norma não resolve todas as configurações da aplicação.
 
+
 <!-- pagebreak -->
+
 
 ## Perguntas para ensaiar: decisões técnicas
 
@@ -277,13 +298,15 @@ As respostas seguintes servem de base ao ensaio. O orador indicado responde prim
 
 «Os valores nominais orientam as medições, mas as tolerâncias e a regra de decisão têm de estar definidas antes dos ensaios de conformidade. Para grandezas sem limite de aceitação, faremos caracterização experimental e reportaremos o resultado e a incerteza, sem declarar cumprimento de um limite inexistente.»
 
-### 10. Já construíram e testaram o protótipo?
+### 10. Quando poderá ser utilizada num robô ou sob pressão?
 
 **Liquito responde.**
 
-«O trabalho apresentado corresponde à análise de requisitos e à arquitetura conceptual. A implementação e os ensaios experimentais são os próximos passos. Nesta apresentação mostramos capacidades exigidas e métodos de validação previstos.»
+«Temos a análise de requisitos e a arquitetura conceptual. É necessário selecionar e dimensionar a solução, implementar e realizar os ensaios. A utilização num sistema concreto depende da compatibilidade com os seus equipamentos. Óleo e pressão surgiram como interesse ideal e um possível acrescento, sem condições quantitativas confirmadas. Essa aplicação precisa de especificação e validação próprias.»
+
 
 <!-- pagebreak -->
+
 
 ## Ensaio e folha de memória
 
@@ -293,7 +316,7 @@ As respostas seguintes servem de base ao ensaio. O orador indicado responde prim
 2. **Segundo ensaio:** cronometrar do início ao fim, incluindo a passagem de palavra. Apontar onde o ritmo abranda e ajustar as explicações.
 3. **Terceiro ensaio:** alternar as dez perguntas anteriores. Ambos devem saber explicar os valores principais e a arquitetura.
 
-Se precisarem de encurtar a apresentação, reduzam os exemplos e os comentários sobre plataformas. Conservem os valores confirmados, o âmbito dos percursos e a distinção entre requisitos e resultados medidos.
+Se precisarem de encurtar a apresentação, reduzam os comentários sobre plataformas. Conservem o cenário que explica a utilidade da unidade. Conservem os valores confirmados, o âmbito dos percursos e a distinção entre requisitos e resultados medidos.
 
 **Antes de apresentar:** confirmar a versão do PowerPoint, testar a projeção e o comando, combinar quem avança os slides e fechar a última frase de cada bloco.
 
@@ -310,6 +333,7 @@ Se precisarem de encurtar a apresentação, reduzam os exemplos e os comentário
 | PWM | 3 protegidos, 50 Hz, impulsos de 1100 a 1900 µs | Resolução, cargas e tolerâncias em aberto |
 | PPS/GPS | PPS a 1 Hz, GPS entre impulsos, resolução da ordem dos µs | Medir erro e avaliar incerteza |
 | Alimentação e RTOS | Entrada de 5 a 60 V, RTOS obrigatório | FreeRTOS candidato, componentes por selecionar |
+| Reutilização e pressão | Reutilização pretendida com configuração. Óleo e pressão como possibilidade futura | Condições e validação próprias por definir |
 | Propostas e opções | RNF01 a RNF03 e RNF05 são propostas. MicroSD e PoE opcionais | Não apresentar estes estados como obrigações confirmadas |
 
-**Apoio para estudar:** o [PowerPoint atualizado](output/Apresentacao_LaSET_Atualizada.pptx) e o [relatório](../template_laset/build/Modelo_LaSET.pdf). Para aprofundar: secções 1.2, 2.8, 3.1 a 3.7 e capítulo 4 do relatório.
+**Apoio para estudar:** o [PowerPoint atualizado](output/Apresentacao_LaSET_Integracao_Robotica.pptx) e o [relatório](../template_laset/build/Modelo_LaSET.pdf). Para aprofundar: secções 1.2, 2.8, 3.1 a 3.7 e capítulo 4 do relatório.

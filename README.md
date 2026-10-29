@@ -58,12 +58,19 @@ validação e um roteiro para leitura conjunta do PDF.
 
 ## Apresentação e guião
 
-- [PowerPoint atualizado](apresentacao/output/Apresentacao_LaSET_Atualizada.pptx): 10 slides com estado da arte, casos de utilização, requisitos e arquitetura.
+- [PowerPoint atualizado](apresentacao/output/Apresentacao_LaSET_Integracao_Robotica.pptx): 10 slides centrados na integração de equipamentos em sistemas robóticos, com fundamentos, estado da arte, casos de utilização, requisitos, arquitetura e verificação prevista.
 - [Guião em PDF](apresentacao/output/Guiao_Apresentacao.pdf) e [fonte editável](apresentacao/Guiao_Apresentacao.md): divisão entre Pedro e Francisco Liquito, falas, tempos e perguntas de preparação.
 
 RF17 distingue os quatro pares mínimos obrigatórios com Ethernet dos
 percursos adicionais que podem ser definidos e implementados em projeto.
 Os critérios de ensaio abrangem todos os percursos efetivamente definidos.
+
+A versão de 29 de outubro acompanha um cenário ilustrativo com motor,
+bateria e sensor. A reutilização em diferentes sistemas é um objetivo;
+funcionamento em óleo e sob pressão permanece uma possibilidade futura,
+com condições e validação por definir. O guião acompanha esta versão,
+com Pedro nos slides 1 a 5 e Francisco Liquito nos slides 6 a 10,
+numa duração de ensaio de cerca de nove minutos.
 
 ## Trabalhar em conjunto
 
