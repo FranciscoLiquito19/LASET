@@ -58,7 +58,7 @@ validação e um roteiro para leitura conjunta do PDF.
 
 ## Apresentação e guião
 
-- [PowerPoint atualizado](apresentacao/output/Apresentacao_LaSET_Integracao_Robotica.pptx): 10 slides centrados na integração de equipamentos em sistemas robóticos, com fundamentos, estado da arte, casos de utilização, requisitos, arquitetura e verificação prevista.
+- [PowerPoint atualizado](apresentacao/output/Apresentacao_LaSET_Integracao_Robotica_Revista.pptx): 10 slides centrados na integração de equipamentos em sistemas robóticos, com fundamentos, estado da arte, casos de utilização, requisitos, arquitetura e verificação prevista.
 - [Guião em PDF](apresentacao/output/Guiao_Apresentacao.pdf) e [fonte editável](apresentacao/Guiao_Apresentacao.md): divisão entre Pedro e Francisco Liquito, falas, tempos e perguntas de preparação.
 
 RF17 distingue os quatro pares mínimos obrigatórios com Ethernet dos
