@@ -26,7 +26,8 @@ sem resultados experimentais nem valores por omissão presumidos.
 RF01 a RF05 concretizam as ligações necessárias a UC01--UC02 e as
 quantidades validadas. RF06 a RF14 cobrem comunicação, tratamento de
 informação e gestão requeridos por UC01, UC02, UC04 e UC07.
-RF15--RF17 cobrem atuação PWM, sincronização e disponibilização de dados.
+RF15--RF18 cobrem atuação PWM, sincronização, disponibilização de dados e
+persistência da configuração.
 A execução sobre RTOS constitui a restrição técnica RNF07. A
 bidirecionalidade não exige transmissão simultânea nos dois
 sentidos em todos os barramentos, nem utilização simultânea das três
@@ -69,19 +70,22 @@ alternativas de ligação pelo PC.
 
     \item[RF05. Suporte para Ethernet:] \hfill\\*
     O sistema deve disponibilizar uma interface Ethernet com capacidade
-    nominal mínima de 100~Mbit/s, como uma das alternativas de comunicação
-    com o computador ou sistema central. Este valor não constitui uma garantia
+    nominal mínima de 100~Mbit/s, dedicada à comunicação com o PC, como
+    uma das suas alternativas de acesso (RF09). A Ethernet não é interface
+    de ligação a dispositivos externos. Este valor não constitui uma garantia
     de débito útil ou de latência.
 
     \item[RF06. Escrita e transmissão:] \hfill\\*
     O sistema deve permitir operações de escrita ou transmissão de dados
     através de cada uma das cinco tecnologias de comunicação previstas, de acordo com as
-    características da respetiva tecnologia.
+    características da respetiva tecnologia; a Ethernet é usada apenas na
+    ligação ao PC.
 
     \item[RF07. Leitura e receção:] \hfill\\*
     O sistema deve permitir operações de leitura ou receção de dados
     através de cada uma das cinco tecnologias de comunicação previstas, de acordo com as
-    características da respetiva tecnologia.
+    características da respetiva tecnologia; a Ethernet é usada apenas na
+    ligação ao PC.
 
     \item[RF08. Processamento e adaptação:] \hfill\\*
     O sistema deve processar a informação recebida e efetuar as adaptações
@@ -135,15 +139,17 @@ alternativas de ligação pelo PC.
     \item[RF15. Três saídas PWM protegidas:] \hfill\\*
     O sistema deve disponibilizar exatamente três saídas/canais PWM para
     comando de cargas ou atuadores físicos, com frequência de 50~Hz,
-    largura de impulso útil entre 1100~$\mu$s e 1900~$\mu$s e proteção
-    elétrica obrigatória em todos os três canais. Luzes e uma garra são exemplos
+    largura de impulso útil entre 1100~$\mu$s e 1900~$\mu$s, com proteção
+    elétrica e isolamento galvânico obrigatórios nos três canais, entre as
+    saídas PWM e a eletrónica de controlo. Luzes e uma garra são exemplos
     de equipamentos comandados; a garra utiliza um dos canais e não
     acrescenta um quarto PWM. A resolução PWM permanece em aberto para
     a fase de projeto. Níveis, tensão e corrente das cargas,
-    resolução e natureza da proteção serão definidos em DP12
-    para UC03 e UC06. O tipo de carga e o comportamento em curto-circuito
-    ou sobrecarga, quando aplicáveis, serão especificados no projeto; não se
-    pressupõe um mecanismo de proteção específico.
+    resolução, tensão de isolamento e natureza da proteção serão definidos
+    em DP12 para UC03 e UC06. O tipo de carga e o comportamento em
+    curto-circuito ou sobrecarga, quando aplicáveis, serão especificados no
+    projeto. O isolamento não deve distorcer a largura do impulso para além
+    da tolerância a definir.
 
     \item[RF16. Sincronização temporal por PPS e informação GPS:] \hfill\\*
     O sistema deve permitir sincronizar o relógio da unidade com uma
@@ -165,7 +171,8 @@ alternativas de ligação pelo PC.
     O sistema deve disponibilizar os dados adquiridos e encaminhar comandos
     e dados entre interfaces suportadas, conforme as operações especificadas.
     O âmbito mínimo obrigatório inclui os percursos bidirecionais entre
-    Ethernet e CAN, RS485, RS232 e I2C. RF09 especifica separadamente as três
+    o PC, através de Ethernet, e cada uma das interfaces CAN FD, RS485, RS232
+    e I2C. RF09 especifica separadamente as três
     alternativas de acesso ao PC. Outros percursos, como CAN para RS485,
     podem ser definidos e implementados em projeto (DP01--DP02); Ethernet
     não tem de intermediar todas as operações. Não se exige conversão
@@ -173,13 +180,21 @@ alternativas de ligação pelo PC.
     Cada operação deve identificar origem, destino, configuração,
     protocolo e mapeamento necessários; só pode ser executada quando
     esses elementos permitirem determinar uma ação compatível.
-    O armazenamento persistente local em microSD é uma opção a validar
-    em DP15, não uma condição obrigatória para disponibilizar os dados.
+    Não se prevê armazenamento persistente local de dados de operação.
+
+    \item[RF18. Persistência da configuração:] \hfill\\*
+    O sistema deve permitir ao PC, através de uma das suas ligações (RF09),
+    definir a configuração da unidade (interfaces, taxas, mapeamentos e
+    percursos, parâmetros PWM) e guardá-la em memória flash não volátil,
+    aplicando-a automaticamente após cada reinício. Uma escrita interrompida
+    não pode deixar uma configuração inválida. O conteúdo, o formato, a
+    verificação de integridade e os valores por omissão, incluindo o estado
+    dos PWM no arranque, serão definidos em DP15.
 \end{description}
 
 RF09 exige suporte às três alternativas de comunicação PC--unidade:
 RS232, CAN e Ethernet. RF17 estabelece separadamente os quatro percursos
-Ethernet como mínimo obrigatório. Os percursos adicionais entre interfaces
+entre o PC, via Ethernet, e as restantes interfaces como mínimo obrigatório. Os percursos adicionais entre interfaces
 serão definidos em DP01--DP02, conforme as operações, protocolos e
 mapeamentos, sem impor conversão universal. RS485 mantém-se no âmbito,
 sem ser uma ligação obrigatória PC--unidade. As quantidades de RF01 e RF04
@@ -191,7 +206,7 @@ Em CAN, um identificador de trama não constitui, por si só, um endereço
 de dispositivo. A uniformidade do acesso é desejável, sem impor uma
 representação intermédia universal. O armazenamento temporário exigido
 em RF13 não garante absorção ilimitada de tráfego superior à capacidade
-de saída; distingue-se do registo persistente opcional em microSD.
+de saída; distingue-se da persistência da configuração em flash (RF18).
 RTOS (RNF07), sincronização (RF16) e limites temporais (RNF06) são aspetos
 distintos, sem uma garantia confirmada de tempo real estrito.
 
@@ -356,11 +371,13 @@ RF13 & P02; UC02, UC04 e UC07: absorver diferenças de taxa. & Aplicar entrada t
 \addlinespace
 RF14 & P02; UC04: atender operações que disputam recursos. & Observar atendimento sob concorrência. Critério: conformidade com política e garantias de progresso a definir (DP08). \\
 \addlinespace
-RF15 & P03--P04; UC03 e UC06: atuar sobre cargas; três canais protegidos e temporização confirmados. & Medir 50~Hz em cada saída e comandar impulsos de 1100~$\mu$s, 1900~$\mu$s e valores intermédios. Critério: funcionamento dos três PWM protegidos na gama; registar medições sem tolerâncias adicionais presumidas. Resolução e ensaios de proteção a definir (DP12). \\
+RF15 & P03--P04; UC03 e UC06: atuar sobre cargas; três canais protegidos e temporização confirmados. & Medir 50~Hz em cada saída e comandar impulsos de 1100~$\mu$s, 1900~$\mu$s e valores intermédios. Critério: funcionamento dos três PWM protegidos e isolados na gama, com ensaio de isolamento à tensão especificada; verificar que o isolamento mantém a largura do impulso dentro da tolerância a definir; registar medições sem tolerâncias adicionais presumidas. Resolução e ensaios de proteção a definir (DP12). \\
 \addlinespace
 RF16 & P03; UC02 e UC05: combinar no PC dados de sensores e de outras fontes para localização, fusão ou processamento. & Verificar PPS a 1~Hz, processamento das mensagens temporais GPS entre impulsos e sincronização do relógio. Verificar resolução da ordem dos microssegundos e medir/reportar o erro face à referência. Não há limite absoluto garantido; medição e recuperação a definir (DP14). \\
 \addlinespace
-RF17 & P01--P02; UC01, UC02 e UC07: encaminhar e disponibilizar dados. & Ensaiar os quatro pares mínimos Ethernet nos dois sentidos e cada percurso adicional definido em DP01--DP02. Critério: dados/resultados conforme os mapeamentos definidos. Registo local só se selecionado (DP15). \\
+RF17 & P01--P02; UC01, UC02 e UC07: encaminhar e disponibilizar dados. & Ensaiar os quatro percursos mínimos entre o PC, via Ethernet, e as restantes interfaces nos dois sentidos, e cada percurso adicional definido em DP01--DP02. Critério: dados/resultados conforme os mapeamentos definidos. \\
+\addlinespace
+RF18 & P01--P02; UC01 e UC04: configurar a unidade e repô-la após reinício. & Gravar uma configuração, desligar e religar a alimentação e verificar que é reposta; interromper a alimentação durante a escrita e verificar o arranque com uma configuração válida. Critério: configuração reposta sem intervenção do PC e nenhuma configuração inválida aplicada. Conteúdo, formato e integridade a definir (DP15). \\
 \addlinespace
 \end{longtable}
 \endgroup
@@ -418,8 +435,8 @@ identifica grandezas a caracterizar experimentalmente. As opções
 assinaladas como tal não são funcionalidades obrigatórias. A referência
 a uma norma ou modo de operação não substitui a definição dos parâmetros
 de configuração próprios da aplicação. Os critérios de proteção distinguem entrada de alimentação,
-interfaces de comunicação e saídas PWM. Só estas últimas têm proteção
-explicitamente obrigatória no âmbito já confirmado; os níveis e restantes
+interfaces de comunicação e saídas PWM. Só estas últimas têm proteção e
+isolamento explicitamente obrigatórios no âmbito já confirmado; os níveis e restantes
 necessidades devem ser especificados antes do dimensionamento.
 
 \begingroup
@@ -449,7 +466,7 @@ Alimentação: tensão & Confirmado & 5~V a 60~V, incluindo limites. & UC06; RNF
 Ethernet: taxa nominal & Confirmado & Pelo menos 100~Mbit/s; Gigabit desejável. & UC01, UC07; RF05 \\
 I2C: quantidade & Confirmado & Exatamente dois barramentos independentes. & UC01, UC02; RF01 \\
 CAN FD: quantidade & Confirmado & Exatamente três barramentos. & UC01, UC02; RF04 \\
-PWM: quantidade & Confirmado & Exatamente três saídas protegidas. & UC03, UC06; RF15 \\
+PWM: quantidade & Confirmado & Exatamente três saídas isoladas e protegidas. & UC03, UC06; RF15 \\
 PC--unidade: alternativas & Confirmado & RS232, CAN e Ethernet; sem simultaneidade exigida. & UC01; RF09 \\
 Execução & Confirmado & RTOS obrigatório; seleção e organização para projeto. & UC04; RNF07 \\
 I2C: modo & Confirmado & Standard mode em ambos os barramentos; validar comunicação nesse modo. & UC01, UC02; RF01 \\
@@ -467,7 +484,7 @@ PWM: frequência & Confirmado & 50~Hz nos três canais; medir em cada saída. & 
 PWM: largura de impulso & Confirmado & 1100--1900~$\mu$s; ensaiar extremos e valores intermédios nos três canais. & UC03; RF15 \\
 PWM: resolução & Em aberto & Resolução de comando da largura de impulso, sem valor confirmado. & UC03; DP12 \\
 PWM: condições elétricas & Em aberto & Níveis, tensão, corrente máxima e natureza das cargas. & UC03, UC06; DP12 \\
-PWM: proteção & Em aberto & Natureza, níveis e critérios; curto/sobrecarga se aplicáveis. & UC03, UC06; DP12 \\
+PWM: proteção e isolamento & Em aberto & Tensão de isolamento, natureza e níveis da proteção; curto/sobrecarga se aplicáveis. & UC03, UC06; DP12 \\
 Sincronização: referência & Confirmado & PPS a 1~Hz e mensagens com informação temporal GPS entre impulsos, associadas à referência para sincronizar o relógio. & UC02, UC05; RF16 \\
 Sincronização: resolução & Confirmado & Ordem dos microssegundos na associação temporal dos dados; verificar a resolução obtida. & UC02, UC05; RF16 \\
 Sincronização: erro & A medir & Medir e reportar erro face à referência; sem precisão absoluta garantida nem limite máximo confirmado. & UC05; RF16, DP14 \\
@@ -480,7 +497,7 @@ Alimentação: proteção & Em aberto & Perturbações, transientes e critérios
 Comunicações: proteção & Em aberto & Níveis de ESD/surto, diferenças de potencial e isolamento necessário. & UC06; DP10 \\
 Ambiente e temperatura & Em aberto & Condições ambientais, temperatura, humidade e grau de proteção, se aplicáveis. & UC06; DP17 \\
 Consumo e eficiência & Em aberto & Objetivos/limites se exigidos; baixo consumo continua desejável. & UC06; DP11, DP13 \\
-Registo local & Opcional & Necessidade de microSD, retenção, capacidade e taxa de escrita. & UC07; DP15 \\
+Configuração persistente & Em aberto & Conteúdo, formato, integridade, valores por omissão e recuperação após interrupção da alimentação. & RF18; DP15 \\
 \end{longtable}
 \endgroup
 
@@ -496,12 +513,10 @@ de carga permanecem nas definições de projeto.
 
 São desejáveis Gigabit Ethernet, alimentação por Ethernet
 (\textit{Power over Ethernet}, PoE) e consumo reduzido, sem valores
-mínimos de eficiência ou máximos de consumo confirmados. O armazenamento
-persistente em microSD é uma opção, não obrigatório; o encaminhamento
-direto dos dados pode satisfazer RF17. A operação autónoma sem intervenção
-do PC permanece uma opção a avaliar em DP01, distinta da definição de
-percursos adicionais em RF17. As restantes opções serão avaliadas em DP11
-e DP15, sem presumir a sua inclusão
+mínimos de eficiência ou máximos de consumo confirmados. A operação
+autónoma sem intervenção do PC permanece uma opção a avaliar em DP01,
+distinta da definição de percursos adicionais em RF17. As restantes
+opções serão avaliadas em DP11, sem presumir a sua inclusão
 na primeira versão nem substituir a entrada obrigatória de 5~V a 60~V.
 
 \section{Restrições do Projeto}
@@ -513,9 +528,9 @@ Tabela~\ref{tab:parametros-aceitacao}; não se acrescentam tolerâncias,
 bitrates separados CAN FD ou precisão absoluta de sincronização.
 
 Plataforma, RTOS concreto, PCB, protocolos superiores e componentes ficam
-para projeto. A proteção PWM é obrigatória; isolamento e proteção das
-restantes interfaces serão avaliados conforme as condições. MicroSD,
-PoE e operação autónoma sem intervenção do PC são opções, sem garantia de
+para projeto. O isolamento e a proteção dos PWM são obrigatórios;
+isolamento e proteção das restantes interfaces serão avaliados conforme
+as condições. PoE e operação autónoma sem intervenção do PC são opções, sem garantia de
 tempo real estrito decorrente do RTOS.
 
 \section{Definições em Aberto para a Fase de Projeto}
@@ -549,7 +564,7 @@ ID & Tema & Definição a documentar \\
 \endfoot
 \bottomrule
 \endlastfoot
-DP01 & Operações e papéis & Distribuição dos três CAN FD entre PC e nós externos, papéis I2C e percursos de RF17. Manter os quatro pares mínimos Ethernet; definir os percursos adicionais, como CAN para RS485, e os respetivos protocolos e mapeamentos com DP02. \\
+DP01 & Operações e papéis & Distribuição dos três CAN FD entre PC e nós externos, papéis I2C e percursos de RF17. Manter os quatro percursos mínimos entre o PC (Ethernet) e as restantes interfaces; definir os percursos adicionais, como CAN para RS485, e os respetivos protocolos e mapeamentos com DP02. \\
 \addlinespace
 DP02 & Protocolos externos & Protocolos superiores, endereços, identificadores e mapeamentos dos dispositivos. Documentar significado dos dados e configurações que permitam reproduzir cada operação. \\
 \addlinespace
@@ -571,13 +586,13 @@ DP10 & Proteção das comunicações & Necessidade de isolamento, diferenças de
 \addlinespace
 DP11 & Opções desejáveis & Avaliação de Gigabit e PoE; baixo consumo como objetivo sem limite especificado. Compatibilizar eventual PoE com a entrada obrigatória de RNF08. \\
 \addlinespace
-DP12 & PWM e cargas & Resolução, níveis, tensão, corrente e natureza das cargas. Dimensionar a proteção obrigatória dos três PWM e os ensaios, incluindo curto/sobrecarga quando aplicáveis; manter RF15. \\
+DP12 & PWM e cargas & Resolução, níveis, tensão, corrente e natureza das cargas. Dimensionar o isolamento galvânico e a proteção obrigatórios dos três PWM (tensão de isolamento, atraso e distorção da largura do impulso) e os ensaios, incluindo curto/sobrecarga quando aplicáveis; manter RF15. \\
 \addlinespace
 DP13 & Alimentação & Corrente, potência, polaridade, eficiência, proteção, perturbações e condições de ensaio. Mantém-se toda a gama de RNF08, incluindo extremos e valores intermédios. \\
 \addlinespace
 DP14 & Marcação e sincronização & Pontos de marcação, escala temporal, associação mensagem/impulso, cargas, medição do erro e da sua incerteza, perda de referência e recuperação. Verificar RF16 sem limite absoluto de erro presumido. Recetor, hardware, protocolo e periféricos em aberto. \\
 \addlinespace
-DP15 & Registo persistente & Necessidade de microSD opcional. Se selecionada, definir retenção, capacidade, taxa de escrita e recuperação após interrupção da alimentação ou operação. O envio direto satisfaz RF17. \\
+DP15 & Persistência da configuração & Memória flash interna ou externa; parâmetros guardados, formato com versão e verificação de integridade, valores por omissão (incluindo o estado dos PWM no arranque), desgaste e recuperação após interrupção da alimentação durante a escrita. Não se prevê registo persistente de dados de operação. \\
 \addlinespace
 DP16 & Configuração local & Níveis I2C; palavra, paridade e fluxo RS232; baud rate e configuração RS485. Selecionar segundo dispositivos/protocolos, mantendo RF01--RF03 e sem baud rate RS485 por omissão. \\
 \addlinespace

@@ -15,13 +15,13 @@
     \node[auxiliar,text width=2.8cm] (energia) at (1.6,-3.8)
         {\textbf{Alimentação}\\Entrada de 5--60 V};
     \node[bloco,text width=3.1cm] (pwm) at (6.4,-3.8)
-        {\textbf{PWM $\times3$ protegidos}\\50 Hz\\1100--1900 $\mu$s};
-    \node[opcional,text width=3.8cm] (sd) at (11.8,-3.8)
-        {\textbf{Registo local em microSD}\\Opcional};
+        {\textbf{PWM $\times3$ isolados e protegidos}\\50 Hz\\1100--1900 $\mu$s};
+    \node[bloco,text width=3.8cm] (flash) at (11.8,-3.8)
+        {\textbf{Configuração em flash}\\Memória não volátil (RF18)};
     \draw[duplo] (pc.east)--([yshift=8mm]core.west);
     \draw[fluxo] (gps.east)--([yshift=-8mm]core.west);
     \draw[duplo] (core.east)--(dispositivos.west);
     \draw[fluxo] (core.south)--(pwm.north);
     \draw[fluxo] (energia.east)--(3.8,-3.8)--(3.8,-2.1)--(core.south west);
-    \draw[fluxo,dashed] (core.south east) |- (11.8,-2.6) -- (sd.north);
+    \draw[fluxo] (core.south east) |- (11.8,-2.6) -- (flash.north);
 \end{tikzpicture}

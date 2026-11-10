@@ -35,6 +35,8 @@
 \patchcmd{\LT@output}{\vss}{\vskip\z@ plus\maxdimen minus\normalbaselineskip}{}{}
 \makeatother
 \usepackage{xurl}
+\usepackage{acronym}
+\newcommand{\acroemph}[1]{\textit{#1}}
 \input{./Outros/Estilo_Visual.tex}
 %\usepackage{subfigure}
 \setlength{\unitlength}{1mm}
@@ -56,6 +58,7 @@
 	\tableofcontents
 	\listoffigures
 	\listoftables
+	\input{./Outros/Acronimos.tex}
 
 	\mainmatter
 	\setlength{\headsep}{5mm}

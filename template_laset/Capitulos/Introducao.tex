@@ -7,7 +7,7 @@
 Sensores, atuadores e equipamentos de supervisão podem usar interfaces
 incompatíveis entre si. Este projeto pretende permitir a um PC centralizar
 comando, aquisição e atuação através de uma unidade embebida com I2C,
-RS232, RS485, CAN e Ethernet. A unidade deve identificar a origem e o
+RS232, RS485, CAN e Ethernet, esta última dedicada à ligação ao PC. A unidade deve identificar a origem e o
 destino das operações, preservar o significado dos dados e gerir
 comunicações concorrentes com taxas diferentes.
 % TODO: confirmar com os docentes o enquadramento nas atividades do
@@ -15,7 +15,7 @@ comunicações concorrentes com taxas diferentes.
 
 A associação temporal é igualmente necessária: o PC pode combinar os
 dados adquiridos com outras fontes em algoritmos de localização, fusão
-ou processamento. A atuação por PWM e a alimentação variável acrescentam
+ou processamento. A atuação por modulação por largura de impulso (\textit{Pulse Width Modulation}, PWM) e a alimentação variável acrescentam
 condições elétricas que têm de ser consideradas no projeto.
 
 Estas necessidades organizam o problema e a rastreabilidade:
@@ -75,7 +75,7 @@ Capítulo~\ref{cap:requisitos}. As quantidades confirmadas delimitam o
     \item[UC04. Operação concorrente:] \hfill\\*
     Pedidos do PC e dados de dispositivos disputam processamento e
     transmissão. A unidade gere prioridades e espera temporária sobre
-    RTOS, mantendo o progresso nas cargas admissíveis. Cargas, latência,
+    um sistema operativo de tempo real (RTOS), mantendo o progresso nas cargas admissíveis. Cargas, latência,
     saturação e política de atendimento ficam para projeto, sem impor
     um RTOS concreto ou uma tarefa por interface.
 
@@ -94,11 +94,11 @@ Capítulo~\ref{cap:requisitos}. As quantidades confirmadas delimitam o
     condições ambientais serão especificados conforme a instalação;
     não estão estabelecidas temperatura, humidade ou classificação de proteção.
 
-    \item[UC07. Disponibilização ou registo de dados:] \hfill\\*
+    \item[UC07. Disponibilização de dados:] \hfill\\*
     O PC obtém dados identificados pelas interfaces previstas, com gestão
-    da espera temporária. Se for necessária retenção local, avalia-se a
-    opção microSD, incluindo retenção e recuperação. O registo persistente
-    é opcional e distingue-se do armazenamento temporário de RF13.
+    da espera temporária de RF13. Não existe registo persistente local de
+    dados; apenas a configuração da unidade é guardada em memória não
+    volátil (RF18).
 \end{description}
 
 \section{Objetivos}

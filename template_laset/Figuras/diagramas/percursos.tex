@@ -1,6 +1,6 @@
 \begin{tikzpicture}
     \node[nucleo,text width=3cm,minimum height=1.4cm] (eth) at (7.2,0)
-        {\textbf{Ethernet}\\RF17};
+        {\textbf{PC}\\via Ethernet (RF17)};
     \node[bloco,text width=2.7cm] (can) at (1.6,1.25) {CAN FD};
     \node[bloco,text width=2.7cm] (rs485) at (12.8,1.25) {RS485};
     \node[bloco,text width=2.7cm] (rs232) at (1.6,-1.25) {RS232};
@@ -10,6 +10,6 @@
     \draw[duplo] (eth.south west)--(rs232.east);
     \draw[duplo] (eth.south east)--(i2c.west);
     \node[legenda,text width=13cm] at (7.2,-2.5)
-        {Quatro pares mínimos obrigatórios, em ambos os sentidos.\\
+        {Quatro percursos mínimos entre o PC e as restantes interfaces, em ambos os sentidos.\\
         Outros percursos podem ser definidos em projeto (DP01--DP02).};
 \end{tikzpicture}

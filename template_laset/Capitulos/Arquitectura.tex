@@ -33,7 +33,7 @@ RS485 não fixam um protocolo de aplicação; CAN FD não fixa o protocolo
 superior nem os bitrates separados das duas fases; Ethernet não implica
 TCP. Os formatos de acesso do PC serão definidos em DP04.
 
-Os PWM são saídas de comando, com proteção obrigatória nos três canais;
+Os PWM são saídas de comando, com isolamento e proteção obrigatórios nos três canais;
 cargas, níveis e resolução permanecem em DP12. A entrada de 5--60~V
 não determina a tensão dessas cargas (DP13). A sincronização usa PPS e
 informação temporal GPS para datar dados com resolução da ordem dos
@@ -62,15 +62,18 @@ atribuir uma tarefa de software ou um componente a cada linha.
         \addlinespace
         Coordenação & Gerir concorrência, prioridades e espera temporária sobre RTOS. & RF12--RF14, RNF07 \\
         \addlinespace
-        Atuação e referência temporal & Comandar os PWM protegidos e associar marcas temporais aos dados e eventos. & RF15--RF16 \\
+        Atuação e referência temporal & Comandar os PWM isolados e protegidos e associar marcas temporais aos dados e eventos. & RF15--RF16 \\
+        \addlinespace
+        Configuração persistente & Guardar a configuração em memória flash e repô-la no arranque. & RF18 \\
         \addlinespace
         Operação e diagnóstico & Funcionar na gama de alimentação; observar resultados e erros segundo a proposta de diagnóstico. & RNF08; proposta RNF05 \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
-A disponibilização pelas interfaces é obrigatória. O registo microSD
-continua opcional; condições ambientais adicionais e diagnóstico
+A disponibilização pelas interfaces é obrigatória. Não existe registo
+persistente local de dados; a configuração da unidade é guardada em
+memória flash (RF18). Condições ambientais adicionais e diagnóstico
 detalhado permanecem em DP17 e RNF05, respetivamente.
 
 \section{Tipos de Operação}
@@ -112,18 +115,18 @@ intermédia comum são possibilidades de projeto. Se destino, configuração
 e mapeamento não permitirem determinar uma operação compatível, esta
 não deve ser executada.
 
-Os quatro pares da Figura~\ref{fig:percursos-obrigatorios} constituem o mínimo
+Os quatro percursos da Figura~\ref{fig:percursos-obrigatorios} constituem o mínimo
 obrigatório de RF17 e distinguem-se das alternativas de acesso do PC de
 RF09. Outros percursos, como CAN para RS485, podem ser definidos e
 implementados em DP01--DP02; Ethernet não tem de intermediar todas as
 operações. O buffering é
-dimensionado para a espera temporária e não é substituído pelo registo
-persistente opcional.
+dimensionado para a espera temporária e não é substituído por
+armazenamento persistente.
 
 \begin{figure}[htbp]
     \centering
     \Diagrama{percursos}
-    \caption[Percursos mínimos obrigatórios entre interfaces.]{Percursos mínimos obrigatórios de RF17. Outros encaminhamentos entre interfaces podem ser definidos em projeto. As ligações não pressupõem equivalência semântica entre protocolos.}
+    \caption[Percursos mínimos obrigatórios entre interfaces.]{Percursos mínimos obrigatórios de RF17, entre o PC (via Ethernet) e as restantes interfaces. Outros encaminhamentos entre interfaces podem ser definidos em projeto. As ligações não pressupõem equivalência semântica entre protocolos.}
     \label{fig:percursos-obrigatorios}
 \end{figure}
 
@@ -168,12 +171,12 @@ CAN FD & Três CAN FD, cada um até 8~Mbit/s (RF04). Distribuição dos canais e
 RS232 & Operação a 500~kbit/s e capacidade até 1~Mbit/s (RF02); palavra, fluxo e protocolo por definir. \\
 RS485 & Referência de aproximadamente 16--32 nós, sem número exato crítico ou limite rígido de 32 (RF03). Baud rate/protocolo em aberto. \\
 Ligação ao PC & RS232, CAN e Ethernet, bidirecionais (RF09). Sem simultaneidade exigida pelo PC; preferência e protocolos por definir (DP04). \\
-Ethernet & Mínimo nominal de 100~Mbit/s (RF05); Gigabit desejável. \\
+Ethernet & Ligação exclusiva ao PC; mínimo nominal de 100~Mbit/s (RF05); Gigabit desejável. \\
 Leitura e escrita & Nas cinco tecnologias de comunicação (RF06--RF07). \\
 Processamento e dados & Adaptação e preservação (RF08, RF10); percursos mínimos de RF17 na Figura~\ref{fig:percursos-obrigatorios}. Percursos adicionais, operações e mapeamentos em DP01--DP02. \\
 Seleção de destino & Interface, canal e endereço ou identificador aplicável (RF11). \\
 Concorrência & RTOS, prioridades e armazenamento temporário quando necessário (RF12--RF14 e RNF07); carga e limites por definir. \\
-PWM & Exatamente três canais protegidos a 50~Hz, com impulsos de 1100--1900~$\mu$s (RF15); resolução PWM, cargas, níveis e proteção concreta por definir (DP12). \\
+PWM & Exatamente três canais isolados e protegidos a 50~Hz, com impulsos de 1100--1900~$\mu$s (RF15); resolução PWM, cargas, níveis e proteção concreta por definir (DP12). \\
 Sincronização & PPS a 1~Hz e informação GPS; resolução da ordem dos microssegundos (RF16). Erro a medir; marcação e recuperação em DP14. \\
 Alimentação & Entrada entre 5~V e 60~V (RNF08); potência, proteção e eficiência por definir (DP13). \\
 RTOS e plataforma & RTOS obrigatório (RNF07); FreeRTOS candidato. RTOS e unidade de processamento por selecionar (DP03). \\
@@ -181,7 +184,7 @@ Diagnóstico & Proposta RNF05; acesso e critérios detalhados reservados ao proj
 PCB própria & Decisão de integração em aberto (DP05). \\
 Desempenho & Latência e cargas por definir (DP06); sem garantia de tempo real estrito. \\
 Ambiente de instalação & Condições e aplicabilidade de ensaios específicos em aberto (UC06; DP17); sem classificação de proteção estabelecida. \\
-Armazenamento local & MicroSD opcional (DP15); envio pelas interfaces pode dispensar registo persistente. \\
+Configuração persistente & Guardada em memória flash e reposta no arranque (RF18; DP15); sem registo persistente de dados. \\
 Opções desejáveis & Gigabit Ethernet, PoE, consumo reduzido e operação autónoma sem intervenção do PC; por avaliar (DP01 e DP11). \\
 \end{longtable}
 \endgroup

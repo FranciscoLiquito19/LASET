@@ -205,13 +205,22 @@ conjunto~\cite[secs.~1 e~6]{viviano_rs485_isolation_2018}.
 No projeto, esta análise deve abranger a proteção da eletrónica de
 controlo e a integridade da comunicação, de acordo com cada interface
 e ambiente de utilização. Não decorre daqui a obrigatoriedade de isolar
-todas as interfaces, nem a definição antecipada de níveis de imunidade.
+todas as interfaces de comunicação, nem a definição antecipada de níveis
+de imunidade.
 
 Em UC06 distinguem-se entrada de alimentação, comunicações e saídas
-PWM/cargas. A proteção dos três PWM é obrigatória; níveis, fenómenos
-e ensaios dos restantes domínios dependem do dimensionamento. Esta
-análise não estabelece isolamento universal ou uma classificação
-ambiental; as condições de instalação permanecem em DP17.
+PWM/cargas. O isolamento galvânico e a proteção dos três PWM são
+obrigatórios; níveis, fenómenos e ensaios dos restantes domínios dependem
+do dimensionamento. Esta análise não estabelece isolamento universal ou
+uma classificação ambiental; as condições de instalação permanecem em DP17.
+
+No caso dos sinais PWM, o isolamento digital tem de preservar a largura do
+impulso. Isoladores digitais e optoacopladores rápidos têm atrasos de
+propagação e distorção da largura do impulso muito inferiores a
+1100--1900~$\mu$s, enquanto optoacopladores lentos de fototransístor
+têm tipicamente tempos de comutação assimétricos, da ordem dos
+microssegundos, que alteram a largura do impulso. O lado isolado
+necessita ainda de alimentação isolada. Estes aspetos ficam para DP12.
 
 \section{Sistemas ou Plataformas Multiprotocolo}
 
@@ -450,8 +459,12 @@ PWM designa uma saída de controlo, não um protocolo de comunicação.
 
 Se os níveis ou a corrente da carga excederem a capacidade da saída
 lógica, é necessário um estágio de acionamento adequado. O projeto
-requer três PWM protegidos, com os parâmetros da Figura~\ref{fig:pwm}.
-Resolução, cargas e natureza da proteção permanecem em aberto (DP12).
+requer três PWM isolados e protegidos, com os parâmetros da
+Figura~\ref{fig:pwm}. Nos sinais de comando de servos e atuadores
+semelhantes, a informação está na largura absoluta do impulso (aqui,
+1100--1900~$\mu$s a 50~Hz) e não na razão cíclica.
+Resolução, cargas, tensão de isolamento e natureza da proteção permanecem
+em aberto (DP12).
 Luzes e garra são exemplos de utilização, sem canais adicionais.
 
 \begin{figure}[htbp]
@@ -521,13 +534,21 @@ estrito. O método de associação temporal e os pontos de aquisição das
 marcas temporais deverão ser definidos para que o erro possa ser medido.
 
 Os dados podem ser disponibilizados diretamente pelas interfaces de
-comunicação, sem exigir armazenamento persistente local. A família SD
-inclui cartões microSD destinados a armazenamento, com variantes de
-capacidade e interface documentadas pela SD
-Association~\cite{sda_overview}. Se o registo local for selecionado,
-terão de ser definidos retenção, capacidade e comportamento perante
-interrupções. Esta é uma opção arquitetural; não substitui a definição
-dos limites do armazenamento temporário necessário às diferenças de taxa.
+comunicação, sem exigir armazenamento persistente local. A configuração
+da unidade, pelo contrário, tem de sobreviver a reinícios, o que se obtém
+em memória flash não volátil. A escrita em flash faz-se por páginas,
+exige apagamento prévio e admite um número limitado de ciclos; por isso
+usam-se técnicas como a rotação de páginas, o registo da configuração com
+verificação de integridade e a manutenção de uma cópia anterior válida,
+de modo a tolerar falhas de alimentação durante a escrita. A emulação de
+EEPROM em flash de microcontroladores, por exemplo, adota estes princípios
+para ser robusta perante quedas de alimentação e reinícios
+assíncronos~\cite{st_an4894}. Em microcontroladores sem banco duplo,
+programar ou apagar a flash pode suspender a execução de código a partir
+da própria flash, o que condiciona o momento da escrita num sistema com
+requisitos temporais. Esta é uma opção arquitetural; não substitui a
+definição dos limites do armazenamento temporário necessário às
+diferenças de taxa.
 
 \section{Comparação das Tecnologias}
 
