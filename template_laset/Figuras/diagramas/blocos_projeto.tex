@@ -1,0 +1,37 @@
+\begin{tikzpicture}
+    \node[nucleo,text width=3.2cm,minimum height=3.4cm] (mcu) at (0,0)
+        {\textbf{STM32H743ZIT6}\\Cortex-M7, 480 MHz\\FreeRTOS + LwIP\\Flash 2 bancos\\(configuração)};
+    % Lado do PC
+    \node[bloco,text width=3.0cm] (eth) at (-5.2,2.0)
+        {\textbf{Ethernet}\\LAN8742A (RMII)\\RJ45 com magnéticos};
+    \node[bloco,text width=3.0cm] (rs232) at (-5.2,0)
+        {\textbf{RS232}\\MAX3227E\\até 1 Mbit/s};
+    \node[bloco,text width=3.0cm] (can1) at (-5.2,-2.0)
+        {\textbf{CAN FD 1}\\ADM3057E\\isolado 3 kV};
+    % Lado dos dispositivos
+    \node[bloco,text width=3.0cm] (can2) at (5.2,2.6)
+        {\textbf{CAN FD 2}\\ADM3057E\\isolado 3 kV};
+    \node[bloco,text width=3.0cm] (rs485) at (5.2,0.9)
+        {\textbf{RS485}\\ADM2582E\\isolado 2,5 kV};
+    \node[bloco,text width=3.0cm] (i2c) at (5.2,-0.8)
+        {\textbf{I2C} $\times2$\\PCA9306\\3,3 V / 5 V};
+    \node[bloco,text width=3.0cm] (pwm) at (5.2,-2.5)
+        {\textbf{PWM} $\times3$\\ADuM6401\\isolado 5 kV};
+    % Referência temporal e alimentação
+    \node[auxiliar,text width=3.4cm] (gps) at (0,3.3)
+        {\textbf{Recetor GPS}\\PPS (captura TIM 32 bits)\\NMEA (UART)};
+    \node[auxiliar,text width=7.6cm] (pwr) at (0,-3.8)
+        {\textbf{Alimentação}: 5--60 V $\rightarrow$ LM74700 (polaridade)
+        $\rightarrow$ LM5177 (5 V) $\rightarrow$ TPS62162 (3,3 V)};
+    \draw[duplo] (eth.east) -- (mcu.west |- eth.east);
+    \draw[duplo] (rs232.east) -- (mcu.west |- rs232.east);
+    \draw[duplo] (can1.east) -- (mcu.west |- can1.east);
+    \draw[duplo] (mcu.east |- can2.west) -- (can2.west);
+    \draw[duplo] (mcu.east |- rs485.west) -- (rs485.west);
+    \draw[duplo] (mcu.east |- i2c.west) -- (i2c.west);
+    \draw[fluxo] (mcu.east |- pwm.west) -- (pwm.west);
+    \draw[fluxo] (gps.south) -- (mcu.north);
+    \draw[fluxo] (pwr.north) -- (mcu.south);
+    \node[legenda] at (-5.2,3.4) {Ligações ao PC};
+    \node[legenda] at (5.2,3.9) {Dispositivos e cargas};
+\end{tikzpicture}

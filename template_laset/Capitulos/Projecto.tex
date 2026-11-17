@@ -1,17 +1,192 @@
 %-----------------------------------------------------------
-%   Capítulo 5 - Arquitectura e Projecto do Sistema
+%   Capítulo - Projeto
 %-----------------------------------------------------------
 \chapter{Projecto}
-Neste capítulo deverá ser feita a descrição do projecto. Neste capítulo deve ser abordados pontos como:
+\label{cap:projecto}
+
+Este capítulo transforma a arquitetura de alto nível do
+Capítulo~\ref{cap:arquitectura} numa solução concreta. Fecham-se as
+decisões de projeto DP01--DP17 que dependem da escolha de componentes e da
+organização do software, comparam-se alternativas com preços e
+apresentam-se duas abordagens de implementação com o respetivo orçamento.
+Os preços indicados são preços unitários sem IVA, consultados em
+distribuidores europeus em novembro de 2026.
 
 \section{Arquitectura do Sistema}
-Diagrama de blocos com identificação dos tipos de ligação, número de linhas, etc.
+\label{sec:proj-arquitetura}
+
+A Figura~\ref{fig:blocos-projeto} apresenta o diagrama de blocos da
+solução. O microcontrolador concentra o processamento, o encaminhamento e
+a referência temporal. As interfaces que ligam ao PC ficam à esquerda e
+as que ligam a dispositivos e cargas à direita.
+
+\begin{figure}[htbp]
+\centering
+\Diagrama{blocos_projeto}
+\caption[Diagrama de blocos da solução.]{Diagrama de blocos da solução, com os componentes selecionados. As interfaces isoladas têm alimentação isolada integrada.}
+\label{fig:blocos-projeto}
+\end{figure}
+
+Os dois barramentos CAN FD de RF04 ficam com papéis distintos (DP01): um
+dedicado à ligação ao PC, como alternativa de RF09, e outro a nós
+externos. Quando o PC usa Ethernet ou RS232, o primeiro pode também
+servir nós externos, por configuração. A Ethernet liga apenas ao PC.
+
+Quanto à proteção das comunicações (DP10), isolam-se galvanicamente os
+barramentos que saem da unidade para nós remotos (CAN FD e RS485) e as
+saídas PWM, onde o isolamento é obrigatório (RF15). RS232 e I2C são
+ligações locais e ficam sem isolamento, com proteção contra ESD.
 
 \section{Opções de Projecto}
-Descrição e justificação de opções técnicas tomadas sob o ponto de vista de \textit{hardware} e/ou \textit{software} dos componente seleccionados e comparação entre diferentes abordagens com diferentes preços.
+\label{sec:proj-opcoes}
+
+\subsection{Unidade de processamento}
+
+A Tabela~\ref{tab:proj-mcu} compara os microcontroladores avaliados.
+Os quatro cumprem os requisitos de comunicação com, pelo menos, dois
+controladores CAN FD e um MAC Ethernet.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Comparação dos microcontroladores candidatos.}
+\label{tab:proj-mcu}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.2\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{LasetTint}
+Critério & STM32H563ZI & STM32H743ZI & SAM E70Q21 & i.MX RT1176 \\
+\midrule
+Núcleo & M33, 250 MHz & M7, 480 MHz & M7, 300 MHz & M7 1 GHz + M4 \\
+CAN FD / Ethernet & 2 / 10/100 & 2 / 10/100 & 2 / 10/100 & 3 / 10/100 + 2 Gbit \\
+Flash interna & 2 MB, 2 bancos & 2 MB, 2 bancos & 2 MB & externa \\
+Encapsulamento & LQFP144 & LQFP144 & LQFP144 & BGA289 \\
+Preço do chip & 7,68 € & 12,83 € & 16,19 € & 16,26 € \\
+Placa de avaliação & 25,67 € & 34,68 € & 156,87 € & 164,83 € \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+O i.MX RT1176 foi excluído por existir apenas em BGA289, sem flash
+interna, e por o número de peça estar marcado como não recomendado para
+novos projetos. O SAM E70 cumpre os requisitos, mas a placa de avaliação
+custa cerca de seis vezes mais do que as da ST. Entre os dois STM32, o
+STM32H563 é mais barato, mas a pilha TCP/IP oficial da ST para esta
+família é a NetX Duo sobre ThreadX e o LwIP com FreeRTOS exige porte
+manual. Escolheu-se o \textbf{STM32H743ZIT6} (DP03): o FreeRTOS, candidato
+indicado pelo docente, e o LwIP estão integrados no STM32CubeMX para esta
+família, com exemplos oficiais em placas Nucleo~\cite{st_lwip_h7}. Os seus
+controladores FDCAN atingem 8~Mbit/s na fase de dados, com a fase de
+arbitragem limitada a 1~Mbit/s~\cite{st_fdcan_8m}, o que é coerente com a
+nota de RF04 sobre as duas fases.
+
+\subsection{Interfaces e alimentação}
+
+A Tabela~\ref{tab:proj-componentes} resume os componentes escolhidos para
+cada bloco, com a alternativa considerada.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Componentes selecionados por bloco.}
+\label{tab:proj-componentes}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.1\textwidth}@{}}
+\toprule
+\rowcolor{LasetTint}
+Bloco & Componente & Justificação & Preço \\
+\midrule
+CAN FD ($\times2$) & ADM3057E & Isolado 3 kV com alimentação isolada integrada; até 12 Mbit/s; proteção de $\pm40$ V no barramento~\cite{adi_adm3057e}. & 13,67 € \\
+RS485 & ADM2582E & Isolado 2,5 kV, 16 Mbit/s, até 256 nós, funciona a 3,3 V~\cite{adi_adm2582e}. & 13,97 € \\
+RS232 & MAX3227E & Taxa de 1 Mbit/s garantida, de 3,0 a 5,5 V~\cite{maxim_max3227e}. & 5,96 € \\
+PWM ($\times3$) & ADuM6401 & Três canais isolados de 5 kV mais um de retorno; alimentação isolada de 5 V integrada~\cite{adi_adum6401}. & 14,91 € \\
+Ethernet & LAN8742A & PHY RMII usado nas placas Nucleo, compatível com o controlador do CubeMX. & 1,30 € \\
+I2C ($\times2$) & PCA9306 & Tradução de nível entre 3,3 V e sensores de 1,8 a 5,5 V. & 0,65 € \\
+Fonte de 5 V & LM5177 & Buck-boost de 3,5 a 60 V; mantém 5 V com 5 V à entrada~\cite{ti_lm5177}. & 6,45 € \\
+Fonte de 3,3 V & TPS62162 & Buck síncrono de 1 A a partir dos 5 V. & 1,35 € \\
+Polaridade & LM74700-Q1 & Díodo ideal até 65 V com MOSFET externo~\cite{ti_lm74700}. & a confirmar \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A gama de entrada de RNF08 determina a topologia da fonte (DP13). Os
+transceivers CAN FD e o isolador dos PWM precisam de 5 V, e um conversor
+abaixador não consegue gerar 5 V quando a entrada também é de 5 V. Por
+isso usa-se um conversor buck-boost, seguido de um abaixador para 3,3 V.
+
+\subsection{Abordagens de implementação}
+
+Comparam-se duas abordagens (DP05):
+\begin{description}
+    \item[A. Placa de avaliação e placa de interfaces:] \hfill\\*
+    NUCLEO-H753ZI com uma placa de duas camadas que contém apenas os
+    transceivers e os isoladores. É mais rápida de obter, mas não inclui
+    a fonte de 5 a 60 V, pelo que não demonstra RNF08. Custo estimado dos
+    componentes com preço confirmado: 163,18 €.
+    \item[B. PCB própria:] \hfill\\*
+    Placa de quatro camadas com o STM32H743, as interfaces e a fonte
+    completa. Cumpre todos os requisitos elétricos. Custo estimado dos
+    componentes com preço confirmado: 197,94 €.
+\end{description}
+
+Ambos os valores incluem a placa NUCLEO e um recetor GPS para os ensaios
+de RF16, e excluem passivos, conectores e o fabrico da PCB, ainda por
+fechar com o esquema elétrico. Propõe-se a abordagem B como solução
+final, usando a NUCLEO para desenvolver o firmware enquanto a PCB é
+fabricada.
 
 \section{Descrição de \textit{Hardware}}
-Esquemas eléctricos do sistema.
+\label{sec:proj-hardware}
+
+% TODO: esquema elétrico no Anexo A, depois de fechados passivos e conectores.
+O esquema elétrico completo será apresentado no Anexo~A. A árvore de
+alimentação é a seguinte: a entrada de 5 a 60 V passa pelo díodo ideal
+LM74700-Q1, o LM5177 gera o barramento de 5 V para os transceivers CAN FD
+e o isolador dos PWM, e o TPS62162 gera os 3,3 V para o microcontrolador,
+o PHY, o RS232 e o lado lógico dos isoladores. O sinal PPS do recetor GPS
+liga a uma entrada de captura de um temporizador de 32 bits e as
+mensagens NMEA a uma UART.
 
 \section{Descrição do \textit{Software}}
-Descrição das funções, fluxogramas e diagramas de estado.
+\label{sec:proj-software}
+
+O firmware executa sobre FreeRTOS com memória estática: filas e
+\textit{pools} de blocos são criados no arranque. As rotinas de
+interrupção e o DMA de cada interface apenas recebem dados e colocam-nos
+numa fila de entrada. Uma tarefa de encaminhamento aplica a tabela de
+encaminhamento configurada e coloca cada mensagem na fila de saída do
+destino. Uma tarefa de transmissão por interface esvazia essa fila ao
+ritmo do respetivo barramento, pelo que uma saída lenta não impede o
+progresso das restantes (RF12).
+
+Cada fila de saída tem duas classes, urgente e normal (RF14). As
+mensagens urgentes são atendidas primeiro, mas, após um número
+configurável de urgentes seguidas, passa uma normal, o que garante
+progresso a ambas. O dimensionamento das filas (RF13, DP09) parte de
+$B = (R_{\mathrm{in}} - R_{\mathrm{out}})\,T$, em que $T$ é a duração da
+rajada, e é ajustado com os contadores de descarte nos ensaios.
+
+A comunicação com o PC (DP04) usa um formato de mensagem comum, com
+versão, tipo, interface, canal, endereço ou identificador, número de
+sequência, marca temporal de 64 bits em microssegundos e comprimento.
+Em Ethernet, as operações seguem por UDP, com confirmação na aplicação,
+e a configuração por TCP. Em RS232, as mensagens são delimitadas com COBS
+e CRC-16. Em CAN FD, as mensagens com mais de 64 bytes são segmentadas
+segundo a ISO 15765-2.
+
+A sincronização (RF16, DP14) usa um temporizador de 32 bits a 240 MHz
+com captura no flanco do PPS, o que dá uma resolução de cerca de 4 ns. A
+mensagem NMEA indica o segundo UTC e a frequência real do temporizador é
+medida entre impulsos PPS sucessivos, compensando a deriva do cristal.
+Sem PPS, a unidade mantém a última frequência medida e assinala que não
+está sincronizada.
+
+Os três canais PWM usam um temporizador avançado com contagem a 2 MHz,
+o que dá uma resolução de 0,5~$\mu$s (DP12). No arranque, as saídas ficam em
+nível baixo até existir uma configuração válida e, sem comandos do PC
+durante um intervalo configurável, passam a um valor seguro.
+
+A configuração (RF18, DP15) fica no segundo banco da flash interna, em
+dois setores usados alternadamente. Cada registo tem um identificador,
+a versão do formato, um número de sequência e um CRC32. No arranque
+usa-se o registo válido mais recente e, se nenhum for válido, os valores
+de fábrica. Como o código corre do primeiro banco, a escrita no segundo
+não interrompe a execução.
