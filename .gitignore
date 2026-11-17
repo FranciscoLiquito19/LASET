@@ -27,3 +27,6 @@ build/*
 # Private presentation build and review files, and Office lock files
 /apresentacao/build/
 ~$*
+hardware/*-backups/
+hardware/*.kicad_prl
+hardware/gerador/__pycache__/
