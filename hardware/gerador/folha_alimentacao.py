@@ -81,7 +81,7 @@ def folha():
     # 3,3 V
     f.comp('U2', 'Regulator_Switching:TPS62162DSG', 'TPS62162', 300, 220, {
         'VIN': '+5V', 'EN': '+5V', 'PG': 'PG_3V3', 'AGND': 'GND', 'PGND': 'GND', 'PAD': 'GND',
-        'SW': '/SW3', 'VOS': '+3V3', 'FB': 'GND'}, 'Package_SON:WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm')
+        'SW': '/SW3', 'VOS': '+3V3', 'FB': 'GND'}, 'Package_SON:Texas_DSG0008A_WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm_ThermalVias')
     f.comp('C15', C, '10 uF 10 V', 270, 240, {1: '+5V', 2: 'GND'}, C0603)
     f.comp('L2', 'Device:L', '2,2 uH', 335, 210, {1: '/SW3', 2: '+3V3'}, 'Inductor_SMD:L_Bourns_SRN6045TA')
     f.comp('C16', C, '22 uF 10 V', 350, 240, {1: '+3V3', 2: 'GND'}, C1206)
