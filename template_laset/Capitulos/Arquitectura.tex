@@ -13,14 +13,14 @@ componentes permanece para projeto.
 \begin{figure}[htbp]
     \centering
     \Diagrama{interfaces}
-    \caption[Interfaces e capacidades da unidade.]{Interfaces e capacidades confirmadas da unidade. CAN FD tem três canais no total, incluindo os papéis de ligação ao PC e a nós externos.}
+    \caption[Interfaces e capacidades da unidade.]{Interfaces e capacidades confirmadas da unidade. CAN FD tem dois canais no total, incluindo os papéis de ligação ao PC e a nós externos.}
     \label{fig:gateway-caixa-preta}
 \end{figure}
 
 O PC dispõe das alternativas RS232, CAN e Ethernet, sem simultaneidade,
 preferência, redundância ou comutação automática exigidas. A representação
 de CAN e RS232 em papéis distintos não cria portas dedicadas adicionais;
-a distribuição dos três CAN FD e a quantidade necessária de RS232 serão
+a distribuição dos dois CAN FD e a quantidade necessária de RS232 serão
 especificadas em DP01 e DP04. As setas indicam o sentido das funções,
 sem impor transmissão simultânea nos dois sentidos.
 
@@ -167,7 +167,7 @@ Característica & Especificação ou definição de projeto \\
 \endlastfoot
 Tipo de sistema & Sistema embebido multiprotocolo com funções de gateway e atuação. \\
 I2C & Exatamente dois barramentos independentes em Standard mode (RF01); papéis e níveis elétricos por definir. \\
-CAN FD & Três CAN FD, cada um até 8~Mbit/s (RF04). Distribuição dos canais e configuração das fases para projeto (DP01). \\
+CAN FD & Dois CAN FD, cada um até 8~Mbit/s (RF04). Distribuição dos canais e configuração das fases para projeto (DP01). \\
 RS232 & Operação a 500~kbit/s e capacidade até 1~Mbit/s (RF02); palavra, fluxo e protocolo por definir. \\
 RS485 & Referência de aproximadamente 16--32 nós, sem número exato crítico ou limite rígido de 32 (RF03). Baud rate/protocolo em aberto. \\
 Ligação ao PC & RS232, CAN e Ethernet, bidirecionais (RF09). Sem simultaneidade exigida pelo PC; preferência e protocolos por definir (DP04). \\

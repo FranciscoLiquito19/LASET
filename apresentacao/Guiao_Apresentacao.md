@@ -6,6 +6,8 @@ Pedro Ribeiro e Francisco Liquito
 
 Versão de 29 de outubro de 2026. Preparação para os 10 slides sobre integração de equipamentos em sistemas robóticos. Objetivo de ensaio: cerca de 9 minutos, dentro da duração prevista de 7 a 10 minutos.
 
+> **Nota de 17 de novembro de 2026.** Este guião e os ficheiros `.pptx` em `apresentacao/output/` refletem o estado dos requisitos à data da apresentação e não foram alterados. Desde então, o relatório passou a indicar: dois CAN FD em vez de três; Ethernet apenas para a ligação ao PC; isolamento galvânico obrigatório nos três PWM; configuração guardada em flash (RF18) em vez de registo opcional em microSD. A versão de referência dos requisitos é o relatório.
+
 ## Divisão e tempos
 
 **Pedro apresenta os slides 1 a 5:** aplicação, problema, fundamentos, estado da arte e exemplo de utilização. **Francisco Liquito apresenta os slides 6 a 10:** capacidades requeridas, atuação e tempo, arquitetura, verificação e contributo. Há uma única passagem de palavra, no fim do slide 5.

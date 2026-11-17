@@ -120,7 +120,7 @@ de todas as fontes externas.
 - Os valores confirmados coincidem entre casos de utilização, requisitos,
   tabelas, critérios de ensaio e arquitetura: I2C Standard mode; RS232
   operacional a 500 kbit/s e com capacidade até 1 Mbit/s; RS485 com
-  aproximadamente 16–32 nós de referência; três CAN FD até 8 Mbit/s;
+  aproximadamente 16–32 nós de referência; dois CAN FD até 8 Mbit/s;
   três PWM protegidos a 50 Hz e 1100–1900 µs; PPS a 1 Hz e informação
   temporal GPS. Mantêm-se Ethernet nominal de pelo menos 100 Mbit/s,
   RTOS obrigatório e entrada de 5–60 V.
@@ -135,12 +135,12 @@ de todas as fontes externas.
 - A secção 2.13 fundamenta a associação conceptual PPS/código temporal na
   RFC 2783. A associação concreta entre mensagens GPS e impulsos deverá
   acompanhar a solução selecionada no projeto, conforme DP14.
-- A distribuição dos três CAN FD entre PC e nós externos, os papéis das
+- A distribuição dos dois CAN FD entre PC e nós externos, os papéis das
   interfaces e os protocolos permanecem decisões de projeto. Os diagramas
   representam funções e papéis; não acrescentam canais físicos nem
   selecionam componentes.
-- RNF01–RNF03 e RNF05 estão identificados como propostas. A microSD e PoE
-  são opcionais; Gigabit Ethernet é desejável. Convém manter estes estados
+- RNF01–RNF03 e RNF05 estão identificados como propostas. PoE é
+  opcional; Gigabit Ethernet é desejável. Convém manter estes estados
   explícitos durante a vossa revisão.
 - A aquisição de sensores continua genérica. Sensores de pressão e
   funcionamento sob pressão não foram tratados como requisitos específicos.
@@ -166,3 +166,20 @@ As páginas abaixo correspondem à numeração impressa do relatório.
 
 PDF atualizado: [Modelo_LaSET.pdf](../template_laset/build/Modelo_LaSET.pdf).
 O comando de compilação encontra-se no [README](../README.md).
+
+**Atualização de 17 de novembro de 2026**
+
+Incorpora o feedback dos docentes (commit `49fa413`) e uma correção posterior
+da quantidade de CAN FD. Os pontos de atenção acima já refletem estas alterações;
+a tabela de verificações corresponde à revisão de 27 de outubro.
+
+- CAN FD: dois barramentos no total, cada um até 8 Mbit/s (RF04, Tabela 3.3,
+  DP01, Figura 4.1 e Tabela 4.2).
+- Ethernet dedicada à ligação ao PC; deixa de ser interface para dispositivos
+  externos. Os quatro percursos mínimos de RF17 passam a ser entre o PC, via
+  Ethernet, e CAN FD, RS485, RS232 e I2C.
+- PWM: isolamento galvânico obrigatório nos três canais, além da proteção (RF15, DP12).
+- Registo opcional em microSD removido. Novo RF18: configuração guardada em
+  flash e reposta após reinício, tolerante a interrupções durante a escrita (DP15).
+- Passam a existir 18 RF e 8 RNF.
+
