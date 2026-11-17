@@ -62,16 +62,16 @@ def folha():
 
     # Andar de potência
     f.comp('C8', C, '100 nF 25 V', 225, 85, {1: '/HB1', 2: '/SW1'}, C0603)
-    f.comp('Q1', 'Device:Q_NMOS_DGS', 'NMOS 100 V (buck alto)', 250, 85, {'D': 'VIN', 'G': '/HO1', 'S': '/SW1'}, MOSFET)
-    f.comp('Q2', 'Device:Q_NMOS_DGS', 'NMOS 100 V (buck baixo)', 250, 115, {'D': '/SW1', 'G': '/LO1', 'S': 'GND'}, MOSFET)
+    f.comp('Q1', 'Transistor_FET:BSC070N10NS5', 'BSC070N10NS5 (buck alto)', 250, 85, {'D': 'VIN', 'G': '/HO1', 'S': '/SW1'}, MOSFET)
+    f.comp('Q2', 'Transistor_FET:BSC070N10NS5', 'BSC070N10NS5 (buck baixo)', 250, 115, {'D': '/SW1', 'G': '/LO1', 'S': 'GND'}, MOSFET)
     f.comp('R10', R, '10 mOhm 1 W (R_CS)', 275, 100, {1: '/SW1', 2: '/LA'}, 'Resistor_SMD:R_2512_6332Metric')
     f.comp('R11', R, '10', 275, 130, {1: '/SW1', 2: '/CSA'}, R0603)
     f.comp('R12', R, '10', 285, 130, {1: '/LA', 2: '/CSB'}, R0603)
     f.comp('C9', C, '180 pF', 280, 150, {1: '/CSA', 2: '/CSB'}, C0603)
     f.comp('L1', 'Device:L', '15 uH, Isat >= 6 A', 305, 100, {1: '/LA', 2: '/SW2'}, 'Inductor_SMD:L_12x12mm_H8mm')
     f.comp('C10', C, '100 nF 25 V', 320, 70, {1: '/HB2', 2: '/SW2'}, C0603)
-    f.comp('Q3', 'Device:Q_NMOS_DGS', 'NMOS 40 V (boost alto)', 335, 85, {'D': '/5V_PRE', 'G': '/HO2', 'S': '/SW2'}, MOSFET)
-    f.comp('Q4', 'Device:Q_NMOS_DGS', 'NMOS 40 V (boost baixo)', 335, 115, {'D': '/SW2', 'G': '/LO2', 'S': 'GND'}, MOSFET)
+    f.comp('Q3', 'Transistor_FET:BSC070N10NS5', 'BSC070N10NS5 (boost alto)', 335, 85, {'D': '/5V_PRE', 'G': '/HO2', 'S': '/SW2'}, MOSFET)
+    f.comp('Q4', 'Transistor_FET:BSC070N10NS5', 'BSC070N10NS5 (boost baixo)', 335, 115, {'D': '/SW2', 'G': '/LO2', 'S': 'GND'}, MOSFET)
     f.comp('R13', R, '10 mOhm (R_ISNS)', 360, 85, {1: '/5V_PRE', 2: '+5V'}, 'Resistor_SMD:R_2512_6332Metric')
     for i, x in enumerate((345, 355, 365)):
         f.comp(f'C{11 + i}', C, '22 uF 10 V', x, 130, {1: '/5V_PRE' if i == 0 else '+5V', 2: 'GND'}, C1206)
@@ -81,7 +81,7 @@ def folha():
     # 3,3 V
     f.comp('U2', 'Regulator_Switching:TPS62162DSG', 'TPS62162', 300, 220, {
         'VIN': '+5V', 'EN': '+5V', 'PG': 'PG_3V3', 'AGND': 'GND', 'PGND': 'GND', 'PAD': 'GND',
-        'SW': '/SW3', 'VOS': '+3V3', 'FB': 'GND'})
+        'SW': '/SW3', 'VOS': '+3V3', 'FB': 'GND'}, 'Package_SON:WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm')
     f.comp('C15', C, '10 uF 10 V', 270, 240, {1: '+5V', 2: 'GND'}, C0603)
     f.comp('L2', 'Device:L', '2,2 uH', 335, 210, {1: '/SW3', 2: '+3V3'}, 'Inductor_SMD:L_Bourns_SRN6045TA')
     f.comp('C16', C, '22 uF 10 V', 350, 240, {1: '+3V3', 2: 'GND'}, C1206)

@@ -61,6 +61,11 @@ def pinos(sym):
     return out
 
 
+def grelha(v, passo=2.54):
+    """Arredonda à grelha de ligação do KiCad (100 mil)."""
+    return round(round(v / passo) * passo, 2)
+
+
 def _u():
     return str(uuid.uuid4())
 
@@ -137,6 +142,7 @@ class Folha:
 
     def flag(self, rede, x, y):
         """PWR_FLAG: indica ao ERC que a rede é alimentada (ex.: saída de um conversor)."""
+        x, y = grelha(x), grelha(y)
         self.npwr += 1
         sym = simbolo('power:PWR_FLAG')
         self._instancia(sym, '#FLG%03d' % self.npwr, 'PWR_FLAG', x, y)
@@ -162,6 +168,7 @@ class Folha:
         Redes começadas por '/' são locais à folha; as outras são globais
         (ligam entre folhas). GND, +5V e +3V3 usam símbolos de alimentação.
         """
+        x, y = grelha(x), grelha(y)
         sym = simbolo(lib_id)
         self._instancia(sym, ref, valor, x, y, footprint, extra=extra)
         ps = pinos(sym)
