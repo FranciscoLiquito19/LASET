@@ -57,7 +57,7 @@ def can():
     ])
     for k, (x, u) in enumerate(((120, 'U5'), (300, 'U6'))):
         n = k + 1
-        g = f'/GISO{n}'
+        g = f'/GNDISO{n}'
         f.comp(u, 'Interface_CAN_LIN:ADM3057ExRW', 'ADM3057E', x, 120, {
             'VCC': '+5V', 'VIO': '+3V3', 'GND1': 'GND', 'TXD': f'CAN{n}_TX', 'RXD': f'CAN{n}_RX',
             'STBY': f'CAN{n}_STBY', 'SILENT': 'GND', 'AUXIN': 'GND', 'VISOOUT': f'/VISO{n}', 'VISOIN': f'/VISO{n}',
@@ -82,17 +82,17 @@ def serie():
     ])
     f.comp('U7', 'Interface_UART:ADM2582E', 'ADM2582E', 110, 120, {
         'VCC': '+3V3', 'GND1': 'GND', 'TxD': 'RS485_TX', 'RxD': 'RS485_RX', 'DE': 'RS485_DE', '~{RE}': 'RS485_NRE',
-        'Visoout': '/VISO485', 'Visoin': '/VISO485', 'GND2': '/GISO485', 'A': '/A', 'Y': '/A', 'B': '/B', 'Z': '/B'})
+        'Visoout': '/VISO485', 'Visoin': '/VISO485', 'GND2': '/GNDISO485', 'A': '/A', 'Y': '/A', 'B': '/B', 'Z': '/B'})
     f.comp('R50', R, '10k', 50, 170, {1: 'RS485_DE', 2: 'GND'}, R0603)
     f.comp('R51', R, '10k', 60, 170, {1: '+3V3', 2: 'RS485_NRE'}, R0603)
     f.comp('C70', C, '10 uF', 50, 200, {1: '+3V3', 2: 'GND'}, C0805)
     f.comp('C71', C, '100 nF', 60, 200, {1: '+3V3', 2: 'GND'}, C0603)
-    f.comp('C72', C, '10 uF', 160, 200, {1: '/VISO485', 2: '/GISO485'}, C0805)
-    f.comp('C73', C, '100 nF', 170, 200, {1: '/VISO485', 2: '/GISO485'}, C0603)
+    f.comp('C72', C, '10 uF', 160, 200, {1: '/VISO485', 2: '/GNDISO485'}, C0805)
+    f.comp('C73', C, '100 nF', 170, 200, {1: '/VISO485', 2: '/GNDISO485'}, C0603)
     f.comp('R52', R, '120', 170, 80, {1: '/A', 2: '/TERM485'}, 'Resistor_SMD:R_1206_3216Metric')
     f.comp('JP3', 'Jumper:Jumper_2_Open', 'Terminação', 170, 50, {'A': '/TERM485', 'B': '/B'}, JMP2)
-    f.comp('J7', 'Connector:Screw_Terminal_01x03', 'RS485 (A, B, GND iso)', 200, 120, {1: '/A', 2: '/B', 3: '/GISO485'}, BORNE3)
-    f.flag('/GISO485', 200, 170)
+    f.comp('J7', 'Connector:Screw_Terminal_01x03', 'RS485 (A, B, GND iso)', 200, 120, {1: '/A', 2: '/B', 3: '/GNDISO485'}, BORNE3)
+    f.flag('/GNDISO485', 200, 170)
 
     f.comp('U8', 'Interface_UART:MAX3227', 'MAX3227E', 300, 130, {
         'VCC': '+3V3', 'GND': 'GND', 'T1IN': 'RS232_TX', 'R1OUT': 'RS232_RX', 'T1OUT': '/T1OUT', 'R1IN': '/R1IN',
@@ -131,28 +131,30 @@ def i2c_gps():
     f.comp('J11', 'Connector_Generic:Conn_01x05', 'GPS (3V3, GND, RX, TX, PPS)', 60, 230,
            {1: '+3V3', 2: 'GND', 3: 'GPS_TX', 4: 'GPS_RX', 5: '/PPS_EXT'},
            'Connector_JST:JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical')
+    f.flag('/EN1', 200, 40)
+    f.flag('/EN2', 360, 40)
     return f
 
 
 def pwm():
     f = Folha('PWM isolado', 'pwm.kicad_sch', notas=[
         'ADuM6401: 3 canais PWM isolados (5 kV) e alimentação isolada de 5 V (VSEL a VISO). O canal D devolve o PWM1 do lado isolado ao MCU.',
-        'A VERIFICAR: símbolo do ADuM5401 (mesma família); confirmar o pino 7 do ADuM6401 na folha de características antes do fabrico.',
+        'Pino 7 (VDDL) ligado a VDD1, como exige a folha de características do ADuM6401 (Tabela 22).',
         'VISO no conector serve só sinais de referência (máx. 500 mW); os servos têm alimentação própria.',
     ])
-    f.comp('U11', 'Isolator:ADuM5401', 'ADuM6401', 180, 130, {
+    f.comp('U11', 'laset:ADuM6401', 'ADuM6401', 180, 130, {
         'VDD1': '+5V', 'GND1': 'GND', 'VIA': 'PWM1', 'VIB': 'PWM2', 'VIC': 'PWM3', 'VOD': 'PWM_FB',
-        'RCOUT': '+5V', 'VISO': '/VISO', 'GNDISO': '/GISO', 'VSEL': '/VISO',
+        'VDDL': '+5V', 'VISO': '/VISO', 'GNDISO': '/GNDISO_PWM', 'VSEL': '/VISO',
         'VOA': '/PWM1_ISO', 'VOB': '/PWM2_ISO', 'VOC': '/PWM3_ISO', 'VID': '/PWM1_ISO'},
         'Package_SO:SOIC-16W_7.5x10.3mm_P1.27mm')
     f.comp('C90', C, '10 uF', 110, 190, {1: '+5V', 2: 'GND'}, C0805)
     f.comp('C91', C, '100 nF', 120, 190, {1: '+5V', 2: 'GND'}, C0603)
-    f.comp('C92', C, '10 uF', 240, 190, {1: '/VISO', 2: '/GISO'}, C0805)
-    f.comp('C93', C, '100 nF', 250, 190, {1: '/VISO', 2: '/GISO'}, C0603)
+    f.comp('C92', C, '10 uF', 240, 190, {1: '/VISO', 2: '/GNDISO_PWM'}, C0805)
+    f.comp('C93', C, '100 nF', 250, 190, {1: '/VISO', 2: '/GNDISO_PWM'}, C0603)
     for i in range(3):
         f.comp(f'R{80 + i}', R, '100', 260, 90 + i * 15, {1: f'/PWM{i + 1}_ISO', 2: f'/PWM{i + 1}_OUT'}, R0603)
     f.comp('J12', 'Connector:Screw_Terminal_01x05', 'PWM (GND iso, 1, 2, 3, VISO)', 320, 120,
-           {1: '/GISO', 2: '/PWM1_OUT', 3: '/PWM2_OUT', 4: '/PWM3_OUT', 5: '/VISO'}, BORNE5)
+           {1: '/GNDISO_PWM', 2: '/PWM1_OUT', 3: '/PWM2_OUT', 4: '/PWM3_OUT', 5: '/VISO'}, BORNE5)
     f.flag('/VISO', 230, 60)
-    f.flag('/GISO', 240, 230)
+    f.flag('/GNDISO_PWM', 240, 230)
     return f

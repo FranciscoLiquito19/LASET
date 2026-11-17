@@ -103,8 +103,7 @@ repetida. O ERC final é no KiCad (a versão de linha de comandos que tenho não
 
 ## A verificar antes do fabrico
 
-- **ADuM6401 pino 7:** usei o símbolo do ADuM5401 (mesma família e encapsulamento).
-  Liguei o pino 7 a 5 V; confirmar na folha de características do ADuM6401.
+- **ADuM6401:** símbolo próprio em `lib/laset.kicad_sym`; pino 7 (VDDL) ligado a VDD1, confirmado na Tabela 22 da folha de características.
 - **HR911105A:** pinos dos LED (9 a 12) sem ligação; confirmar o pino 8 (blindagem).
 - **LM5177:** compensação (WEBENCH) e footprint com pad exposto.
 - **TPS62162:** FB a GND na versão fixa de 3,3 V.

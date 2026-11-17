@@ -66,7 +66,7 @@ def folha():
     R, C = 'Device:R', 'Device:C'
     lig = {pino: rede for pino, (rede, _) in PINOS.items()}
     lig.update({'VDD': '+3V3', 'VDD33_USB': '+3V3', 'VBAT': '+3V3', 'PDR_ON': '+3V3',
-                'VDDA': '/VDDA', 'VREF+': '/VDDA', 'VSS': 'GND', 'VSSA': 'GND', 'VCAP': '/VCAP',
+                'VDDA': '/VDDA', 'VREF+': '/VDDA', 'VSS': 'GND', 'VSSA': 'GND', 71: '/VCAP1', 106: '/VCAP2',
                 'NRST': '/NRST', 'BOOT0': '/BOOT0'})
     f.comp('U3', 'MCU_ST_STM32H7:STM32H743ZITx', 'STM32H743ZIT6', 200, 150, lig, resto_nc=True)
 
@@ -79,8 +79,8 @@ def folha():
     f.comp('C32', C, '1 uF', 55, 50, {1: '/VDDA', 2: 'GND'}, C0603)
     f.comp('C33', C, '100 nF', 65, 50, {1: '/VDDA', 2: 'GND'}, C0603)
     # VCAP (regulador interno do núcleo)
-    f.comp('C34', C, '2,2 uF', 80, 50, {1: '/VCAP', 2: 'GND'}, C0603)
-    f.comp('C35', C, '2,2 uF', 90, 50, {1: '/VCAP', 2: 'GND'}, C0603)
+    f.comp('C34', C, '2,2 uF', 80, 50, {1: '/VCAP1', 2: 'GND'}, C0603)
+    f.comp('C35', C, '2,2 uF', 90, 50, {1: '/VCAP2', 2: 'GND'}, C0603)
     # Reset e arranque
     f.comp('C36', C, '100 nF', 40, 80, {1: '/NRST', 2: 'GND'}, C0603)
     f.comp('R20', R, '10k', 55, 80, {1: '/BOOT0', 2: 'GND'}, R0603)
@@ -107,5 +107,4 @@ def folha():
                {'A': f'/LED{i + 1}_A', 'K': 'GND'}, 'LED_SMD:LED_0603_1608Metric')
     # PWR_FLAG: redes alimentadas por componentes passivos ou pelo regulador interno
     f.flag('/VDDA', 110, 40)
-    f.flag('/VCAP', 120, 40)
     return f

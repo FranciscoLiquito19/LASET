@@ -23,6 +23,7 @@ REDES_ALIMENTACAO = {'GND': 'GND', '+5V': '+5V', '+3V3': '+3V3'}
 STUB = 2.54
 
 _libs = {}
+_contador = [0]  # numeração única de #PWR/#FLG em todas as folhas
 
 
 def _lib(nick):
@@ -132,7 +133,8 @@ class Folha:
 
     def _pwr(self, rede, x, y, d):
         """Símbolo de alimentação na ponta do stub, orientado no sentido d."""
-        self.npwr += 1
+        _contador[0] += 1
+        self.npwr = _contador[0]
         sym = simbolo('power:' + REDES_ALIMENTACAO[rede])
         if rede == 'GND':
             rot = {(0, 1): 0, (0, -1): 180, (1, 0): 90, (-1, 0): 270}[d]
@@ -143,7 +145,8 @@ class Folha:
     def flag(self, rede, x, y):
         """PWR_FLAG: indica ao ERC que a rede é alimentada (ex.: saída de um conversor)."""
         x, y = grelha(x), grelha(y)
-        self.npwr += 1
+        _contador[0] += 1
+        self.npwr = _contador[0]
         sym = simbolo('power:PWR_FLAG')
         self._instancia(sym, '#FLG%03d' % self.npwr, 'PWR_FLAG', x, y)
         self._ligar(rede, x, y, (0, 1))
