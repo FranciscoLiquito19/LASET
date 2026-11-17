@@ -1,3 +1,118 @@
 {
-  "meta": {"filename": "laset_gateway.kicad_pro", "version": 1}
+  "board": {
+    "design_settings": {
+      "meta": {
+        "version": 2
+      },
+      "rules": {
+        "min_clearance": 0.15,
+        "min_track_width": 0.15,
+        "min_via_diameter": 0.5,
+        "min_via_annular_width": 0.1,
+        "min_through_hole_diameter": 0.3,
+        "min_hole_to_hole": 0.25,
+        "min_hole_clearance": 0.25,
+        "min_copper_edge_clearance": 0.5,
+        "min_connection": 0.0
+      }
+    }
+  },
+  "meta": {
+    "filename": "laset_gateway.kicad_pro",
+    "version": 1
+  },
+  "net_settings": {
+    "meta": {
+      "version": 3
+    },
+    "classes": [
+      {
+        "name": "Default",
+        "clearance": 0.2,
+        "track_width": 0.2,
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "bus_width": 12,
+        "wire_width": 6,
+        "line_style": 0,
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
+      },
+      {
+        "name": "HV",
+        "clearance": 0.6,
+        "track_width": 1.5,
+        "via_diameter": 0.8,
+        "via_drill": 0.4,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "bus_width": 12,
+        "wire_width": 6,
+        "line_style": 0,
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
+      },
+      {
+        "name": "P5V",
+        "clearance": 0.2,
+        "track_width": 1.0,
+        "via_diameter": 0.8,
+        "via_drill": 0.4,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "bus_width": 12,
+        "wire_width": 6,
+        "line_style": 0,
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
+      }
+    ],
+    "net_colors": null,
+    "netclass_assignments": null,
+    "netclass_patterns": [
+      {
+        "pattern": "VIN",
+        "netclass": "HV"
+      },
+      {
+        "pattern": "/Alimenta*/VIN_*",
+        "netclass": "HV"
+      },
+      {
+        "pattern": "/Alimenta*/SW1",
+        "netclass": "HV"
+      },
+      {
+        "pattern": "/Alimenta*/SW2",
+        "netclass": "HV"
+      },
+      {
+        "pattern": "/Alimenta*/LA",
+        "netclass": "HV"
+      },
+      {
+        "pattern": "+5V",
+        "netclass": "P5V"
+      },
+      {
+        "pattern": "/Alimenta*/5V_PRE",
+        "netclass": "P5V"
+      },
+      {
+        "pattern": "/Alimenta*/SW3",
+        "netclass": "P5V"
+      }
+    ]
+  }
 }
