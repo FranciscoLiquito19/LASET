@@ -17,10 +17,13 @@ C1210 = 'Capacitor_SMD:C_1210_3225Metric'
 MOSFET = 'Package_TO_SOT_SMD:TDSON-8-1'
 
 
+FP_LM5177 = 'Package_SO:HTSSOP-38-1EP_4.4x9.7mm_P0.5mm_EP2.74x4.75mm_ThermalVias'  # DCP0038A: pad térmico 2,9 x 4,7 mm (TI)
+
+
 def folha():
     f = Folha('Alimentação', 'alimentacao.kicad_sch', notas=[
         'Entrada 5 a 60 V (RNF08). LM5177 buck-boost gera 5 V mesmo com 5 V à entrada; TPS62162 gera 3,3 V.',
-        'A VERIFICAR antes do fabrico: rede de compensação (COMP), MOSFET e bobina com o WEBENCH da TI; footprint HTSSOP-38 com pad exposto.',
+        'A VERIFICAR antes do fabrico: rede de compensação (COMP), MOSFET e bobina com o WEBENCH da TI.',
     ])
     R, C = 'Device:R', 'Device:C'
 
@@ -47,7 +50,7 @@ def folha():
         'IMONOUT': '/VCC', 'nFLT': 'PG_5V', 'VCC': '/VCC', 'HB1': '/HB1', 'HO1': '/HO1', 'SW1': '/SW1',
         'LO1': '/LO1', 'CSA': '/CSA', 'CSB': '/CSB', 'HB2': '/HB2', 'HO2': '/HO2', 'SW2': '/SW2',
         'LO2': '/LO2', 'VOUT': '+5V', 'ISNSP': '/5V_PRE', 'ISNSN': '+5V', 'AGND': 'GND', 'PGND': 'GND',
-        'EP': 'GND'}, nc=('HO1_LL', 'HO2_LL'))
+        'EP': 'GND'}, FP_LM5177, nc=('HO1_LL', 'HO2_LL'))
     f.comp('R3', R, '13,3k (CFG)', 110, 110, {1: '/CFG', 2: 'GND'}, R0603)
     f.comp('R4', R, '75k (SLOPE)', 120, 110, {1: '/SLOPE', 2: 'GND'}, R0603)
     f.comp('R5', R, '78,7k (400 kHz)', 130, 110, {1: '/RT', 2: 'GND'}, R0603)

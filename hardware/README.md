@@ -60,8 +60,9 @@ Schottky de 100 V (D2): mais simples e robusto, à custa de ~0,5 V de queda.
 - Rede de compensação R6/C5/C6: valores do exemplo da TI, recalcular no WEBENCH para
   15 µH e 5 V.
 - Referência exata da bobina.
-- Footprint do LM5177: o KiCad não tem o HTSSOP-38 de 4,4 mm com pad exposto; está
-  provisoriamente o TSSOP-38 sem pad. É preciso criar o footprint.
+- Footprint do LM5177: `HTSSOP-38-1EP_4.4x9.7mm_P0.5mm_EP2.74x4.75mm_ThermalVias` (KiCad 10).
+  O pad térmico da TI (DCP0038A) é 2,43 a 2,90 x 3,94 a 4,70 mm; o pad de 2,74 x 4,75 mm é o
+  mais próximo da biblioteca. Confirmar no desenho mecânico antes de encomendar a placa.
 - Pino FB do TPS62162 (versão fixa de 3,3 V) a GND: confirmar na folha de características.
 
 ## Folha 2: Microcontrolador (`mcu.kicad_sch`)

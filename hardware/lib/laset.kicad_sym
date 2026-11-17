@@ -6,7 +6,7 @@
     (property "Value" "LM5177" (id 1) (at 0 7.62 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "Package_SO:TSSOP-38_4.4x9.7mm_P0.5mm" (id 2) (at 0 0 0)
+    (property "Footprint" "Package_SO:HTSSOP-38-1EP_4.4x9.7mm_P0.5mm_EP2.74x4.75mm_ThermalVias" (id 2) (at 0 0 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "https://www.ti.com/lit/gpn/lm5177" (id 3) (at 0 0 0)
