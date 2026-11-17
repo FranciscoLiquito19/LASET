@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+    \node[bloco,text width=2.2cm,minimum height=1.4cm] (p) at (1.3,0)
+        {\textbf{P01--P04}\\Necessidades};
+    \node[bloco,text width=2.2cm,minimum height=1.4cm] (uc) at (4.4,0)
+        {\textbf{UC01--UC07}\\Utilização};
+    \node[nucleo,text width=2.2cm,minimum height=1.4cm] (rf) at (7.5,0)
+        {\textbf{RF e RNF}\\Requisitos};
+    \node[bloco,text width=2.2cm,minimum height=1.4cm] (teste) at (10.6,0)
+        {\textbf{Verificação}\\Critérios e ensaios};
+    \node[bloco,text width=2.2cm,minimum height=1.4cm] (arq) at (13.7,0)
+        {\textbf{Arquitetura}\\Funções e interfaces};
+    \draw[fluxo] (p)--(uc);
+    \draw[fluxo] (uc)--(rf);
+    \draw[fluxo] (rf)--(teste);
+    \draw[fluxo] (teste)--(arq);
+\end{tikzpicture}

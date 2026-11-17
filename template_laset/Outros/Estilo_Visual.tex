@@ -1,0 +1,25 @@
+% Diagramas vetoriais: estilos comuns, legíveis também em escala de cinzentos.
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\definecolor{LasetBlue}{HTML}{234D65}
+\definecolor{LasetTeal}{HTML}{287D83}
+\definecolor{LasetTint}{HTML}{EDF3F6}
+\definecolor{LasetGrey}{HTML}{555E64}
+\tikzset{
+    bloco/.style={draw=LasetBlue,fill=LasetTint,rounded corners=2pt,
+        line width=0.7pt,align=center,inner sep=5pt,
+        font=\sffamily\small,text=black},
+    nucleo/.style={bloco,fill=LasetBlue,text=white},
+    auxiliar/.style={bloco,draw=LasetGrey,fill=black!3},
+    opcional/.style={auxiliar,dashed},
+    fluxo/.style={-{Latex[length=2.2mm,width=1.5mm]},
+        draw=LasetBlue,line width=0.85pt},
+    duplo/.style={{Latex[length=2mm,width=1.4mm]}-{Latex[length=2mm,width=1.4mm]},
+        draw=LasetBlue,line width=0.85pt},
+    ligacao/.style={draw=LasetBlue,line width=0.8pt},
+    legenda/.style={font=\sffamily\footnotesize,align=center,text=LasetGrey},
+    mini/.style={bloco,font=\sffamily\footnotesize,inner sep=3pt}
+}
+\newcommand{\Diagrama}[1]{%
+    \begingroup\setstretch{1}\hyphenpenalty=10000\exhyphenpenalty=10000%
+    \input{./Figuras/diagramas/#1.tex}\endgroup}

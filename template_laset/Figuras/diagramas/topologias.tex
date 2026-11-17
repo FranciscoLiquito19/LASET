@@ -1,0 +1,35 @@
+\begin{tikzpicture}
+    \foreach \x/\y in {0/0,7.5/0,0/-3.8,7.5/-3.8}
+        \draw[draw=LasetBlue!35,fill=LasetTint!45,rounded corners=3pt]
+            (\x,\y+0.8) rectangle +(7,-3.5);
+    \node[legenda,font=\sffamily\small\bfseries] at (3.5,0.35) {I2C: barramento partilhado};
+    \node[mini] (controlador) at (1.1,-0.75) {Controlador};
+    \node[mini] (alvoa) at (3.5,-1.8) {Alvo A};
+    \node[mini] (alvob) at (5.7,-1.8) {Alvo B};
+    \draw[ligacao] (controlador.east) -- (6.2,-0.75);
+    \draw[ligacao] (3.5,-0.75) -- (alvoa);
+    \draw[ligacao] (5.7,-0.75) -- (alvob);
+    \node[legenda] at (4.3,-0.43) {SDA e SCL};
+    \node[legenda] at (3.5,-2.38) {Endereçamento no barramento};
+    \node[legenda,font=\sffamily\small\bfseries] at (11,0.35) {RS232: ponto a ponto};
+    \node[mini] (dtea) at (8.8,-1.1) {Equip. A};
+    \node[mini] (dceb) at (13.1,-1.1) {Equip. B};
+    \draw[fluxo] ([yshift=2mm]dtea.east) -- ([yshift=2mm]dceb.west);
+    \draw[fluxo] ([yshift=-2mm]dceb.west) -- ([yshift=-2mm]dtea.east);
+    \node[legenda] at (11,-2.1) {Transmissão e receção separadas};
+    \node[legenda,font=\sffamily\small\bfseries] at (3.5,-3.45) {RS485 / CAN high-speed};
+    \draw[ligacao] (0.7,-4.35) -- (6.3,-4.35);
+    \foreach \x/\id in {1.2/A,3.5/B,5.8/C} {
+        \node[mini] (no\id) at (\x,-5.35) {Nó \id};
+        \draw[ligacao] (\x,-4.35) -- (no\id.north);
+    }
+    \node[legenda] at (3.5,-6.03) {Barramento linear multiponto};
+    \node[legenda,font=\sffamily\small\bfseries] at (11,-3.45) {Ethernet comutada};
+    \node[mini] (switch) at (11,-4.6) {Comutador};
+    \node[mini] (etha) at (8.6,-4.6) {Nó A};
+    \node[mini] (ethb) at (13.4,-4.6) {Nó B};
+    \node[mini] (ethc) at (11,-5.7) {Nó C};
+    \draw[ligacao] (switch) -- (etha);
+    \draw[ligacao] (switch) -- (ethb);
+    \draw[ligacao] (switch) -- (ethc);
+\end{tikzpicture}

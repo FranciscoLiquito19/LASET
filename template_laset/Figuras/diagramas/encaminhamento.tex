@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+    \node[bloco,text width=3.2cm,minimum height=1.25cm] (origem) at (1.8,0)
+        {\textbf{1. Origem}\\Interface e canal};
+    \node[bloco,text width=3.2cm,minimum height=1.25cm] (ler) at (7.2,0)
+        {\textbf{2. Ler / receber}\\Dados e metadados};
+    \node[nucleo,text width=3.2cm,minimum height=1.25cm] (processar) at (12.6,0)
+        {\textbf{3. Processar}\\Adaptar\\Datar se aplicável};
+    \node[bloco,text width=3.2cm,minimum height=1.25cm] (decidir) at (12.6,-2.5)
+        {\textbf{4. Encaminhar}\\Operação e destino};
+    \node[bloco,text width=3.2cm,minimum height=1.25cm] (escrever) at (7.2,-2.5)
+        {\textbf{5. Transmitir}\\Configuração\\e protocolo};
+    \node[bloco,text width=3.2cm,minimum height=1.25cm] (destino) at (1.8,-2.5)
+        {\textbf{6. Destino}\\Interface e canal};
+    \draw[fluxo] (origem)--(ler);
+    \draw[fluxo] (ler)--(processar);
+    \draw[fluxo] (processar)--(decidir);
+    \draw[fluxo] (decidir)--(escrever);
+    \draw[fluxo] (escrever)--(destino);
+    \node[auxiliar,text width=13.5cm,font=\sffamily\footnotesize] at (7.2,-4.1)
+        {Coordenação por RTOS; prioridades e armazenamento temporário quando necessário.\\
+         Os blocos representam funções, sem impor componentes ou tarefas individuais.};
+\end{tikzpicture}

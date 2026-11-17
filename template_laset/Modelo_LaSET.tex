@@ -1,4 +1,5 @@
-\documentclass[a4paper,11pt]{book}
+% Paginação de uma face: margens e cabeçalhos fixos em todas as páginas.
+\documentclass[a4paper,11pt,oneside,openany]{book}
 
 \usepackage{amsmath}
 % Permite a hifenização das palavras acentuadas do conteúdo em português.
@@ -8,7 +9,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[portuguese]{babel}
 \usepackage{graphicx}
-\usepackage{color}
+\usepackage{xcolor}
+% Bloco de texto centrado, com espaço para diagramas legíveis.
+\usepackage[a4paper,left=27.5mm,right=27.5mm,top=25mm,bottom=25mm,
+    includeheadfoot,headheight=16pt,headsep=5mm,footskip=10mm]{geometry}
 \usepackage{fancyhdr}
 \usepackage{setspace}
 \usepackage{array}
@@ -20,45 +24,51 @@
 \usepackage{csquotes}
 \usepackage{booktabs}
 \usepackage{tabularx}
+% Tabelas de rastreabilidade e características com continuação entre páginas.
+\usepackage{longtable}
+% Compatibilidade com versões de longtable anteriores à correção de 2026:
+% usar encolhimento finito nas quebras de página, em vez de \vss.
+% https://github.com/latex3/latex2e/issues/1907
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\LT@output}{\vss}{\vskip\z@ plus\maxdimen minus\normalbaselineskip}{}{}
+\patchcmd{\LT@output}{\vss}{\vskip\z@ plus\maxdimen minus\normalbaselineskip}{}{}
+\makeatother
 \usepackage{xurl}
+\usepackage{acronym}
+\newcommand{\acroemph}[1]{\textit{#1}}
+\input{./Outros/Estilo_Visual.tex}
 %\usepackage{subfigure}
 \setlength{\unitlength}{1mm}
 \renewcommand{\baselinestretch}{1.5}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
 \newif\ifRequisitos
 \newif\ifProjecto
 \newif\ifFinal
-
-\makeatletter
-	\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
-	\hbox{}
-	\vspace*{\fill}
-		\begin{center}
-			Esta página foi intencionalmente deixada em branco.
-		\end{center}
-	\vspace{\fill}
-	\thispagestyle{empty}
-	\newpage
-	\if@twocolumn\hbox{}\newpage\fi\fi\fi}
-\makeatother
 
 \input{./Outros/Identificacao.tex}
 \begin{document}
 	\begin{titlepage}
 		\input{./Outros/Capa_Relatorio.tex}
-		\newpage
-		\thispagestyle{empty}
-		\vspace*{\fill}
-		\newpage
 	\end{titlepage}
+	\pagestyle{plain}
 	\pagenumbering{roman}
 	\tableofcontents
 	\listoffigures
 	\listoftables
+	\input{./Outros/Acronimos.tex}
 
 	\mainmatter
 	\setlength{\headsep}{5mm}
 	\setlength{\headheight}{16pt}
 	\pagestyle{fancy}
+	\fancyhf{}
+	\fancyhead[L]{\small\itshape\nouppercase{\leftmark}}
+	\fancyhead[R]{\small\itshape\nouppercase{\rightmark}}
+	\fancyfoot[C]{\thepage}
+	\raggedbottom
 
 	\renewcommand{\sectionmark}[1]{\markright{\arabic{chapter}.\arabic{section}. #1}}
 	\renewcommand{\chaptermark}[1]{\markboth{Capítulo \arabic{chapter} }{}}
@@ -81,7 +91,12 @@
 	\input{./Capitulos/Conclusao_Trabalho_Futuro.tex}
 	\fi
 	
-	\input{bibliografia.tex}	
+	\clearpage
+	\begingroup
+	\fancyhead[R]{}
+	\input{bibliografia.tex}
+	\clearpage
+	\endgroup
 	\appendix
 	\input{./Anexos/AnexoA.tex}
 

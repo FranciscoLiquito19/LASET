@@ -1,173 +1,155 @@
-%-----------------------------------------------------------
-%   Capítulo 1 - Introdução
-%-----------------------------------------------------------
+% Capítulo 1 - Introdução
 \chapter{Introdução}
 \label{cap:introducao}
 
 \section{Enquadramento e Motivação}
 
-O projeto de um sistema de leitura e escrita multiprotocolo insere-se
-no contexto dos sistemas embebidos e autónomos em que coexistem diferentes
-tecnologias de comunicação. O trabalho abrange I2C, RS232, RS485, CAN e
-Ethernet e é apresentado neste relatório numa fase preliminar de definição,
-centrada no enquadramento do problema e na organização do estudo e do
-desenvolvimento.
-% TODO: confirmar com os docentes o enquadramento deste trabalho nas
-% atividades do LSA/LaSET/INESC TEC ou num projeto associado; a identificação
-% institucional do template não estabelece esse vínculo específico.
+Sensores, atuadores e equipamentos de supervisão podem usar interfaces
+incompatíveis entre si. Este projeto pretende permitir a um PC centralizar
+comando, aquisição e atuação através de uma unidade embebida com I2C,
+RS232, RS485, CAN e Ethernet, esta última dedicada à ligação ao PC. A unidade deve identificar a origem e o
+destino das operações, preservar o significado dos dados e gerir
+comunicações concorrentes com taxas diferentes.
+% TODO: confirmar com os docentes o enquadramento nas atividades do
+% LSA/LaSET/INESC TEC; a identificação do template não estabelece esse vínculo.
 
-Os sistemas autónomos e os sistemas embebidos integram funções de
-perceção, processamento, controlo e atuação que dependem da troca de
-informação entre os seus elementos. A aquisição de dados de sensores,
-o envio de comandos a atuadores e a comunicação com controladores ou
-equipamentos de supervisão podem envolver tecnologias de comunicação
-distintas numa mesma instalação. Esta coexistência resulta das
-características dos dispositivos e das funções que desempenham, bem
-como da necessidade de integrar equipamentos desenvolvidos em momentos
-ou contextos diferentes.
+A associação temporal é igualmente necessária: o PC pode combinar os
+dados adquiridos com outras fontes em algoritmos de localização, fusão
+ou processamento. A atuação por modulação por largura de impulso (\textit{Pulse Width Modulation}, PWM) e a alimentação variável acrescentam
+condições elétricas que têm de ser consideradas no projeto.
 
-Neste contexto, sensores, atuadores, controladores e outros equipamentos
-podem disponibilizar interfaces como I2C, RS232, RS485, CAN e Ethernet.
-Estas tecnologias apresentam diferenças nas características elétricas,
-na \mbox{organização} das ligações e nos mecanismos de comunicação que
-suportam. Por conseguinte, a ligação de um novo equipamento exige a
-análise da compatibilidade da interface e da forma como os dados são
-transmitidos e recebidos, além da compreensão do seu significado para
-a aplicação.
-
-O problema central reside na heterogeneidade destas interfaces e na
-dificuldade de integrar operações de leitura e escrita sobre equipamentos
-com formas de acesso distintas. O suporte de cada tecnologia pode exigir
-configurações, procedimentos de comunicação e mecanismos de tratamento
-de erros específicos. Quando estas particularidades são tratadas de
-forma dispersa na aplicação, a inclusão ou substituição de equipamentos
-pode implicar alterações em várias partes do sistema, dificultando a
-manutenção e a reutilização das funções de comunicação. Além disso, a
-disponibilidade de uma ligação compatível não assegura, por si só, a
-interpretação correta dos dados trocados.
-
-A relevância do trabalho reside, assim, na possibilidade de organizar de
-forma coerente os mecanismos de acesso aos equipamentos, facilitando a
-integração e a evolução de sistemas com diferentes tecnologias de
-comunicação.
-
-O sistema pretendido assume a função de um \textit{gateway} multiprotocolo,
-com Ethernet como ligação principal a um computador ou sistema central.
-Através dessa ligação, o sistema central deve conseguir enviar comandos
-e receber dados ou respostas de dispositivos ligados a CAN, RS485, RS232
-e I2C. Pretende-se um acesso tão uniforme quanto possível, mantendo
-explícitos os parâmetros necessários a cada interface e protocolo.
-O encaminhamento deve preservar o significado da informação e pode
-exigir adaptação às características da origem e do destino; não se
-pressupõe correspondência de uma trama recebida para uma trama transmitida.
-A gestão de comunicações concorrentes e de diferenças de taxa faz parte
-do problema. O encaminhamento entre outras interfaces constitui uma
-possibilidade de extensão, sem tornar obrigatória a conversão entre
-todos os pares.
+Estas necessidades organizam o problema e a rastreabilidade:
+\begin{description}
+    \item[P01. Integração e identificação das operações:] \hfill\\*
+    Aceder a dispositivos heterogéneos pelo PC, identificar origem e
+    destino e preservar comandos, dados e feedback.
+    \item[P02. Continuidade sob concorrência e diferenças de taxa:] \hfill\\*
+    Coordenar operações, prioridades e informação temporariamente em
+    espera, respeitando os limites de carga a definir.
+    \item[P03. Coerência temporal e atuação física:] \hfill\\*
+    Associar temporalmente dados, comandos e eventos e comandar cargas
+    pelas saídas PWM com proteção elétrica.
+    \item[P04. Funcionamento elétrico e contexto de instalação:] \hfill\\*
+    Operar com entrada de 5--60~V e especificar cargas e perturbações.
+    A aplicabilidade de condições ambientais adicionais permanece em aberto.
+\end{description}
 
 \section{Cenários de aplicação}
 \label{sec:cenarios-aplicacao}
 
-Os cenários seguintes ilustram o caso de utilização principal e possíveis
-extensões do sistema. São exemplos conceptuais, independentes da
-plataforma de execução. O caso base abrange a comunicação bidirecional
-entre Ethernet e cada uma das restantes quatro interfaces, sem fixar
-os protocolos de aplicação ou a implementação.
+A Figura~\ref{fig:contexto-utilizacao} permite ler o âmbito pelos atores
+que interagem com a unidade. Os casos UC01--UC07 descrevem os resultados
+esperados; os valores e critérios completos constam do
+Capítulo~\ref{cap:requisitos}. As quantidades confirmadas delimitam o
+âmbito e não são deduzidas dos periféricos de um componente.
+
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{contexto}
+    \caption[Atores e casos de utilização.]{Atores e casos de utilização da unidade multiprotocolo. As ligações representam funções, não portas físicas adicionais.}
+    \label{fig:contexto-utilizacao}
+\end{figure}
 
 \begin{description}
-    \item[CA01 --- Comando e supervisão via Ethernet:] \hfill\newline
-    Um computador ou sistema central pode necessitar de comandar e
-    supervisionar dispositivos ligados a CAN, RS485, RS232 ou I2C.
-    Através de Ethernet, indica ao \textit{gateway} a interface de destino,
-    os dados ou comando e a informação de identificação ou endereçamento
-    aplicável. O \textit{gateway} transmite a informação ao dispositivo
-    e disponibiliza ao sistema central os dados ou respostas recebidos.
-    Esta mediação permite aceder, por uma ligação principal comum, a
-    equipamentos de barramento e a dispositivos locais, como sensores
-    I2C, respeitando as características de cada ligação.
+    \item[UC01. Comando de dispositivo pelo PC:] \hfill\\*
+    O PC envia uma operação por RS232, CAN ou Ethernet. A unidade
+    seleciona interface, canal e destino, adapta a informação e devolve
+    feedback quando previsto. Espera-se o resultado correto, associado
+    à operação. As três alternativas são suportadas, sem simultaneidade
+    exigida pelo PC; os percursos mínimos obrigatórios constam de RF17.
 
-    \item[CA02 --- Integração de equipamentos heterogéneos:] \hfill\newline
-    Um equipamento com interface série pode produzir informação necessária
-    a outro equipamento com interface CAN. Como extensão ao caso base,
-    o \textit{gateway} poderá receber essa informação e encaminhá-la para
-    o destino segundo um mapeamento que preserve o seu significado.
-    Esta mediação permite integrar equipamentos sem uma interface de
-    comunicação comum, desde que as operações de origem e destino sejam
-    compatíveis com o mapeamento definido. O exemplo não constitui um
-    par de encaminhamento obrigatório para a primeira versão.
+    \item[UC02. Aquisição de dados de sensor:] \hfill\\*
+    Um dispositivo fornece dados por uma interface suportada. A unidade
+    identifica a origem, associa informação temporal quando aplicável,
+    processa e disponibiliza os dados ao PC ou ao destino previsto.
+    Gere espera temporária se a saída não acompanhar a entrada.
+    A aquisição é genérica, sem uma grandeza de medição obrigatória.
 
-    \item[CA03 --- Plataforma de ensaio multiprotocolo:] \hfill\newline
-    Num contexto de desenvolvimento e integração de equipamentos, pode
-    ser necessário caracterizar a comunicação entre dispositivos com
-    interfaces distintas. O \textit{gateway} pode funcionar como plataforma
-    de ensaio, recebendo e processando informação desses dispositivos e,
-    quando previsto, encaminhando-a para um equipamento de ensaio.
-    A observação dessas operações permite estudar diferenças de delimitação
-    de tramas (\textit{framing}), temporização, endereçamento e débito
-    efetivo (\textit{throughput}), incluindo o comportamento com várias
-    comunicações ativas, apoiando a identificação de limitações antes
-    da integração no sistema de destino.
+    \item[UC03. Comando de atuador por PWM:] \hfill\\*
+    O PC solicita atuação num dos três PWM protegidos. A unidade comanda
+    o canal a 50~Hz, com impulso de 1100--1900~$\mu$s, nas condições
+    elétricas a especificar. Luzes e garra são exemplos; a garra usa
+    um dos três canais. Resolução, cargas e proteção concreta estão
+    em aberto; feedback físico exige meios de aquisição definidos.
+
+    \item[UC04. Operação concorrente:] \hfill\\*
+    Pedidos do PC e dados de dispositivos disputam processamento e
+    transmissão. A unidade gere prioridades e espera temporária sobre
+    um sistema operativo de tempo real (RTOS), mantendo o progresso nas cargas admissíveis. Cargas, latência,
+    saturação e política de atendimento ficam para projeto, sem impor
+    um RTOS concreto ou uma tarefa por interface.
+
+    \item[UC05. Sincronização por PPS e informação temporal GPS:] \hfill\\*
+    A unidade recebe PPS a um impulso por segundo e informação temporal
+    GPS entre impulsos, associando-os para sincronizar o relógio.
+    Os dados podem assim ser combinados pelo PC com outras fontes,
+    com resolução da ordem dos microssegundos. O erro será medido e
+    reportado; recuperação, recetor, protocolo e hardware ficam em aberto,
+    sem precisão absoluta garantida de $\pm1~\mu$s.
+
+    \item[UC06. Funcionamento elétrico e ambiental:] \hfill\\*
+    O responsável pela instalação alimenta a unidade dentro de 5--60~V
+    e utiliza as cargas especificadas. Avaliam-se separadamente a entrada,
+    as comunicações e as saídas PWM. Perturbações, isolamento e eventuais
+    condições ambientais serão especificados conforme a instalação;
+    não estão estabelecidas temperatura, humidade ou classificação de proteção.
+
+    \item[UC07. Disponibilização de dados:] \hfill\\*
+    O PC obtém dados identificados pelas interfaces previstas, com gestão
+    da espera temporária de RF13. Não existe registo persistente local de
+    dados; apenas a configuração da unidade é guardada em memória não
+    volátil (RF18).
 \end{description}
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Estudar e desenvolver um \textit{gateway} multiprotocolo que permita a
-um computador ou sistema central realizar, através de Ethernet,
-operações de leitura e escrita com dispositivos ligados a I2C, RS232,
-RS485 e CAN, processando e encaminhando a informação nos dois sentidos
-com a adaptação necessária aos protocolos e destinos envolvidos.
+Integrar comando, aquisição e atuação entre um PC e dispositivos
+heterogéneos, preservando a informação, coordenando operações concorrentes
+e relacionando temporalmente dados e eventos, nas condições elétricas
+especificadas. A solução será validada pelos critérios de aceitação do
+Capítulo~\ref{cap:requisitos}.
 
 \subsection{Objetivos Específicos}
 
-Para concretizar o objetivo geral, estabelecem-se os seguintes objetivos
-específicos:
-
+\begingroup
+\setstretch{1.15}
 \begin{enumerate}
+\setlength{\itemsep}{2pt}
     \item \label{obj:estudo-tecnologias}
-    Estudar as características de I2C, RS232, RS485, CAN e Ethernet
-    relevantes para a realização de operações de comunicação.
-
+    Estudar I2C, RS232, RS485, CAN e Ethernet, bem como RTOS, PWM,
+    sincronização e alimentação, no contexto dos casos de utilização.
     \item \label{obj:analise-limitacoes}
-    Analisar as diferenças e limitações das cinco tecnologias,
-    identificando as suas implicações para a integração num mesmo sistema.
-
+    Identificar limitações, parâmetros de dimensionamento e critérios
+    de aceitação das operações previstas.
     \item \label{obj:arquitetura}
-    Definir uma arquitetura de integração das cinco interfaces,
-    com Ethernet como ligação principal ao sistema central,
-    identificando os blocos de interface, processamento e decisão de
-    encaminhamento e as respetivas ligações.
-
+    Definir os blocos e ligações da arquitetura, incluindo as três
+    alternativas de acesso do PC, PWM e referência temporal PPS/GPS.
     \item \label{obj:comunicacao}
-    Implementar as funções de comunicação necessárias à transmissão
-    e receção de dados através de cada uma das cinco interfaces,
-    incluindo a gestão de comunicações concorrentes e de diferenças
-    de taxa.
-
+    Implementar leitura e escrita nas cinco tecnologias e a gestão
+    concorrente de prioridades e diferenças de taxa sobre RTOS.
     \item \label{obj:processamento-encaminhamento}
-    Definir e implementar operações de processamento e encaminhamento
-    bidirecional entre Ethernet e cada uma das restantes quatro
-    interfaces, explicitando a seleção de destino, as adaptações
-    necessárias e a informação a preservar.
-
+    Definir e implementar seleção de destino, processamento e
+    encaminhamento, preservando a informação segundo os mapeamentos
+    das operações, sem conversão universal entre todos os pares.
+    \item \label{obj:atuacao-alimentacao}
+    Implementar os três PWM protegidos e a alimentação de 5--60~V,
+    após especificar cargas e critérios elétricos.
+    \item \label{obj:sincronizacao}
+    Sincronizar o relógio por PPS e informação GPS, associar dados
+    com resolução da ordem dos microssegundos e medir o erro obtido.
     \item \label{obj:validacao}
-    Validar experimentalmente as operações de transmissão e receção
-    em cada interface e as operações de processamento e encaminhamento
-    definidas, de acordo com os requisitos que venham a ser consolidados.
+    Ensaiar as interfaces, os percursos definidos, o acesso do PC,
+    os PWM, a alimentação e a sincronização, documentando as condições.
 \end{enumerate}
+\endgroup
 
 \section{Estrutura do Relatório}
 
-Nesta fase de Análise de Requisitos, o relatório inclui quatro capítulos.
-O Capítulo~\ref{cap:introducao} apresenta o enquadramento, a motivação,
-os cenários de aplicação e os objetivos do trabalho.
-O Capítulo~\ref{cap:estado-arte} analisa as tecnologias abrangidas e as
-soluções existentes, comparando as suas características e limitações.
-O Capítulo~\ref{cap:requisitos} define os requisitos preliminares,
-relaciona-os com as suas origens e formas previstas de validação e
-identifica as decisões a esclarecer com os docentes.
-O Capítulo~\ref{cap:arquitectura} apresenta a visão conceptual do sistema,
-as interfaces externas, as funcionalidades e os tipos de operação,
-bem como o percurso funcional de encaminhamento e as características
-preliminares. A bibliografia reúne as fontes citadas.
+O Capítulo~\ref{cap:estado-arte} compara tecnologias e soluções existentes.
+O Capítulo~\ref{cap:requisitos} apresenta os requisitos, a rastreabilidade,
+os ensaios e as decisões em aberto. O Capítulo~\ref{cap:arquitectura}
+organiza funções, interfaces e percursos numa arquitetura conceptual.
+A bibliografia reúne as fontes citadas. Componentes e implementação
+concreta permanecem para a fase de projeto.

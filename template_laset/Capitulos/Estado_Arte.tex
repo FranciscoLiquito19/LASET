@@ -4,6 +4,12 @@
 \chapter{Estado da Arte}
 \label{cap:estado-arte}
 
+Este estudo fornece conhecimento para analisar P01--P04 e os casos de
+utilização da Introdução. Características de tecnologias e exemplos
+comerciais ajudam a identificar limites e parâmetros a especificar;
+não originam requisitos apenas por estarem disponíveis numa plataforma.
+A seleção de implementação segue os requisitos e os critérios de aceitação.
+
 \section{Comunicação em Sistemas Embebidos e Autónomos}
 
 Nos sistemas embebidos e autónomos, as interfaces de comunicação respondem
@@ -27,6 +33,18 @@ constitui um exemplo de protocolo que pode operar sobre ligações série,
 sem ser uma propriedade intrínseca dessas
 interfaces~\cite{nxp_um10204_2021,modbus_serial_2006}.
 
+A Figura~\ref{fig:topologias} compara as organizações de ligação usadas
+neste estudo. Os desenhos são conceptuais: os nós e os traços ilustram
+a topologia, sem estabelecer quantidades de equipamentos, condutores
+ou componentes para o projeto.
+
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{topologias}
+    \caption[Topologias das interfaces de comunicação.]{Organizações de ligação: I2C, RS232, RS485/CAN high-speed e Ethernet comutada. Elaboração a partir de~\cite{nxp_um10204_2021,dodson_rs232_2023,ti_rs485_an1057_2013,cia_can_hs,simmons_ethernet_2008}.}
+    \label{fig:topologias}
+\end{figure}
+
 \section{I2C}
 
 O I2C utiliza um barramento série síncrono partilhado constituído por duas
@@ -35,6 +53,7 @@ sinal de relógio. Nos modos \textit{Standard-mode}, \textit{Fast-mode} e
 \textit{Fast-mode Plus}, a sinalização baseia-se tipicamente em saídas de dreno ou
 coletor aberto e na polarização das linhas por
 \textit{pull-up}~\cite[sec.~3.1]{nxp_um10204_2021}.
+O projeto requer Standard mode (RF01), sem exigir os restantes modos.
 
 Nestes modos, um controlador inicia cada transferência e gera o relógio;
 o dispositivo alvo é selecionado por endereço de 7 ou 10 bits. Os dados circulam em bytes,
@@ -131,8 +150,8 @@ Classical CAN admite até 8 bytes de dados por trama. CAN FD aumenta
 esse limite para 64 bytes e permite, opcionalmente, um débito superior
 na fase de dados, mantendo a arbitragem à velocidade nominal.
 A dimensão das tramas e os condicionamentos físicos continuam a limitar
-a transferência; a variante e a configuração da rede devem, por isso,
-ser explicitadas na análise~\cite{cia_can_fd,cia_can_hs}.
+a transferência; a configuração da rede deve, por isso, ser
+explicitada~\cite{cia_can_fd,cia_can_hs}. A capacidade requerida e a configuração de projeto são distinguidas em RF04.
 
 \section{Ethernet}
 
@@ -159,17 +178,12 @@ monitorização e controlo. A adequação a sistemas embebidos e industriais
 exige, contudo, delimitar a variante física, a organização da rede e
 os serviços superiores necessários~\cite{ieee_8023_2018,simmons_ethernet_2008}.
 
-A validação de requisitos com os docentes estabelece Ethernet como
-ligação principal ao computador ou sistema central, com capacidade
-nominal mínima de 100~Mbit/s; Gigabit Ethernet é desejável. A família
-100BASE-T exemplifica Ethernet a 100~Mbit/s sobre pares entrançados;
-o requisito fixa a capacidade nominal, mantendo a variante PHY e o meio
-por selecionar. O débito nominal caracteriza a ligação,
-enquanto o débito útil depende também dos campos de controlo, dos
-intervalos entre tramas e dos protocolos
-superiores~\cite{simmons_ethernet_2008}. Por conseguinte, esta capacidade
-não garante uma latência ou um débito útil específicos do gateway, que
-dependem ainda da carga e do processamento.
+A família 100BASE-T exemplifica Ethernet a 100~Mbit/s sobre pares
+entrançados. O débito nominal caracteriza a ligação; o débito útil
+depende dos campos de controlo, intervalos entre tramas e protocolos
+superiores~\cite{simmons_ethernet_2008}. Também a latência do gateway
+depende da carga e do processamento. O requisito RF05 fixa o mínimo
+nominal, mantendo PHY, meio e serviços por selecionar.
 
 \section{Interface Física, Isolamento e Proteção}
 
@@ -191,7 +205,22 @@ conjunto~\cite[secs.~1 e~6]{viviano_rs485_isolation_2018}.
 No projeto, esta análise deve abranger a proteção da eletrónica de
 controlo e a integridade da comunicação, de acordo com cada interface
 e ambiente de utilização. Não decorre daqui a obrigatoriedade de isolar
-todas as interfaces, nem a definição antecipada de níveis de imunidade.
+todas as interfaces de comunicação, nem a definição antecipada de níveis
+de imunidade.
+
+Em UC06 distinguem-se entrada de alimentação, comunicações e saídas
+PWM/cargas. O isolamento galvânico e a proteção dos três PWM são
+obrigatórios; níveis, fenómenos e ensaios dos restantes domínios dependem
+do dimensionamento. Esta análise não estabelece isolamento universal ou
+uma classificação ambiental; as condições de instalação permanecem em DP17.
+
+No caso dos sinais PWM, o isolamento digital tem de preservar a largura do
+impulso. Isoladores digitais e optoacopladores rápidos têm atrasos de
+propagação e distorção da largura do impulso muito inferiores a
+1100--1900~$\mu$s, enquanto optoacopladores lentos de fototransístor
+têm tipicamente tempos de comutação assimétricos, da ordem dos
+microssegundos, que alteram a largura do impulso. O lado isolado
+necessita ainda de alimentação isolada. Estes aspetos ficam para DP12.
 
 \section{Sistemas ou Plataformas Multiprotocolo}
 
@@ -258,12 +287,14 @@ pelo equipamento; não implica que pertença diretamente ao MCU ou MPU.
 \begin{table}[htbp]
     \centering
     \small
+    \setstretch{1.05}
     \setlength{\tabcolsep}{4pt}
     \renewcommand{\arraystretch}{1.12}
     \caption{Plataformas programáveis e conversores dedicados selecionados.}
     \label{tab:plataformas-multiprotocolo}
     \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.18\textwidth}*{3}{>{\raggedright\arraybackslash}X}@{}}
         \toprule
+\rowcolor{LasetTint}
         Sistema e fonte & Computação e software & Interfaces documentadas & Configuração e limites \\
         \midrule
         GoWired~\cite{domatic_gowired}
@@ -304,12 +335,14 @@ nas fontes consultadas, sem implicar custo nulo.
 \begin{table}[htbp]
     \centering
     \small
+    \setstretch{1.05}
     \setlength{\tabcolsep}{4pt}
     \renewcommand{\arraystretch}{1.12}
     \caption{Informação económica disponível para as plataformas selecionadas.}
     \label{tab:custos-plataformas}
     \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.18\textwidth}*{2}{>{\raggedright\arraybackslash}X}@{}}
         \toprule
+\rowcolor{LasetTint}
         Sistema & Custo de aquisição & Utilização / observações \\
         \midrule
         GoWired~\cite{domatic_gowired}
@@ -376,28 +409,146 @@ barramento, como a prioridade dos identificadores CAN, não substitui
 essa gestão no interior do gateway~\cite{cia_can_cc}. No projeto, a
 política de prioridades terá de considerar os tempos de espera e evitar
 que uma comunicação impeça indefinidamente o progresso das restantes;
-esta necessidade não determina um sistema operativo ou escalonador.
+a validação de requisitos exige um RTOS, mantendo a seleção do sistema
+operativo e da política concreta de execução para a fase de projeto.
 
-As diferenças de taxa podem ocorrer tanto na concentração de dados dos
-barramentos para Ethernet como no envio do sistema central para uma
-interface mais lenta. Se os dados chegam antes de poderem ser
-transmitidos, pode ser necessário armazenamento temporário
-(\textit{buffering}). Por balanço entre a informação recebida e escoada,
-um buffer finito absorve apenas desequilíbrios limitados: se a taxa de
-entrada exceder de forma sustentada a capacidade de saída, não pode
-garantir ausência de perdas. É necessário definir a carga admissível
-e o comportamento perante saturação, em vez de atribuir essa garantia
-apenas à existência de memória.
+As diferenças de taxa surgem tanto na concentração de dados para o
+PC como no envio para uma interface mais lenta. A
+Figura~\ref{fig:buffering} sintetiza o problema: a memória absorve apenas
+desequilíbrios limitados, pelo que é necessário definir a carga admissível
+e o comportamento perante saturação.
 
-O controlo de fluxo ou \textit{backpressure} pode limitar a produção de
-dados quando os protocolos e os participantes o permitem. Em TCP,
-a janela anunciada pelo recetor condiciona os dados que o emissor pode
-enviar e relaciona-se com o espaço de receção
-disponível~\cite[sec.~3.8.6]{eddy_tcp_2022}. Este mecanismo exemplifica
-uma possibilidade, sem assumir TCP no projeto nem a existência de
-controlo de fluxo equivalente em todas as interfaces. As condições de
-operação terão de compatibilizar taxas, armazenamento, prioridades e
-tempos de espera, mantendo em aberto os limites quantitativos.
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{concorrencia}
+    \caption[Adaptação de taxas e armazenamento temporário.]{Adaptação de taxas e armazenamento temporário. Esquema qualitativo, sem capacidade, duração ou desempenho já dimensionados.}
+    \label{fig:buffering}
+\end{figure}
+
+Quando os protocolos o permitem, o controlo de fluxo pode limitar a
+produção de dados. Em TCP, por exemplo, a janela anunciada pelo recetor
+condiciona os dados enviados e relaciona-se com o espaço de receção
+disponível~\cite[sec.~3.8.6]{eddy_tcp_2022}. Não se pressupõe TCP no
+projeto nem um mecanismo equivalente em todas as interfaces.
+
+\section{Execução Concorrente sobre RTOS}
+\label{sec:rtos}
+
+Um RTOS organiza a execução concorrente através de tarefas, prioridades,
+espera por eventos e serviços de temporização. Uma tarefa que aguarda
+um evento pode deixar o processador disponível para outras atividades.
+A documentação do FreeRTOS apresenta estes mecanismos e a sua relação
+com o escalonamento~\cite[cap.~3]{barry_freertos_2016}. Num sistema com
+várias interfaces, permitem coordenar receção, processamento e transmissão;
+a adequação depende das cargas e dos tempos de resposta especificados.
+
+O RTOS é uma restrição técnica confirmada para UC04, não uma conclusão
+de que só esta tecnologia permite concorrência. FreeRTOS é candidato,
+sem seleção efetuada. A existência de um RTOS não demonstra cumprimento
+de prazos; cargas, tarefas e política de execução ficam para projeto.
+
+\section{PWM e Comando de Cargas}
+\label{sec:pwm}
+
+A modulação por largura de impulso (PWM) varia a duração do impulso ativo
+relativamente ao período, expressa pelo ciclo de trabalho
+(\textit{duty cycle}). A documentação da Microchip apresenta a sua
+utilização no comando de potência de cargas, incluindo motores, e
+exemplos com estágios de acionamento~\cite{microchip_tips_2009}.
+PWM designa uma saída de controlo, não um protocolo de comunicação.
+
+Se os níveis ou a corrente da carga excederem a capacidade da saída
+lógica, é necessário um estágio de acionamento adequado. O projeto
+requer três PWM isolados e protegidos, com os parâmetros da
+Figura~\ref{fig:pwm}. Nos sinais de comando de servos e atuadores
+semelhantes, a informação está na largura absoluta do impulso (aqui,
+1100--1900~$\mu$s a 50~Hz) e não na razão cíclica.
+Resolução, cargas, tensão de isolamento e natureza da proteção permanecem
+em aberto (DP12).
+Luzes e garra são exemplos de utilização, sem canais adicionais.
+
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{pwm}
+    \caption[Largura de impulso e frequência PWM.]{Limites da largura de impulso PWM de RF15, iguais nos três canais protegidos. As larguras são proporcionais ao período de 20 ms, deduzido de 50 Hz; a amplitude não está especificada. Representação ideal, sem resultados medidos.}
+    \label{fig:pwm}
+\end{figure}
+
+\section{Alimentação com Gama de Entrada Ampla}
+\label{sec:alimentacao}
+
+A entrada confirmada de 5~V a 60~V exige compatibilizar a tensão externa
+com as tensões de funcionamento internas. O estudo da Texas Instruments
+sobre conversores DC--DC com gama ampla analisa a variação dos esforços
+elétricos e da eficiência com as condições de entrada e
+carga~\cite{ti_wide_input_2013}. Estes aspetos motivam avaliar conversão
+ou regulação, dissipação e proteção da entrada em toda a gama requerida.
+
+Não se escolhe uma topologia nem componentes nesta fase. A corrente e
+potência máximas, a polaridade, os transientes admissíveis, a proteção
+e a eficiência requerida permanecem por definir. A gama da entrada do
+sistema não define a tensão das cargas PWM nem impõe ensaios de
+transientes ainda não especificados.
+
+\section{Sincronização e Disponibilização de Dados}
+\label{sec:sincronizacao-dados}
+
+A sincronização permite associar medições de diferentes sensores a
+uma referência temporal, para o PC as combinar com dados de outras
+fontes em localização, fusão ou processamento. A RFC~5905
+exemplifica a utilização de marcas temporais e a estimativa de desvio
+entre relógios considerando atrasos da comunicação~\cite{mills_ntp_2010}.
+É usada para fundamentar estes conceitos, sem selecionar NTP, PTP ou
+outro protocolo para o projeto. A mesma RFC identifica GPS e PPS como
+referências temporais~\cite[sec.~7.3]{mills_ntp_2010}.
+
+A Figura~\ref{fig:pps-gps} representa a referência temporal requerida.
+O docente confirmou PPS com um impulso por segundo e mensagens GPS
+com informação temporal entre impulsos para sincronizar o relógio da
+unidade, com resolução da ordem dos microssegundos na associação dos
+dados. Resolução temporal não equivale a precisão absoluta: o erro
+efetivo será medido e reportado.
+
+A RFC~2783 descreve a captura de uma marca temporal na transição PPS
+e a sua comparação com o código temporal recebido para estimar o desvio
+do relógio. Esta separação fundamenta a associação entre impulso e
+informação temporal; a representação de uma marca com elevada resolução
+não demonstra igual exatidão na captura~\cite[secs.~1--2]{mogul_pps_2000}.
+A RFC trata uma API para sistemas UNIX, aqui usada apenas como
+fundamentação conceptual, sem exigir essa API ou sistema operativo.
+A correspondência entre mensagem e impulso, a escala temporal e a
+recuperação serão especificadas em DP14, segundo a documentação da
+referência selecionada; recetor, protocolo e hardware permanecem em aberto.
+
+\begin{figure}[htbp]
+    \centering
+    \Diagrama{sincronizacao}
+    \caption[Referência temporal PPS/GPS.]{PPS a 1 Hz e informação temporal GPS para sincronizar o relógio. Os instantes das mensagens são ilustrativos; não fixam latência, protocolo ou associação a um impulso específico.}
+    \label{fig:pps-gps}
+\end{figure}
+
+Sincronizar relógios é distinto de cumprir prazos de execução. A presença
+de RTOS não sincroniza automaticamente o relógio da unidade, e uma
+referência temporal comum não garante latência limitada ou tempo real
+estrito. O método de associação temporal e os pontos de aquisição das
+marcas temporais deverão ser definidos para que o erro possa ser medido.
+
+Os dados podem ser disponibilizados diretamente pelas interfaces de
+comunicação, sem exigir armazenamento persistente local. A configuração
+da unidade, pelo contrário, tem de sobreviver a reinícios, o que se obtém
+em memória flash não volátil. A escrita em flash faz-se por páginas,
+exige apagamento prévio e admite um número limitado de ciclos; por isso
+usam-se técnicas como a rotação de páginas, o registo da configuração com
+verificação de integridade e a manutenção de uma cópia anterior válida,
+de modo a tolerar falhas de alimentação durante a escrita. A emulação de
+EEPROM em flash de microcontroladores, por exemplo, adota estes princípios
+para ser robusta perante quedas de alimentação e reinícios
+assíncronos~\cite{st_an4894}. Em microcontroladores sem banco duplo,
+programar ou apagar a flash pode suspender a execução de código a partir
+da própria flash, o que condiciona o momento da escrita num sistema com
+requisitos temporais. Esta é uma opção arquitetural; não substitui a
+definição dos limites do armazenamento temporário necessário às
+diferenças de taxa.
 
 \section{Comparação das Tecnologias}
 
@@ -413,12 +564,14 @@ as variantes.
 \begin{table}[htbp]
     \centering
     \small
+    \setstretch{1.05}
     \setlength{\tabcolsep}{4pt}
     \renewcommand{\arraystretch}{1.12}
     \caption{Organização da comunicação nas tecnologias estudadas.}
     \label{tab:comparacao-organizacao}
     \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{3}{>{\raggedright\arraybackslash}X}@{}}
         \toprule
+\rowcolor{LasetTint}
         Tecnologia & Topologia e multiponto & Sinalização & Identificação \\
         \midrule
         I2C~\cite{nxp_um10204_2021}
@@ -452,12 +605,14 @@ as variantes.
 \begin{table}[htbp]
     \centering
     \small
+    \setstretch{1.05}
     \setlength{\tabcolsep}{4pt}
     \renewcommand{\arraystretch}{1.12}
     \caption{Condicionamentos e aplicações das tecnologias estudadas.}
     \label{tab:comparacao-condicoes}
     \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}*{3}{>{\raggedright\arraybackslash}X}@{}}
         \toprule
+\rowcolor{LasetTint}
         Tecnologia & Alcance e débito & Robustez e condicionantes & Aplicações típicas \\
         \midrule
         I2C~\cite{nxp_um10204_2021}
@@ -493,61 +648,41 @@ as variantes.
 \section{Síntese Crítica do Estado da Arte}
 \label{sec:sintese-estado-arte}
 
-Os exemplos analisados evidenciam duas questões distintas:
-disponibilizar interfaces e assegurar interoperabilidade. As plataformas
-programáveis fornecem recursos para implementar a integração, sujeitos
-às suas opções e incompatibilidades físicas; os conversores dedicados
-documentam pares de protocolos, papéis e mapeamentos
+Disponibilizar interfaces e assegurar interoperabilidade são problemas
+distintos. As plataformas programáveis oferecem recursos sujeitos às
+suas opções e incompatibilidades físicas; os conversores dedicados
+suportam pares de protocolos, papéis e mapeamentos
 concretos~\cite{compulab_imx7_manual_2018,moxa_mgate5105,hms_ab7838}.
-Por conseguinte, o conceito de \textit{gateway} embebido multiprotocolo
-em estudo deve ser delimitado pelas trocas de informação pretendidas,
-sem pressupor conversão arbitrária entre quaisquer interfaces. No âmbito
-confirmado na validação de requisitos com os docentes, Ethernet é a ligação principal ao
-sistema central, que envia comandos e recebe dados de CAN, RS485, RS232
-e I2C. O encaminhamento bidirecional entre Ethernet e cada uma destas
-interfaces constitui o núcleo obrigatório; outros pares são uma
-possibilidade de generalização a confirmar.
+Por isso, o gateway deste projeto é definido pelas operações pretendidas,
+sem pressupor conversão arbitrária entre interfaces.
 
-As tecnologias diferem na delimitação de tramas (\textit{framing}),
-identificação, unidades de transferência, débito, temporização e
-tratamento de erros. Por exemplo, RS485 define características elétricas,
-não um tamanho máximo de dados de aplicação. A transmissão de grandes
-volumes não é excluída por essa norma: a sua organização e viabilidade
-dependem do protocolo superior e das condições da
-ligação~\cite{ti_rs485_an1057_2013,modbus_serial_2006}.
-Também não se pode pressupor correspondência de uma trama recebida
-para uma trama transmitida. TCP ilustra esta diferença: transporta
-um fluxo de bytes e não preserva os limites das operações de escrita
-da aplicação~\cite[sec.~3.7]{eddy_tcp_2022}. A sua utilização neste exemplo
-não constitui uma escolha de protocolo para o projeto.
+As tecnologias diferem na delimitação de tramas, identificação, unidade
+de transferência, taxa, temporização e tratamento de erros. RS485 não
+impõe um tamanho máximo de dados de aplicação: a transferência depende
+do protocolo superior~\cite{ti_rs485_an1057_2013,modbus_serial_2006}.
+TCP ilustra outra diferença, pois transporta um fluxo de bytes sem
+preservar os limites das escritas da aplicação~\cite[sec.~3.7]{eddy_tcp_2022}.
+Não é, por isso, garantida uma correspondência de uma trama recebida
+para uma trama transmitida.
 
-Da comparação decorre que o encaminhamento pode exigir delimitação,
-segmentação e adaptação, além da interpretação do protocolo superior.
-O mapeamento
-tem ainda de preservar o significado dos dados; copiar bytes não
-estabelece, por si só, equivalência entre operações ou grandezas.
-Esta conclusão articula os mecanismos de transporte com os exemplos
-de mapeamento e normalização
-estudados~\cite{eddy_tcp_2022,castellanos_gateway_2021}.
+O encaminhamento pode exigir delimitação, segmentação, controlo de
+fluxo e interpretação. Deve preservar o significado dos dados, além de
+copiar bytes; os exemplos de mapeamento e normalização sustentam esta
+distinção~\cite{eddy_tcp_2022,castellanos_gateway_2021}. O acesso do PC
+precisa de identificar origem, destino e configuração. Em CAN, o
+identificador da trama não constitui, por si só, um endereço de nó.
+Uma representação intermédia comum continua a ser hipótese de projeto.
 
-O acesso a partir do sistema central deve permitir selecionar a
-interface e o destinatário ou identificador aplicável, fornecer dados
-ou comandos e receber os resultados. A uniformidade e a transparência
-deste acesso são objetivos desejáveis de abstração. Em CAN, o identificador
-de trama não equivale necessariamente
-a um endereço de nó; a sua interpretação depende do protocolo superior.
-Esta abstração externa não obriga a uma representação intermédia
-universal. Adaptadores e uma representação comum continuam a ser
-hipóteses de projeto, a avaliar quanto à preservação da informação
-específica e ao processamento adicional.
+O âmbito confirmado inclui acesso por RS232, CAN e Ethernet, aquisição,
+PWM protegido, alimentação de gama ampla, RTOS e relógio sincronizado
+por PPS/GPS. Os valores são consolidados no Capítulo~\ref{cap:requisitos}.
+As diferenças de taxa exigem limites de buffering; a concorrência exige
+uma política de atendimento; a sincronização exige distinguir resolução
+e erro efetivo. Nenhuma destas propriedades resulta apenas da presença
+de memória, RTOS ou uma referência temporal.
 
-Para a Análise de Requisitos, estas conclusões sustentam o acesso
-bidirecional centrado em Ethernet, a adaptação e preservação da informação
-e a gestão de concorrência, prioridades e diferenças de taxa. A capacidade
-geral de gateway exige informação suficiente sobre destino, configuração
-e protocolo em cada operação; não implica conversão semântica automática
-de protocolos desconhecidos. O mínimo nominal Ethernet de 100~Mbit/s
-está definido, mas as condições de carga, os limites de armazenamento e
-os critérios temporais e de fiabilidade permanecem por validar. A
-observação de operações, erros e resultados deverá permitir verificar
-esse comportamento sem antecipar a implementação.
+As escolhas de hardware e configuração seguem os requisitos e os
+ensaios definidos. Latência, cargas, proteção e restantes decisões
+permanecem nas DP01--DP17. Os limites teóricos de uma tecnologia não
+são valores de aceitação presumidos; as condições ambientais adicionais
+dependem do contexto de instalação.

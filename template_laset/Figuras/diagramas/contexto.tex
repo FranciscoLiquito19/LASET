@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+    \node[nucleo,text width=3.8cm,minimum height=1.8cm] (unidade) at (7.2,0)
+        {\textbf{Unidade embebida}\\Comando e aquisição\\Atuação\\
+         RTOS (UC04)};
+    \node[bloco,text width=2.7cm] (pc) at (1.5,0)
+        {\textbf{PC}\\Comandos (UC01)\\Dados (UC07)};
+    \node[bloco,text width=2.7cm] (sensores) at (12.7,0)
+        {\textbf{Dispositivos externos}\\Aquisição (UC02)};
+    \node[auxiliar,text width=2.7cm] (tempo) at (1.5,-2.8)
+        {\textbf{PPS + GPS}\\Referência temporal\\(UC05)};
+    \node[bloco,text width=3.8cm] (cargas) at (7.2,-2.8)
+        {\textbf{Cargas / atuadores}\\Comando PWM isolado e protegido (UC03)};
+    \node[auxiliar,text width=2.7cm] (instalacao) at (12.7,-2.8)
+        {\textbf{Instalação}\\Alimentação\\e condições (UC06)};
+    \draw[duplo] (pc) -- (unidade);
+    \draw[duplo] (unidade) -- (sensores);
+    \draw[fluxo] (unidade) -- (cargas);
+    \draw[fluxo] (tempo.north east) -- (unidade.south west);
+    \draw[fluxo] (instalacao.north west) -- (unidade.south east);
+\end{tikzpicture}
