@@ -64,11 +64,55 @@ Schottky de 100 V (D2): mais simples e robusto, à custa de ~0,5 V de queda.
   provisoriamente o TSSOP-38 sem pad. É preciso criar o footprint.
 - Pino FB do TPS62162 (versão fixa de 3,3 V) a GND: confirmar na folha de características.
 
-## Próximas folhas
+## Folha 2: Microcontrolador (`mcu.kicad_sch`)
 
-2. Microcontrolador (STM32H743ZIT6): alimentação, cristais, reset, SWD, atribuição de pinos.
-3. Ethernet (LAN8742A + RJ45).
-4. CAN FD ×2 (ADM3057E).
-5. RS485 (ADM2582E) e RS232 (MAX3227E).
-6. I2C ×2 (PCA9306) e GPS (PPS + UART).
-7. PWM ×3 (ADuM6401).
+STM32H743ZIT6 com 11 condensadores de 100 nF (um por VDD) + 4,7 µF, VDDA filtrado por
+ferrite, 2 × 2,2 µF no VCAP, cristal de 25 MHz (o PLL dá 80 MHz exatos para o FDCAN a
+8 Mbit/s), cristal de 32,768 kHz para o RTC, conector SWD de 10 pinos, consola em USART3
+e dois LED.
+
+O gerador **recusa gerar** se algum pino não tiver a função alternativa pedida
+(`verificar_pinos()` em `folha_mcu.py`). Atribuição:
+
+| Função | Pinos |
+|---|---|
+| Ethernet RMII (igual à NUCLEO-H753ZI) | PA1 REF_CLK, PA2 MDIO, PC1 MDC, PA7 CRS_DV, PC4/PC5 RXD0/1, PG11 TX_EN, PG13/PB13 TXD0/1, PG14 reset do PHY |
+| CAN FD 1 / 2 | PD0/PD1 (FDCAN1), PB5/PB6 (FDCAN2); PG2/PG3 STBY |
+| RS485 (USART1, DE por hardware) | PA9 TX, PA10 RX, PA12 DE, PA11 nRE |
+| RS232 (USART2) | PD5 TX, PD6 RX |
+| GPS | PE7/PE8 (UART7), PA15 PPS (TIM2_CH1, 32 bits) |
+| I2C 1 / 2 | PB8/PB9, PF1/PF0 |
+| PWM (TIM1) | PE9, PE11, PE13; PE14 retorno do isolador |
+| Consola, SWD | PD8/PD9 (USART3); PA13, PA14, PB3 |
+| Estado | PG0 PG_5V, PG1 PG_3V3, PB0 e PE1 LED |
+
+## Folhas 3 a 7: interfaces
+
+| Folha | Conteúdo |
+|---|---|
+| Ethernet | LAN8742A em RMII, cristal 25 MHz, REF_CLK de 50 MHz para o MCU, terminações de 49,9 Ω, RJ45 com magnéticos HR911105A |
+| CAN FD | 2 × ADM3057E isolados; STBY com pull-down; terminação de 120 Ω por jumper de solda; bornes H, L, GND isolado |
+| RS485 e RS232 | ADM2582E isolado em half-duplex com terminação por jumper; MAX3227E sempre ligado |
+| I2C e GPS | 2 × PCA9306 (lado do sensor a 3,3 ou 5 V por JP4); conector GPS com PPS protegido por 100 Ω |
+| PWM isolado | ADuM6401: 3 canais isolados + retorno do PWM1 isolado para diagnóstico; VSEL a VISO (5 V) |
+
+## Verificação feita aqui
+
+161 componentes, 218 redes, nenhuma etiqueta global sem par, nenhuma referência
+repetida. O ERC final é no KiCad (a versão de linha de comandos que tenho não o faz).
+
+## A verificar antes do fabrico
+
+- **ADuM6401 pino 7:** usei o símbolo do ADuM5401 (mesma família e encapsulamento).
+  Liguei o pino 7 a 5 V; confirmar na folha de características do ADuM6401.
+- **HR911105A:** pinos dos LED (9 a 12) sem ligação; confirmar o pino 8 (blindagem).
+- **LM5177:** compensação (WEBENCH) e footprint com pad exposto.
+- **TPS62162:** FB a GND na versão fixa de 3,3 V.
+- **Footprints no KiCad 9:** alguns nomes podem ter mudado. Ver o passo seguinte.
+
+## Passo seguinte: footprints e PCB
+
+1. No editor de esquemas: **Ferramentas > Atualizar PCB a partir do esquema** (F8).
+   Abre o editor de PCB e lista os footprints que não encontrou. Manda-me essa lista.
+2. Com todos os footprints encontrados, definimos o contorno da placa, as 4 camadas
+   (sinal, GND, alimentação, sinal) e as zonas de isolamento antes de colocar componentes.

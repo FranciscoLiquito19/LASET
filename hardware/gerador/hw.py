@@ -162,7 +162,7 @@ class Folha:
         else:
             self.sch.globalLabels.append(GlobalLabel(text=rede, shape='bidirectional', position=Position(ex, ey, ang), effects=_fx(just=just), uuid=_u()))
 
-    def comp(self, ref, lib_id, valor, x, y, ligacoes, footprint='', nc=(), extra=None):
+    def comp(self, ref, lib_id, valor, x, y, ligacoes, footprint='', nc=(), extra=None, resto_nc=False):
         """Coloca um componente. ligacoes: {numero_ou_nome_do_pino: rede}.
 
         Redes começadas por '/' são locais à folha; as outras são globais
@@ -186,7 +186,7 @@ class Folha:
         for p in ps:
             if p.number in feitos:
                 continue
-            if p.electricalType == 'no_connect' or p.number in [str(n) for n in nc] or p.name in nc:
+            if resto_nc or p.electricalType == 'no_connect' or p.number in [str(n) for n in nc] or p.name in nc:
                 px, py = x + p.position.X, y - p.position.Y
                 self.sch.noConnects.append(NoConnect(position=Position(px, py), uuid=_u()))
             else:
