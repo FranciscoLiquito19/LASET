@@ -56,8 +56,8 @@ alternativas de ligação pelo PC.
     um limite rígido. Baud rate e protocolo superior serão definidos em
     DP16 e DP02; não é uma ligação obrigatória PC--unidade.
 
-    \item[RF04. Três barramentos CAN FD:] \hfill\\*
-    O sistema deve disponibilizar exatamente três barramentos CAN FD,
+    \item[RF04. Dois barramentos CAN FD:] \hfill\\*
+    O sistema deve disponibilizar exatamente dois barramentos CAN FD,
     cada um com capacidade até 8~Mbit/s, conforme indicação do docente.
     CAN FD deve poder servir a comunicação com o PC e com nós externos;
     a distribuição dos canais por estes papéis será definida em DP01.
@@ -349,7 +349,7 @@ RF02 & P01; UC01: acesso série do PC; UC02: aquisição; taxas confirmadas. & T
 \addlinespace
 RF03 & P01; UC01--UC02: dispositivos externos RS485; dimensão de referência de aproximadamente 16--32 nós, sem número exato crítico. & Ensaiar operações na rede de referência e registar a configuração e o número de nós usados. Critério: resultados esperados, sem impor 32 como limite rígido; baud rate/protocolo a definir (DP02, DP16). \\
 \addlinespace
-RF04 & P01; UC01--UC02: PC e nós CAN; três CAN FD até 8~Mbit/s confirmados. & Inspecionar exatamente três barramentos e transmitir/receber dados conhecidos em cada um, verificando a capacidade de 8~Mbit/s. Critério: dados corretos nos três; registar a configuração das duas fases definida no projeto, sem a presumir nesta especificação. \\
+RF04 & P01; UC01--UC02: PC e nós CAN; dois CAN FD até 8~Mbit/s confirmados. & Inspecionar exatamente dois barramentos e transmitir/receber dados conhecidos em cada um, verificando a capacidade de 8~Mbit/s. Critério: dados corretos nos dois; registar a configuração das duas fases definida no projeto, sem a presumir nesta especificação. \\
 \addlinespace
 RF05 & P01; UC01 e UC07: ligação Ethernet; mínimo validado. & Verificar capacidade e ligação com equipamento compatível. Critério: capacidade nominal de pelo menos 100~Mbit/s; débito útil/latência não garantidos. \\
 \addlinespace
@@ -465,13 +465,13 @@ Parâmetro & Estado & Valor / Critério & Origem / Caso \\
 Alimentação: tensão & Confirmado & 5~V a 60~V, incluindo limites. & UC06; RNF08 \\
 Ethernet: taxa nominal & Confirmado & Pelo menos 100~Mbit/s; Gigabit desejável. & UC01, UC07; RF05 \\
 I2C: quantidade & Confirmado & Exatamente dois barramentos independentes. & UC01, UC02; RF01 \\
-CAN FD: quantidade & Confirmado & Exatamente três barramentos. & UC01, UC02; RF04 \\
+CAN FD: quantidade & Confirmado & Exatamente dois barramentos. & UC01, UC02; RF04 \\
 PWM: quantidade & Confirmado & Exatamente três saídas isoladas e protegidas. & UC03, UC06; RF15 \\
 PC--unidade: alternativas & Confirmado & RS232, CAN e Ethernet; sem simultaneidade exigida. & UC01; RF09 \\
 Execução & Confirmado & RTOS obrigatório; seleção e organização para projeto. & UC04; RNF07 \\
 I2C: modo & Confirmado & Standard mode em ambos os barramentos; validar comunicação nesse modo. & UC01, UC02; RF01 \\
 I2C: configuração restante & Em aberto & Papéis e níveis elétricos, mantendo Standard mode. & UC01, UC02; DP01, DP16 \\
-CAN FD: capacidade & Confirmado & Até 8~Mbit/s em cada um dos três barramentos; verificar por comunicação. & UC01, UC02; RF04 \\
+CAN FD: capacidade & Confirmado & Até 8~Mbit/s em cada um dos dois barramentos; verificar por comunicação. & UC01, UC02; RF04 \\
 CAN FD: configuração & Em aberto & Configuração das duas fases sem bitrates separados presumidos; protocolo superior em DP02. & UC01, UC02; RF04 \\
 RS232: taxa operacional & Confirmado & 500~kbit/s; ensaiar transmissão e receção. & UC01, UC02; RF02 \\
 RS232: capacidade & Confirmado & Até 1~Mbit/s; verificar também comunicação a 1~Mbit/s. & UC01, UC02; RF02 \\
@@ -564,7 +564,7 @@ ID & Tema & Definição a documentar \\
 \endfoot
 \bottomrule
 \endlastfoot
-DP01 & Operações e papéis & Distribuição dos três CAN FD entre PC e nós externos, papéis I2C e percursos de RF17. Manter os quatro percursos mínimos entre o PC (Ethernet) e as restantes interfaces; definir os percursos adicionais, como CAN para RS485, e os respetivos protocolos e mapeamentos com DP02. \\
+DP01 & Operações e papéis & Distribuição dos dois CAN FD entre PC e nós externos, papéis I2C e percursos de RF17. Manter os quatro percursos mínimos entre o PC (Ethernet) e as restantes interfaces; definir os percursos adicionais, como CAN para RS485, e os respetivos protocolos e mapeamentos com DP02. \\
 \addlinespace
 DP02 & Protocolos externos & Protocolos superiores, endereços, identificadores e mapeamentos dos dispositivos. Documentar significado dos dados e configurações que permitam reproduzir cada operação. \\
 \addlinespace
