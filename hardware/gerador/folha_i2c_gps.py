@@ -29,6 +29,8 @@ def i2c(f, n, y):
     f.comp(f'JP{3 + n}', 'Jumper:Jumper_3_Bridged12', 'VPU: 3,3 V (1-2) ou 5 V (2-3)', 290, y - 15, {
         1: '+3V3', 2: vpu, 3: '+5V'}, JP3)
     f.comp(f'C{91 + 2 * n}', C, '1 uF', 300, y + 10, {1: vpu, 2: 'GND'}, C0603)
+    f.comp(f'D{6 + n}', 'Power_Protection:PRTR5V0U2X', 'PRTR5V0U2X', 315, y - 25, {
+        'GND': 'GND', 'I/O1': sda, 'I/O2': scl, 'VCC': vpu})
     f.comp(f'J{7 + n}', 'Connector_Generic:Conn_01x04', f'I2C{n} (VPU, SDA, SCL, GND)', 335, y, {
         1: vpu, 2: sda, 3: scl, 4: 'GND'}, jst_ph(4))
 
@@ -46,5 +48,8 @@ def folha():
     f.comp('R80', R, '33', 200, 215, {1: '/GPS_TXD', 2: 'GPS_RX'}, R0603)
     f.comp('R81', R, '33', 225, 215, {1: 'GPS_TX', 2: '/GPS_RXD'}, R0603)
     f.comp('R82', R, '100', 250, 215, {1: '/GPS_PPS_IN', 2: 'GPS_PPS'}, R0603)
+    f.comp('D9', 'Power_Protection:ESDA6V1-5SC6', 'ESDA6V1-5SC6', 200, 245, {
+        'IO1': '/GPS_TXD', 'GND': 'GND', 'IO2': '/GPS_RXD', 'IO3': '/GPS_PPS_IN'}, nc=('IO4', 'IO5'))
+    f.comp('TP9', 'Connector:TestPoint', 'PPS', 250, 245, {1: 'GPS_PPS'}, 'TestPoint:TestPoint_Pad_D1.5mm')
     f.comp('C96', C, '10 uF', 290, 230, {1: '+3V3', 2: 'GND'}, C1206)
     return f

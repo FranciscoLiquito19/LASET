@@ -1,4 +1,22 @@
 \section*{Resumo}
-...
+Este relatório descreve o projeto de uma unidade de escrita e leitura
+multiprotocolo que liga um PC a dispositivos externos através de I2C,
+RS232, RS485, dois barramentos CAN FD e Ethernet, e que comanda três
+saídas PWM isoladas com marcação temporal sincronizada por PPS/GPS. A
+unidade encaminha dados entre interfaces com taxas diferentes, mantém
+progresso sob concorrência e guarda a configuração em memória não
+volátil.
+
+A partir das necessidades recolhidas junto dos docentes, definem-se
+sete casos de utilização, 18 requisitos funcionais, 8 requisitos não
+funcionais e os respetivos critérios de aceitação, e propõe-se uma
+arquitetura de alto nível. Na fase de projeto escolhe-se o
+microcontrolador STM32H743 com FreeRTOS, transceivers isolados para CAN FD,
+RS485 e PWM, e uma fonte buck-boost que aceita de 5 a 60 V. O esquema
+elétrico completo é gerado por código e verificado automaticamente, e o
+firmware organiza-se em tarefas com filas por interface e duas classes de
+prioridade.
+
 \section*{Palavras-chave}
-...
+Gateway multiprotocolo, CAN FD, RS485, Ethernet, PPS/GPS, PWM isolado,
+STM32H743, FreeRTOS.

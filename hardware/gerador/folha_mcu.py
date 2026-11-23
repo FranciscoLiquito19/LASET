@@ -18,7 +18,7 @@ projeto CubeMX da placa de avaliação):
   Estado         PB0 LED; PF2 PG_5V; PF3 PG_3V3
 """
 from hw import Folha, simbolo, pinos
-from comum import (R, C, FB, R0603, C0603, C0805, FB0603, LED0603, XTAL3225, desacoplamento)
+from comum import (R, C, FB, R0603, C0603, C0805, FB0603, LED0603, XTAL3225, JP2, desacoplamento)
 
 MCU = 'MCU_ST_STM32H7:STM32H743ZITx'
 
@@ -75,6 +75,7 @@ def folha():
     # Reset e arranque
     f.comp('C36', C, '100 nF', 40, 130, {1: 'NRST', 2: 'GND'}, C0603)
     f.comp('R20', R, '10k', 52, 130, {1: '/BOOT0', 2: 'GND'}, R0603)
+    f.comp('JP6', 'Jumper:Jumper_2_Open', 'BOOT0 (fechar = bootloader)', 66, 145, {1: '+3V3', 2: '/BOOT0'}, JP2)
 
     # Oscilador HSE
     f.comp('Y1', 'Device:Crystal_GND24', '25 MHz (C_L 10 pF)', 60, 165, {1: '/OSC_IN', 3: '/OSC_OUT', 2: 'GND', 4: 'GND'}, XTAL3225)
@@ -82,9 +83,10 @@ def folha():
     f.comp('C38', C, '15 pF', 80, 180, {1: '/OSC_OUT', 2: 'GND'}, C0603)
 
     # SWD
-    f.comp('J2', 'Connector:Conn_ARM_JTAG_SWD_10', 'SWD (Tag-Connect / ST-LINK)', 340, 70, {
-        1: '+3V3', 2: '/SWDIO', 3: 'GND', 4: '/SWCLK', 5: 'GND', 6: '/SWO', 9: 'GND', 10: 'NRST'},
-        'Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical', nc=(8,))
+    # Mesma ordem do CN4 (SWD) do ST-LINK das placas NUCLEO: cabo direto de 6 vias
+    f.comp('J2', 'Connector_Generic:Conn_01x06', 'SWD (CN4 da NUCLEO)', 340, 70, {
+        1: '+3V3', 2: '/SWCLK', 3: 'GND', 4: '/SWDIO', 5: 'NRST', 6: '/SWO'},
+        'Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical')
 
     # LED de estado
     f.comp('R21', R, '1k', 330, 130, {1: '/LED', 2: '/LED_A'}, R0603)

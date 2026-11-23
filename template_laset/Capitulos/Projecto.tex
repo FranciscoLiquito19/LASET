@@ -128,8 +128,11 @@ Comparam-se duas abordagens (DP05):
 \end{description}
 
 Ambos os valores incluem a placa NUCLEO e um recetor GPS para os ensaios
-de RF16, e excluem passivos, conectores e o fabrico da PCB, ainda por
-fechar com o esquema elétrico. Propõe-se a abordagem B como solução
+de RF16, e excluem passivos, conectores e o fabrico da PCB. Excluem também
+os componentes acrescentados com o esquema elétrico e cujo preço ainda
+não foi confirmado: o díodo Schottky e o TVS de entrada, a bobina e os
+quatro MOSFET da fonte de 5 V, três 74AHCT1G125, as proteções contra ESD
+(NUP2105L, SM712, PRTR5V0U2X e ESDA6V1-5SC6) e os cristais. Propõe-se a abordagem B como solução
 final, usando a NUCLEO para desenvolver o firmware enquanto a PCB é
 fabricada.
 
@@ -152,13 +155,51 @@ elevador (14,5 kHz) com 2 A de carga. O TPS62162 gera os 3,3 V para o
 microcontrolador, o PHY, o RS232, o RS485 e o lado lógico dos isoladores
 CAN FD.
 
-A atribuição de pinos do STM32H743 segue a da placa NUCLEO-H743ZI na
-Ethernet RMII, para reaproveitar o projeto do CubeMX: FDCAN1 em PD0/PD1,
+A atribuição de pinos do STM32H743 segue a da placa NUCLEO-H753ZI da
+abordagem A na Ethernet RMII, para reaproveitar o projeto do CubeMX: FDCAN1 em PD0/PD1,
 FDCAN2 em PB5/PB6, RS232 no USART2, RS485 no USART6 com controlo automático
 do emissor (DE), GPS no UART7 e os três PWM nos canais 1 a 3 do TIM1. A
 linha de falha do conector PWM entra pela entrada de paragem do TIM1
 (BKIN), o que desliga as saídas por hardware sem depender do firmware. O
 PPS do recetor GPS liga a PA0, canal de captura do TIM2, que é de 32 bits.
+
+A Tabela~\ref{tab:proj-consumo} resume o consumo por barramento no pior
+caso (DP13). Os 1,3 A no barramento de 5 V ficam abaixo dos 2 A usados para
+compensar o LM5177, e os 0,66 A no de 3,3 V abaixo do limite de 1 A do
+TPS62162. Do lado da entrada, o pior caso é cerca de 1,6 A a 4,5 V.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Consumo por barramento no pior caso.}
+\label{tab:proj-consumo}
+\begin{tabularx}{\textwidth}{@{}p{0.12\textwidth}>{\raggedright\arraybackslash}X>{\raggedleft\arraybackslash}p{0.13\textwidth}@{}}
+\toprule
+\rowcolor{LasetTint}
+Barramento & Carga & Corrente \\
+\midrule
+3,3 V & STM32H743 a 480 MHz, com periféricos (estimativa) & 300 mA \\
+3,3 V & ADM2582E a 16 Mbit/s com carga de 54~$\Omega$ (máximo) & 230 mA \\
+3,3 V & LAN8742A, MAX3227E, PCA9306 e LED (estimativa) & 80 mA \\
+3,3 V & Módulo GPS (estimativa) & 50 mA \\
+\midrule
+\textbf{3,3 V} & \textbf{Total} (TPS62162: 1 A) & \textbf{0,66 A} \\
+\midrule
+5 V & Dois ADM3057E em estado dominante de falha (máximo de 260 mA cada) & 520 mA \\
+5 V & ADuM6401 com a saída isolada à carga máxima (máximo) & 290 mA \\
+5 V & Barramento de 3,3 V através do TPS62162 (90 \% de rendimento) & 490 mA \\
+\midrule
+\textbf{5 V} & \textbf{Total} & \textbf{1,3 A} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+O TVS de entrada (SMCJ60CA) começa a conduzir a 66,7 V, mas à corrente de
+pico limita a 96,8 V, acima do máximo absoluto de 85 V do LM5177. Nenhum
+TVS com tensão de trabalho de 60 V limita abaixo desse valor, pelo que a
+proteção cobre descargas eletrostáticas e transitórios curtos, mas não um
+ensaio de surto normalizado. Este ponto fica registado como risco
+(Secção~\ref{sec:proj-riscos}).
 
 Ficam por fechar antes do fabrico: a margem de fase da fonte de 5 V,
 medida no protótipo, o footprint do LM5177, feito a partir do encapsulamento
@@ -166,6 +207,15 @@ TSSOP-38 com o pad exposto, e a escolha dos conectores definitivos.
 
 \section{Descrição do \textit{Software}}
 \label{sec:proj-software}
+
+A Figura~\ref{fig:tarefas} mostra a organização do firmware.
+
+\begin{figure}[htbp]
+\centering
+\Diagrama{tarefas}
+\caption[Organização do firmware em tarefas e filas.]{Organização do firmware em tarefas e filas. Cada interface tem uma rotina de receção e uma tarefa de transmissão; o encaminhamento é feito por uma única tarefa.}
+\label{fig:tarefas}
+\end{figure}
 
 O firmware executa sobre FreeRTOS com memória estática: filas e
 \textit{pools} de blocos são criados no arranque. As rotinas de
@@ -183,9 +233,34 @@ progresso a ambas. O dimensionamento das filas (RF13, DP09) parte de
 $B = (R_{\mathrm{in}} - R_{\mathrm{out}})\,T$, em que $T$ é a duração da
 rajada, e é ajustado com os contadores de descarte nos ensaios.
 
-A comunicação com o PC (DP04) usa um formato de mensagem comum, com
-versão, tipo, interface, canal, endereço ou identificador, número de
-sequência, marca temporal de 64 bits em microssegundos e comprimento.
+A comunicação com o PC (DP04) usa um formato de mensagem comum, com o
+cabeçalho da Tabela~\ref{tab:proj-mensagem}; os tamanhos são uma
+proposta, a confirmar com o primeiro protótipo do software do PC.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Cabeçalho proposto para as mensagens entre o PC e a unidade.}
+\label{tab:proj-mensagem}
+\begin{tabularx}{\textwidth}{@{}p{0.27\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{LasetTint}
+Campo & Bytes & Conteúdo \\
+\midrule
+Versão & 1 & Versão do formato, para manter compatibilidade. \\
+Tipo & 1 & Pedido, dados, confirmação, erro ou configuração. \\
+Interface & 1 & I2C, RS232, RS485, CAN FD, Ethernet ou PWM (RF11). \\
+Canal & 1 & Barramento dentro da interface (por exemplo CAN FD 1 ou 2). \\
+Endereço / identificador & 4 & Endereço I2C, nó RS485 ou identificador CAN de 29 bits. \\
+Sequência & 2 & Número de sequência para confirmações e deteção de perdas. \\
+Marca temporal & 8 & Microssegundos desde a época UTC (RF16). \\
+Comprimento & 2 & Número de bytes de dados que se seguem. \\
+\midrule
+\textbf{Total} & \textbf{20} & Seguido dos dados. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 Em Ethernet, as operações seguem por UDP, com confirmação na aplicação,
 e a configuração por TCP. Em RS232, as mensagens são delimitadas com COBS
 e CRC-16. Em CAN FD, as mensagens com mais de 64 bytes são segmentadas
@@ -209,3 +284,84 @@ a versão do formato, um número de sequência e um CRC32. No arranque
 usa-se o registo válido mais recente e, se nenhum for válido, os valores
 de fábrica. Como o código corre do primeiro banco, a escrita no segundo
 não interrompe a execução.
+
+\section{Estado das Decisões de Projeto}
+\label{sec:proj-decisoes}
+
+A Tabela~\ref{tab:proj-decisoes} indica, para cada decisão em aberto da
+Secção~\ref{sec:definicoes-projeto}, o que ficou decidido neste capítulo
+e o que falta. As decisões marcadas como parciais ou em aberto fecham-se
+com o protótipo e com a escolha dos dispositivos de ensaio.
+
+\begingroup
+\small
+\setstretch{1.05}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.08\textwidth}>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.72\textwidth}@{}}
+\caption{Estado das decisões de projeto DP01--DP17.}\label{tab:proj-decisoes}\\
+\toprule
+\rowcolor{LasetTint}
+DP & Estado & Decisão ou o que falta \\
+\midrule
+\endfirsthead
+\toprule
+\rowcolor{LasetTint}
+DP & Estado & Decisão ou o que falta \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+DP01 & Fechada & CAN FD 1 dedicado ao PC (alternativa de RF09) e CAN FD 2 a nós externos; Ethernet só para o PC. \\
+DP02 & Em aberto & Protocolos superiores e endereços dependem dos dispositivos de ensaio, ainda por escolher. \\
+DP03 & Fechada & STM32H743ZIT6 com FreeRTOS e LwIP (Secção~\ref{sec:proj-opcoes}). \\
+DP04 & Fechada & Cabeçalho comum (Tabela~\ref{tab:proj-mensagem}); UDP para operações e TCP para configuração; COBS e CRC-16 em RS232; ISO 15765-2 em CAN FD. \\
+DP05 & Fechada & PCB própria de quatro camadas (abordagem B); NUCLEO para desenvolver o firmware. \\
+DP06 & Em aberto & Pontos de medição de latência a definir com o firmware; a placa tem pontos de teste para PPS e PWM. \\
+DP07 & Em aberto & Número de nós e combinações simultâneas a fixar com os dispositivos de ensaio. \\
+DP08 & Fechada & Duas classes por fila, urgente e normal, com passagem de uma normal após um número configurável de urgentes. \\
+DP09 & Parcial & Dimensionamento por $B = (R_{\mathrm{in}} - R_{\mathrm{out}})\,T$; valores ajustados com os contadores de descarte. \\
+DP10 & Fechada & Isolamento galvânico em CAN FD, RS485 e PWM; RS232 e I2C sem isolamento, com proteção contra ESD. \\
+DP11 & Fechada & Sem Gigabit (PHY de 10/100 Mbit/s) nem PoE nesta versão. \\
+DP12 & Fechada & ADuM6401 (5 kV), resolução de 0,5~$\mu$s, saídas em nível baixo até haver configuração válida. \\
+DP13 & Parcial & LM5177 e TPS62162, consumo na Tabela~\ref{tab:proj-consumo}; falta medir a margem de fase e tratar os surtos. \\
+DP14 & Fechada & Captura do PPS no TIM2 (32 bits), segundo UTC pela NMEA e compensação da deriva entre impulsos. \\
+DP15 & Fechada & Segundo banco da flash interna, dois setores alternados, registo com versão, sequência e CRC32. \\
+DP16 & Parcial & Níveis I2C de 3,3 V ou 5 V por jumper; palavra, paridade e taxas série ficam como parâmetros de configuração. \\
+DP17 & Em aberto & Condições de instalação por definir; sem classificação ambiental. \\
+\end{longtable}
+\endgroup
+
+\section{Riscos}
+\label{sec:proj-riscos}
+
+A Tabela~\ref{tab:proj-riscos} lista os riscos técnicos identificados e a
+forma de os reduzir.
+
+\begingroup
+\small
+\setstretch{1.05}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.62\textwidth}@{}}
+\caption{Riscos técnicos e medidas de redução.}\label{tab:proj-riscos}\\
+\toprule
+\rowcolor{LasetTint}
+Risco & Redução \\
+\midrule
+\endfirsthead
+\toprule
+\rowcolor{LasetTint}
+Risco & Redução \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+Instabilidade da fonte de 5 V & Compensação calculada com margem ($f_{BW}$ abaixo de um terço do zero no semiplano direito); medir a resposta a degraus de carga no protótipo antes de ligar os restantes blocos. \\
+Surtos na entrada acima de 85 V & TVS para transitórios curtos; se for preciso cumprir um ensaio de surto, acrescentar um limitador ativo à entrada. \\
+Footprint do LM5177 feito à mão & Conferir com o desenho do encapsulamento antes de encomendar a PCB. \\
+CAN FD a 8 Mbit/s sem erros & Transceivers em modo de alta velocidade, terminação dividida e cabo entrançado; ensaiar primeiro a taxas mais baixas na fase de dados. \\
+Ruído dos conversores isolados integrados & Seguir as regras de layout da Analog Devices para os ADM3057E, ADM2582E e ADuM6401 e prever ferrites. \\
+Atraso na PCB & Desenvolver e ensaiar o firmware na NUCLEO e nos módulos de avaliação enquanto a PCB é fabricada. \\
+Sensores I2C de 1,8 V & O PCA9306 exige o lado do sensor acima do lado do MCU; confirmar os sensores antes do fabrico ou trocar de tradutor. \\
+\end{longtable}
+\endgroup
+

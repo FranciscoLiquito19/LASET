@@ -53,7 +53,6 @@ sinal de relógio. Nos modos \textit{Standard-mode}, \textit{Fast-mode} e
 \textit{Fast-mode Plus}, a sinalização baseia-se tipicamente em saídas de dreno ou
 coletor aberto e na polarização das linhas por
 \textit{pull-up}~\cite[sec.~3.1]{nxp_um10204_2021}.
-O projeto requer Standard mode (RF01), sem exigir os restantes modos.
 
 Nestes modos, um controlador inicia cada transferência e gera o relógio;
 o dispositivo alvo é selecionado por endereço de 7 ou 10 bits. Os dados circulam em bytes,
@@ -151,7 +150,7 @@ esse limite para 64 bytes e permite, opcionalmente, um débito superior
 na fase de dados, mantendo a arbitragem à velocidade nominal.
 A dimensão das tramas e os condicionamentos físicos continuam a limitar
 a transferência; a configuração da rede deve, por isso, ser
-explicitada~\cite{cia_can_fd,cia_can_hs}. A capacidade requerida e a configuração de projeto são distinguidas em RF04.
+explicitada~\cite{cia_can_fd,cia_can_hs}.
 
 \section{Ethernet}
 
@@ -182,8 +181,7 @@ A família 100BASE-T exemplifica Ethernet a 100~Mbit/s sobre pares
 entrançados. O débito nominal caracteriza a ligação; o débito útil
 depende dos campos de controlo, intervalos entre tramas e protocolos
 superiores~\cite{simmons_ethernet_2008}. Também a latência do gateway
-depende da carga e do processamento. O requisito RF05 fixa o mínimo
-nominal, mantendo PHY, meio e serviços por selecionar.
+depende da carga e do processamento.
 
 \section{Interface Física, Isolamento e Proteção}
 
@@ -208,11 +206,10 @@ e ambiente de utilização. Não decorre daqui a obrigatoriedade de isolar
 todas as interfaces de comunicação, nem a definição antecipada de níveis
 de imunidade.
 
-Em UC06 distinguem-se entrada de alimentação, comunicações e saídas
-PWM/cargas. O isolamento galvânico e a proteção dos três PWM são
-obrigatórios; níveis, fenómenos e ensaios dos restantes domínios dependem
-do dimensionamento. Esta análise não estabelece isolamento universal ou
-uma classificação ambiental; as condições de instalação permanecem em DP17.
+Numa unidade deste tipo distinguem-se três domínios a proteger: a entrada
+de alimentação, as comunicações e as saídas para cargas. Os níveis, os
+fenómenos a considerar e os ensaios de cada domínio dependem do
+dimensionamento e do ambiente de instalação.
 
 No caso dos sinais PWM, o isolamento digital tem de preservar a largura do
 impulso. Isoladores digitais e optoacopladores rápidos têm atrasos de
@@ -220,7 +217,7 @@ propagação e distorção da largura do impulso muito inferiores a
 1100--1900~$\mu$s, enquanto optoacopladores lentos de fototransístor
 têm tipicamente tempos de comutação assimétricos, da ordem dos
 microssegundos, que alteram a largura do impulso. O lado isolado
-necessita ainda de alimentação isolada. Estes aspetos ficam para DP12.
+necessita ainda de alimentação isolada.
 
 \section{Sistemas ou Plataformas Multiprotocolo}
 
@@ -442,10 +439,10 @@ com o escalonamento~\cite[cap.~3]{barry_freertos_2016}. Num sistema com
 várias interfaces, permitem coordenar receção, processamento e transmissão;
 a adequação depende das cargas e dos tempos de resposta especificados.
 
-O RTOS é uma restrição técnica confirmada para UC04, não uma conclusão
-de que só esta tecnologia permite concorrência. FreeRTOS é candidato,
-sem seleção efetuada. A existência de um RTOS não demonstra cumprimento
-de prazos; cargas, tarefas e política de execução ficam para projeto.
+Um RTOS não é a única forma de obter concorrência, mas facilita a
+organização do firmware em tarefas com prioridades. A sua existência não
+demonstra, por si, o cumprimento de prazos: isso depende das cargas, das
+tarefas e da política de execução.
 
 \section{PWM e Comando de Cargas}
 \label{sec:pwm}
@@ -463,14 +460,12 @@ requer três PWM isolados e protegidos, com os parâmetros da
 Figura~\ref{fig:pwm}. Nos sinais de comando de servos e atuadores
 semelhantes, a informação está na largura absoluta do impulso (aqui,
 1100--1900~$\mu$s a 50~Hz) e não na razão cíclica.
-Resolução, cargas, tensão de isolamento e natureza da proteção permanecem
-em aberto (DP12).
 Luzes e garra são exemplos de utilização, sem canais adicionais.
 
 \begin{figure}[htbp]
     \centering
     \Diagrama{pwm}
-    \caption[Largura de impulso e frequência PWM.]{Limites da largura de impulso PWM de RF15, iguais nos três canais protegidos. As larguras são proporcionais ao período de 20 ms, deduzido de 50 Hz; a amplitude não está especificada. Representação ideal, sem resultados medidos.}
+    \caption[Largura de impulso e frequência PWM.]{Limites típicos da largura de impulso nos sinais de comando de servos e atuadores semelhantes. As larguras são proporcionais ao período de 20 ms, deduzido de 50 Hz; a amplitude não está especificada. Representação ideal, sem resultados medidos.}
     \label{fig:pwm}
 \end{figure}
 
@@ -516,9 +511,8 @@ informação temporal; a representação de uma marca com elevada resolução
 não demonstra igual exatidão na captura~\cite[secs.~1--2]{mogul_pps_2000}.
 A RFC trata uma API para sistemas UNIX, aqui usada apenas como
 fundamentação conceptual, sem exigir essa API ou sistema operativo.
-A correspondência entre mensagem e impulso, a escala temporal e a
-recuperação serão especificadas em DP14, segundo a documentação da
-referência selecionada; recetor, protocolo e hardware permanecem em aberto.
+A correspondência entre mensagem e impulso e a escala temporal dependem
+da documentação do recetor usado.
 
 \begin{figure}[htbp]
     \centering
@@ -681,8 +675,7 @@ uma política de atendimento; a sincronização exige distinguir resolução
 e erro efetivo. Nenhuma destas propriedades resulta apenas da presença
 de memória, RTOS ou uma referência temporal.
 
-As escolhas de hardware e configuração seguem os requisitos e os
-ensaios definidos. Latência, cargas, proteção e restantes decisões
-permanecem nas DP01--DP17. Os limites teóricos de uma tecnologia não
+As escolhas de hardware e configuração são feitas nos capítulos
+seguintes, a partir dos requisitos e dos ensaios definidos. Os limites teóricos de uma tecnologia não
 são valores de aceitação presumidos; as condições ambientais adicionais
 dependem do contexto de instalação.
