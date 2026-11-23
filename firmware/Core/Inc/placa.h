@@ -24,9 +24,10 @@ extern FDCAN_HandleTypeDef hfdcan1, hfdcan2;
 extern TIM_HandleTypeDef   htim1, htim2;
 extern UART_HandleTypeDef  huart2, huart3, huart6, huart7;
 extern I2C_HandleTypeDef   hi2c1, hi2c2;
+extern ETH_HandleTypeDef   heth;
 
 void sistema_relogios(void);
-void sistema_cache(void);
+void sistema_cache(void);          /* configura também a MPU (Ethernet) */
 void perifericos_iniciar(void);
 void can_configurar(uint32_t modo);   /* FDCAN_MODE_NORMAL, _INTERNAL_LOOPBACK, ... */
 void Error_Handler(void);

@@ -43,6 +43,8 @@ typedef struct {
     uint8_t origem_if;       /* por onde a mensagem entrou na unidade */
     uint8_t origem_canal;
     uint8_t urgente;         /* classe de prioridade (RF14) */
+    uint8_t para_pc;         /* posto pelo encaminhamento: vai para o PC (com protocolo) */
+    uint8_t destino_canal;   /* na Ethernet: 0 = UDP, 1 = TCP */
     uint8_t dados[MSG_DADOS_MAX];
 } mensagem_t;
 

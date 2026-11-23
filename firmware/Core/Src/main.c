@@ -22,6 +22,7 @@ static void tarefa_estado(void *arg)
                            (unsigned long)(xTaskGetTickCount() / configTICK_RATE_HZ), ok ? "sim" : "não",
                            (unsigned long)f, (long long)utc);
             encaminhamento_estado();
+            eth_estado();
         }
     }
 }
@@ -31,6 +32,7 @@ int main(void)
     sistema_cache();
     HAL_Init();
     sistema_relogios();
+    config_carregar();             /* as velocidades série vêm da configuração */
     perifericos_iniciar();
     consola_printf("\r\nLASET gateway %s (%s), SYSCLK %lu Hz\r\n", FIRMWARE_VERSAO,
 #if defined(PLACA_NUCLEO)
@@ -39,12 +41,15 @@ int main(void)
                    "PCB LASET",
 #endif
                    (unsigned long)HAL_RCC_GetSysClockFreq());
+    consola_printf("configuração: %s\r\n", config_carregada_da_flash() ? "da flash" : "de fábrica");
     can_autoteste();
 
     consola_iniciar();
     encaminhamento_iniciar();      /* as filas têm de existir antes de ativar as receções */
+    config_iniciar();
     can_arrancar();
     serie_iniciar();
+    eth_iniciar();
     sincronizacao_iniciar();
     pwm_iniciar();
     xTaskCreateStatic(tarefa_estado, "estado", 512, NULL, 1, estado_pilha, &estado_tcb);

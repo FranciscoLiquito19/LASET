@@ -1,8 +1,23 @@
-/* CAN FD: autoteste em loopback, receção por interrupção e transmissão. */
+/* CAN FD: autoteste em loopback, receção por interrupção e transmissão. Quando a
+ * ligação ao PC é um dos CAN FD (RF09), as tramas com os identificadores do ISO-TP
+ * vão para a tarefa isotp, que junta as mensagens do PC e responde com Flow Control. */
 #include <string.h>
 #include "placa.h"
 #include "app.h"
+#include "isotp.h"
+#include "trama_pc.h"
 #include "task.h"
+#include "queue.h"
+
+#define ISOTP_N_BS_MS  1000     /* tempo máximo à espera de um Flow Control (N_Bs) */
+
+typedef struct { uint8_t canal, n; uint8_t d[64]; } trama_t;
+static QueueHandle_t fila_isotp, fila_fc[2];
+static StaticQueue_t fila_isotp_q, fila_fc_q[2];
+static uint8_t fila_isotp_buf[8 * sizeof(trama_t)], fila_fc_buf[2][sizeof(trama_t)];
+static StaticTask_t isotp_tcb;
+static StackType_t isotp_pilha[768];
+static void tarefa_isotp(void *arg);
 
 static const uint8_t COMPRIMENTOS[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64 };
 static const uint32_t DLC[16] = {
@@ -75,6 +90,9 @@ int can_autoteste(void)
 
 void can_arrancar(void)
 {
+    fila_isotp = xQueueCreateStatic(8, sizeof(trama_t), fila_isotp_buf, &fila_isotp_q);
+    for (int i = 0; i < 2; i++) fila_fc[i] = xQueueCreateStatic(1, sizeof(trama_t), fila_fc_buf[i], &fila_fc_q[i]);
+    xTaskCreateStatic(tarefa_isotp, "isotp", 768, NULL, 4, isotp_pilha, &isotp_tcb);
 #if defined(LASET_CAN_LOOPBACK)
     can_configurar(FDCAN_MODE_INTERNAL_LOOPBACK);   /* NUCLEO sem transceivers */
 #else
@@ -109,23 +127,86 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *h, uint32_t its)
         m.origem_if = IF_CANFD;
         m.origem_canal = m.c.canal;
         m.urgente = 0;
+        if (tabela.pc_if == IF_CANFD && tabela.pc_canal == m.c.canal && rx.IdType == FDCAN_STANDARD_ID
+            && rx.Identifier == ISOTP_ID_PC_PARA_GW) {
+            trama_t t = { .canal = m.c.canal, .n = (uint8_t)m.c.comprimento };
+            memcpy(t.d, m.dados, t.n);
+            xQueueSendFromISR(fila_isotp, &t, &acordar);
+            continue;
+        }
         encaminhamento_entrada_isr(&m, &acordar);
     }
     portYIELD_FROM_ISR(acordar);
 }
 
-int can_enviar(uint8_t canal, const mensagem_t *m)
+static int can_trama(uint8_t canal, uint32_t endereco, const uint8_t *dados, uint16_t n)
 {
     FDCAN_HandleTypeDef *h = handle(canal);
     FDCAN_TxHeaderTypeDef tx;
-    uint16_t n = m->c.comprimento > 64 ? 64 : m->c.comprimento;
-    cabecalho_tx(&tx, m->c.endereco, n);
+    if (n > 64) n = 64;
+    cabecalho_tx(&tx, endereco, n);
     /* espera por espaço na fila de transmissão do controlador (até 10 ms) */
     for (int i = 0; HAL_FDCAN_GetTxFifoFreeLevel(h) == 0; i++) {
         if (i >= 10) return -1;
         vTaskDelay(pdMS_TO_TICKS(1));
     }
     uint8_t d[64] = {0};
-    memcpy(d, m->dados, n);                            /* bytes de enchimento a zero */
+    memcpy(d, dados, n);                               /* bytes de enchimento a zero */
     return HAL_FDCAN_AddMessageToTxFifoQ(h, &tx, d) == HAL_OK ? 0 : -2;
+}
+
+int can_enviar(uint8_t canal, const mensagem_t *m)
+{
+    return can_trama(canal, m->c.endereco, m->dados, m->c.comprimento);
+}
+
+/* Mensagem para o PC por ISO-TP: cabeçalho + dados, segmentados em tramas de 64 bytes. */
+int can_pc_enviar(uint8_t canal, const mensagem_t *m)
+{
+    uint8_t b[PC_BRUTO_MAX], t[64];
+    trama_t fc;
+    isotp_tx_t tx;
+    isotp_tx_iniciar(&tx, b, (uint16_t)pc_para_bytes(m, b));
+    xQueueReset(fila_fc[canal]);
+    for (;;) {
+        int k = isotp_tx_proxima(&tx, t);
+        if (k < 0) return 0;
+        if (k == 0) {                                  /* espera pelo Flow Control do PC */
+            if (xQueueReceive(fila_fc[canal], &fc, pdMS_TO_TICKS(ISOTP_N_BS_MS)) != pdTRUE) return -1;
+            if (isotp_tx_fc(&tx, fc.d, fc.n) < 0) return -2;
+            continue;
+        }
+        if (can_trama(canal, ISOTP_ID_GW_PARA_PC | CAN_FD | CAN_BRS, t, (uint16_t)k) != 0) return -3;
+        uint32_t st = isotp_stmin_us(tx.stmin);
+        if (st) vTaskDelay(pdMS_TO_TICKS((st + 999) / 1000));
+    }
+}
+
+static void tarefa_isotp(void *arg)
+{
+    (void)arg;
+    static isotp_rx_t rx[2];
+    trama_t t;
+    uint8_t fc[3], fc_n;
+    mensagem_t m;
+    for (;;) {
+        if (xQueueReceive(fila_isotp, &t, portMAX_DELAY) != pdTRUE || t.canal > 1) continue;
+        switch (isotp_rx_trama(&rx[t.canal], t.d, t.n, fc, &fc_n)) {
+        case ISOTP_RX_ENVIAR_FC:
+            can_trama(t.canal, ISOTP_ID_GW_PARA_PC | CAN_FD | CAN_BRS, fc, fc_n);
+            break;
+        case ISOTP_RX_FC_RECEBIDO:
+            xQueueOverwrite(fila_fc[t.canal], &t);
+            break;
+        case ISOTP_RX_COMPLETA:
+            if (pc_de_bytes(rx[t.canal].buf, rx[t.canal].total, &m) != 0) break;
+            m.origem_if = IF_CANFD;
+            m.origem_canal = t.canal;
+            m.urgente = (m.c.tipo & TIPO_URGENTE) != 0;
+            encaminhamento_entrada(&m, pdMS_TO_TICKS(10));
+            break;
+        default:
+            break;
+        }
+    }
 }

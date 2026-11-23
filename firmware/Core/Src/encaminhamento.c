@@ -5,6 +5,7 @@
 #include <string.h>
 #include "placa.h"
 #include "app.h"
+#include "config.h"
 #include "queue.h"
 #include "task.h"
 
@@ -28,7 +29,7 @@ typedef struct {
     volatile uint32_t enviadas, descartadas, erros;
 } saida_ctx_t;
 
-tabela_t tabela = { .pc_if = IF_RS232, .pc_canal = 0 };   /* ligação ao PC por omissão */
+tabela_t tabela;   /* cópia de config_atual.tabela, só alterada por esta tarefa */
 
 static QueueHandle_t entrada;
 static StaticQueue_t entrada_q;
@@ -38,15 +39,14 @@ static StaticTask_t enc_tcb;
 static StackType_t enc_pilha[768];
 
 /* funções de envio de cada saída */
-static int env_can1(const mensagem_t *m)  { return can_enviar(0, m); }
-static int env_can2(const mensagem_t *m)  { return can_enviar(1, m); }
+static int env_can1(const mensagem_t *m)  { return m->para_pc ? can_pc_enviar(0, m) : can_enviar(0, m); }
+static int env_can2(const mensagem_t *m)  { return m->para_pc ? can_pc_enviar(1, m) : can_enviar(1, m); }
 static int env_i2c1(const mensagem_t *m)  { return i2c_executar(0, m); }
 static int env_i2c2(const mensagem_t *m)  { return i2c_executar(1, m); }
 static int env_rs232(const mensagem_t *m)
 {
-    return (tabela.pc_if == IF_RS232) ? pc_serie_enviar(m) : rs232_enviar_bruto(m);
+    return m->para_pc ? pc_serie_enviar(m) : rs232_enviar_bruto(m);
 }
-static int env_eth(const mensagem_t *m)   { (void)m; return -1; }   /* LwIP: próxima fase */
 
 static saida_ctx_t saidas[S_N] = {
     [S_CAN1]  = { .nome = "CAN FD 1", .enviar = env_can1 },
@@ -56,7 +56,7 @@ static saida_ctx_t saidas[S_N] = {
     [S_I2C1]  = { .nome = "I2C1",     .enviar = env_i2c1 },
     [S_I2C2]  = { .nome = "I2C2",     .enviar = env_i2c2 },
     [S_PWM]   = { .nome = "PWM",      .enviar = pwm_comando },
-    [S_ETH]   = { .nome = "Ethernet", .enviar = env_eth },
+    [S_ETH]   = { .nome = "Ethernet", .enviar = eth_enviar },
 };
 
 static void tarefa_saida(void *arg)
@@ -73,36 +73,61 @@ static void tarefa_saida(void *arg)
     }
 }
 
-static void responder_sistema(const mensagem_t *pedido)
+static void enfileirar(saida_t s, const mensagem_t *m, uint8_t urg)
 {
-    mensagem_t r = *pedido;
-    r.origem_if = IF_SISTEMA; r.origem_canal = 0;
-    r.c.tipo = MSG_DADOS;
+    saida_ctx_t *c = &saidas[s];
+    if (xQueueSend(urg ? c->urg : c->norm, m, 0) == pdTRUE) xTaskNotifyGive(c->tarefa);
+    else c->descartadas++;                               /* fila cheia: conta e descarta (RF13) */
+}
+
+/* Mensagens para a própria unidade (interface IF_SISTEMA): versão e configuração.
+ * A resposta volta por onde o pedido entrou. */
+static void tratar_sistema(const mensagem_t *m)
+{
+    mensagem_t r = *m;
+    uint16_t n = 0;
+    r.c.interface = IF_SISTEMA;
+    r.c.canal = 0;
     r.c.marca_us = sincronizacao_agora_us();
-    r.c.comprimento = (uint16_t)strlen("LASET " FIRMWARE_VERSAO);
-    memcpy(r.dados, "LASET " FIRMWARE_VERSAO, r.c.comprimento);
-    encaminhamento_entrada(&r, 0);
+    if (TIPO(m) == MSG_CONFIG) {
+        int x = m->c.comprimento ? config_comando(&config_atual, m->dados, m->c.comprimento, r.dados, &n) : -1;
+        if (x >= 0) tabela = config_atual.tabela;
+        if (x == 1) config_pedir_gravacao();
+        if (x < 0) { r.dados[0] = m->c.comprimento ? m->dados[0] : 0; n = 1; }
+        r.c.tipo = x < 0 ? MSG_ERRO : MSG_CONFIRMACAO;
+    } else {
+        static const char v[] = "LASET " FIRMWARE_VERSAO;
+        n = sizeof v - 1;
+        memcpy(r.dados, v, n);
+        r.c.tipo = MSG_DADOS;
+    }
+    r.c.comprimento = n;
+    r.para_pc = 1;
+    r.destino_canal = m->origem_canal;
+    saida_t s = saida_de(m->origem_if, m->origem_canal);
+    if (s != S_NENHUMA) enfileirar(s, &r, 0);
 }
 
 static void tarefa_encaminhamento(void *arg)
 {
     (void)arg;
     mensagem_t m;
-    const saida_t pc = saida_de(tabela.pc_if, tabela.pc_canal);
     for (;;) {
         if (xQueueReceive(entrada, &m, portMAX_DELAY) != pdTRUE) continue;
+        const saida_t pc = saida_de(tabela.pc_if, tabela.pc_canal);
         int do_pc = m.origem_if == tabela.pc_if && m.origem_canal == tabela.pc_canal;
-        if (do_pc && m.c.interface == IF_SISTEMA) { responder_sistema(&m); continue; }
+        int do_tcp = m.origem_if == IF_ETH && m.origem_canal == 1;   /* a configuração por TCP é sempre aceite */
+        if ((do_pc || do_tcp) && m.c.interface == IF_SISTEMA) { tratar_sistema(&m); continue; }
         uint8_t urg;
         saida_t s = encaminhar(&tabela, &m, &urg);
         if (s == S_NENHUMA) { sem_destino++; continue; }
-        if (s == pc && !do_pc) {                        /* para o PC: o cabeçalho leva a origem */
+        m.para_pc = (s == pc && !do_pc);
+        m.destino_canal = m.para_pc ? tabela.pc_canal : 0;
+        if (m.para_pc) {                                  /* para o PC: o cabeçalho leva a origem */
             m.c.interface = m.origem_if;
             m.c.canal = m.origem_canal;
         }
-        saida_ctx_t *c = &saidas[s];
-        if (xQueueSend(urg ? c->urg : c->norm, &m, 0) == pdTRUE) xTaskNotifyGive(c->tarefa);
-        else c->descartadas++;                           /* fila cheia: conta e descarta (RF13) */
+        enfileirar(s, &m, urg);
     }
 }
 
@@ -122,6 +147,7 @@ BaseType_t encaminhamento_entrada_isr(const mensagem_t *m, BaseType_t *acordar)
 
 void encaminhamento_iniciar(void)
 {
+    tabela = config_atual.tabela;
     entrada = xQueueCreateStatic(ENTRADA_N, sizeof(mensagem_t), entrada_buf, &entrada_q);
     for (int i = 0; i < S_N; i++) {
         saida_ctx_t *s = &saidas[i];

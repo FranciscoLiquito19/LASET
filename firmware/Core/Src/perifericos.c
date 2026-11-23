@@ -1,5 +1,6 @@
 /* Iniciação dos periféricos (o equivalente ao que o CubeMX gera em main.c). */
 #include "placa.h"
+#include "config.h"
 
 FDCAN_HandleTypeDef hfdcan1, hfdcan2;
 TIM_HandleTypeDef   htim1, htim2;
@@ -146,9 +147,9 @@ static void uart_iniciar(UART_HandleTypeDef *h, USART_TypeDef *inst, uint32_t ba
 
 static void uarts_iniciar(void)
 {
-    uart_iniciar(&huart2, USART2, 1000000);        /* RS232 (RF02: 500 kbit/s e 1 Mbit/s) */
+    uart_iniciar(&huart2, USART2, config_atual.baud_rs232);   /* RS232 (RF02: 500 kbit/s e 1 Mbit/s) */
     if (HAL_UART_Init(&huart2) != HAL_OK) Error_Handler();
-    uart_iniciar(&huart6, USART6, 1000000);        /* RS485, DE controlado pelo periférico */
+    uart_iniciar(&huart6, USART6, config_atual.baud_rs485);   /* RS485, DE controlado pelo periférico */
     if (HAL_RS485Ex_Init(&huart6, UART_DE_POLARITY_HIGH, 8, 8) != HAL_OK) Error_Handler();
     uart_iniciar(&huart7, UART7, 9600);            /* GPS (NMEA a 9600 baud por omissão) */
     if (HAL_UART_Init(&huart7) != HAL_OK) Error_Handler();

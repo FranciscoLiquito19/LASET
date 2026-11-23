@@ -8,7 +8,7 @@ saida_t saida_de(uint8_t interface, uint8_t canal)
     case IF_RS485: return canal == 0 ? S_RS485 : S_NENHUMA;
     case IF_I2C:   return canal == 0 ? S_I2C1 : canal == 1 ? S_I2C2 : S_NENHUMA;
     case IF_PWM:   return canal <= 2 ? S_PWM : S_NENHUMA;   /* um só periférico, três canais */
-    case IF_ETH:   return canal == 0 ? S_ETH : S_NENHUMA;
+    case IF_ETH:   return canal <= 1 ? S_ETH : S_NENHUMA;   /* 0 = UDP, 1 = TCP */
     default:       return S_NENHUMA;
     }
 }

@@ -6,7 +6,7 @@
 #include "mensagem.h"
 #include "encaminhamento_regras.h"
 
-#define FIRMWARE_VERSAO "0.1.0"
+#define FIRMWARE_VERSAO "0.2.0"
 /* O bit 7 do campo "tipo" marca a mensagem como urgente (RF14); os bits 0-6 são o tipo. */
 #define TIPO_URGENTE 0x80
 #define TIPO(m)      ((m)->c.tipo & 0x7F)
@@ -26,6 +26,9 @@ extern tabela_t tabela;
 int  can_autoteste(void);                 /* 0 = os dois FDCAN passaram em loopback */
 void can_arrancar(void);
 int  can_enviar(uint8_t canal, const mensagem_t *m);
+int  can_pc_enviar(uint8_t canal, const mensagem_t *m);   /* ISO-TP, quando o PC está no CAN */
+#define ISOTP_ID_PC_PARA_GW  0x7E0                         /* identificadores do ISO-TP (11 bits) */
+#define ISOTP_ID_GW_PARA_PC  0x7E8
 uint8_t len_valida_canfd(uint16_t n);      /* arredonda para um comprimento CAN FD válido */
 
 /* serie.c */
@@ -42,6 +45,17 @@ int  sincronizacao_estado(uint32_t *freq_hz, int64_t *utc_s);  /* 1 = sincroniza
 /* pwm.c */
 void pwm_iniciar(void);
 int  pwm_comando(const mensagem_t *m);
+
+/* eth.c */
+void eth_iniciar(void);
+int  eth_enviar(const mensagem_t *m);
+void eth_estado(void);
+
+/* flash_config.c */
+void config_carregar(void);            /* antes de iniciar os periféricos */
+int  config_carregada_da_flash(void);
+void config_iniciar(void);
+void config_pedir_gravacao(void);
 
 /* i2c_bus.c */
 int  i2c_executar(uint8_t canal, const mensagem_t *m);

@@ -26,3 +26,4 @@ void TIM2_IRQHandler(void)       { sincronizacao_tim2_irq(); }
 void USART2_IRQHandler(void)     { HAL_UART_IRQHandler(&huart2); }
 void USART6_IRQHandler(void)     { HAL_UART_IRQHandler(&huart6); }
 void UART7_IRQHandler(void)      { HAL_UART_IRQHandler(&huart7); }
+void ETH_IRQHandler(void)        { HAL_ETH_IRQHandler(&heth); }

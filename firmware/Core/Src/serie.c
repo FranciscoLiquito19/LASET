@@ -4,7 +4,7 @@
 #include <string.h>
 #include "placa.h"
 #include "app.h"
-#include "cobs.h"
+#include "trama_pc.h"
 #include "task.h"
 #include "stream_buffer.h"
 
@@ -22,8 +22,6 @@ static uint8_t sb_gps_buf[512];
 
 static StaticTask_t pc_tcb;
 static StackType_t pc_pilha[768];
-
-#define TRAMA_MAX (sizeof(cabecalho_t) + MSG_DADOS_MAX + 2)
 
 static void bloco_para_mensagem(uint8_t interface, const uint8_t *d, uint16_t n, BaseType_t *acordar)
 {
@@ -66,29 +64,16 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *h)
     else if (h->Instance == UART7)  HAL_UARTEx_ReceiveToIdle_IT(h, rxgps, BLOCO);
 }
 
-/* Descodifica as tramas vindas do PC: COBS(cabeçalho + dados + CRC-16 LE), 0x00 no fim. */
+/* Tramas vindas do PC: COBS(cabeçalho + dados + CRC-16 LE), 0x00 no fim. */
 static void tarefa_pc_serie(void *arg)
 {
     (void)arg;
-    static uint8_t trama[TRAMA_MAX + TRAMA_MAX / 254 + 2], dec[TRAMA_MAX + 2];
-    size_t n = 0;
+    static pc_fluxo_t f;
+    mensagem_t m;
     uint8_t b;
     for (;;) {
         if (xStreamBufferReceive(sb_pc, &b, 1, portMAX_DELAY) != 1) continue;
-        if (b != 0) {
-            if (n < sizeof trama) trama[n++] = b; else n = sizeof trama + 1;   /* demasiado longa */
-            continue;
-        }
-        size_t k = (n <= sizeof trama) ? cobs_descodificar(trama, n, dec) : 0;
-        n = 0;
-        if (k < sizeof(cabecalho_t) + 2) continue;
-        uint16_t crc = (uint16_t)(dec[k - 2] | dec[k - 1] << 8);
-        if (crc16_ccitt(dec, k - 2) != crc) continue;
-        mensagem_t m;
-        memcpy(&m.c, dec, sizeof(cabecalho_t));
-        if (m.c.versao != MSG_VERSAO || m.c.comprimento != k - 2 - sizeof(cabecalho_t)
-            || m.c.comprimento > MSG_DADOS_MAX) continue;
-        memcpy(m.dados, dec + sizeof(cabecalho_t), m.c.comprimento);
+        if (!pc_fluxo_byte(&f, b, &m)) continue;
         m.origem_if = IF_RS232;
         m.origem_canal = 0;
         m.urgente = (m.c.tipo & TIPO_URGENTE) != 0;
@@ -98,19 +83,9 @@ static void tarefa_pc_serie(void *arg)
 
 int pc_serie_enviar(const mensagem_t *m)
 {
-    static uint8_t bruto[TRAMA_MAX], enc[TRAMA_MAX + TRAMA_MAX / 254 + 2];
-    uint16_t n = m->c.comprimento > MSG_DADOS_MAX ? MSG_DADOS_MAX : m->c.comprimento;
-    cabecalho_t c = m->c;
-    c.versao = MSG_VERSAO;
-    c.comprimento = n;
-    memcpy(bruto, &c, sizeof c);
-    memcpy(bruto + sizeof c, m->dados, n);
-    uint16_t crc = crc16_ccitt(bruto, sizeof c + n);
-    bruto[sizeof c + n] = (uint8_t)crc;
-    bruto[sizeof c + n + 1] = (uint8_t)(crc >> 8);
-    size_t k = cobs_codificar(bruto, sizeof c + n + 2, enc);
-    enc[k++] = 0;
-    return HAL_UART_Transmit(&huart2, enc, (uint16_t)k, 50) == HAL_OK ? 0 : -1;
+    static uint8_t t[PC_TRAMA_MAX];
+    size_t k = pc_para_trama(m, t);
+    return HAL_UART_Transmit(&huart2, t, (uint16_t)k, 50) == HAL_OK ? 0 : -1;
 }
 
 int rs232_enviar_bruto(const mensagem_t *m)

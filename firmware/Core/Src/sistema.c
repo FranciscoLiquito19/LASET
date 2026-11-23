@@ -45,15 +45,48 @@ void sistema_relogios(void)
     clk.APB4CLKDivider = RCC_APB4_DIV2;
     if (HAL_RCC_ClockConfig(&clk, FLASH_LATENCY_4) != HAL_OK) Error_Handler();
 
+    __HAL_RCC_D2SRAM1_CLK_ENABLE();         /* SRAM do domínio D2 (descritores da Ethernet) */
+    __HAL_RCC_D2SRAM2_CLK_ENABLE();
+    __HAL_RCC_D2SRAM3_CLK_ENABLE();
+
     per.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
     per.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL;
     if (HAL_RCCEx_PeriphCLKConfig(&per) != HAL_OK) Error_Handler();
 }
 
+/* MPU: o início da SRAM do domínio D2 (secção .eth) fica sem cache, porque o DMA da
+ * Ethernet lê e escreve lá. Os primeiros 256 bytes (descritores) ficam como memória
+ * de dispositivo partilhada, como recomenda a ST (AN4838/AN4839). */
+static void sistema_mpu(void)
+{
+    MPU_Region_InitTypeDef r = {0};
+    HAL_MPU_Disable();
+    r.Enable = MPU_REGION_ENABLE;
+    r.Number = MPU_REGION_NUMBER0;
+    r.BaseAddress = 0x30000000;
+    r.Size = MPU_REGION_SIZE_32KB;
+    r.SubRegionDisable = 0;
+    r.TypeExtField = MPU_TEX_LEVEL1;              /* normal, sem cache */
+    r.AccessPermission = MPU_REGION_FULL_ACCESS;
+    r.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+    r.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+    r.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+    r.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+    HAL_MPU_ConfigRegion(&r);
+    r.Number = MPU_REGION_NUMBER1;
+    r.Size = MPU_REGION_SIZE_256B;
+    r.TypeExtField = MPU_TEX_LEVEL0;              /* dispositivo partilhado */
+    r.IsShareable = MPU_ACCESS_SHAREABLE;
+    r.IsBufferable = MPU_ACCESS_BUFFERABLE;
+    HAL_MPU_ConfigRegion(&r);
+    HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+}
+
 void sistema_cache(void)
 {
+    sistema_mpu();
     SCB_EnableICache();
-    SCB_EnableDCache();   /* sem DMA nesta fase; a Ethernet usará a SRAM2 sem cache (MPU) */
+    SCB_EnableDCache();
 }
 
 void Error_Handler(void)
