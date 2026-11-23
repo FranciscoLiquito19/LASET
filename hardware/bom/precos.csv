@@ -1,0 +1,46 @@
+chave;fabricante;referencia;preco_eur;fonte;tipo
+STM32H743ZIT6;STMicroelectronics;STM32H743ZIT6;12.83;Capítulo Projecto (nov. 2026);consultado
+LAN8742A-CZ;Microchip;LAN8742A-CZ-TR;1.30;Capítulo Projecto (nov. 2026);consultado
+ADM3057EBRWZ;Analog Devices;ADM3057EBRWZ;13.67;Capítulo Projecto (nov. 2026);consultado
+ADM2582EBRWZ;Analog Devices;ADM2582EBRWZ;13.97;Capítulo Projecto (nov. 2026);consultado
+MAX3227EEAE;Analog Devices (Maxim);MAX3227EEAE+;5.96;Capítulo Projecto (nov. 2026);consultado
+ADuM6401ARWZ;Analog Devices;ADUM6401ARWZ;14.91;Capítulo Projecto (nov. 2026);consultado
+PCA9306DR;Texas Instruments;PCA9306DR;0.65;Capítulo Projecto (nov. 2026);consultado
+LM5177;Texas Instruments;LM5177DCPR;6.45;Capítulo Projecto (nov. 2026);consultado
+TPS62162;Texas Instruments;TPS62162DSGR;1.35;Capítulo Projecto (nov. 2026);consultado
+74AHCT1G125;Texas Instruments;SN74AHCT1G125DBVR;0.12;DigiKey (EUR, 1 un., 23/11/2026);consultado
+BSC160N10NS3 G;Infineon;BSC160N10NS3GATMA1;1.50;DigiKey (EUR, 1 un., 23/11/2026);consultado
+SRP1245A-180M;Bourns;SRP1245A-180M;1.25;DigiKey (EUR, 1 un., 23/11/2026);consultado
+SMCJ60CA;Littelfuse;SMCJ60CA;0.45;DigiKey (EUR, 1 un., 23/11/2026);consultado
+MB510;Panjit;MB510_R1_00001;0.51;DigiKey (EUR, 1 un., 23/11/2026);consultado
+NUP2105L;onsemi;NUP2105LT1G;0.34;DigiKey (EUR, 1 un., 23/11/2026);consultado
+SM712;Semtech;SM712.TCT;1.65;RS (EUR, 25 un., 23/11/2026);consultado
+PRTR5V0U2X;Nexperia;PRTR5V0U2X,215;0.71;DigiKey (EUR, 1 un., 23/11/2026);consultado
+ESDA6V1-5SC6;STMicroelectronics;ESDA6V1-5SC6;0.25;DigiKey (EUR, 1 un., 23/11/2026);consultado
+HR911105A;HanRun;HR911105A;1.15;LCSC (1,24 USD, 1 un., 23/11/2026, conversão aproximada);consultado
+25 MHz;CTS;425F22A025M0000 (C_L 10 pF);0.65;DigiKey (0,70 USD, 1 un., 23/11/2026, conversão aproximada);consultado
+SRN6045TA;Bourns;SRN6045TA-2R2M;0.40;—;estimativa
+Polyfuse 1812;Bourns;MF-MSMF300-2;0.40;—;estimativa
+R 0603;Yageo;série RC0603 1 %;0.02;—;estimativa
+R 1206;Yageo;série RC1206;0.03;—;estimativa
+R 2512 shunt;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0.60;—;estimativa
+C 0603 pequeno;Murata;GRM18 X7R/C0G;0.03;—;estimativa
+C 0603 grande;Murata;GRM18 X5R (4,7–10 uF);0.08;—;estimativa
+C 0805;Murata;GRM21 X7R 2,2 uF;0.06;—;estimativa
+C 1206;Murata;GRM31 X5R/X7R (10–22 uF);0.15;—;estimativa
+C 1206 2 kV;Vishay;VJ1206 1 nF 2 kV;0.30;—;estimativa
+C 1210 100 V;Murata;GRM32 4,7 uF 100 V;0.60;—;estimativa
+CP 47 uF 100 V;Panasonic;EEE-FK2A470P;0.50;—;estimativa
+CP 100 uF polímero;Panasonic;série OS-CON 10 V;0.80;—;estimativa
+Ferrite 0603;Murata;BLM18AG601SN1D;0.05;—;estimativa
+LED 0603;Würth;150060VS75000;0.08;—;estimativa
+Borne 2 vias;Phoenix Contact;MKDS 1,5/2-5,08;0.60;—;estimativa
+Borne 3 vias;Phoenix Contact;MKDS 1,5/3-5,08;0.80;—;estimativa
+JST PH 4;JST;B4B-PH-K-S;0.20;—;estimativa
+JST PH 5;JST;B5B-PH-K-S;0.25;—;estimativa
+JST PH 6;JST;B6B-PH-K-S;0.30;—;estimativa
+Barra 1x02;genérico;2,54 mm;0.05;—;estimativa
+Barra 1x03;genérico;2,54 mm;0.05;—;estimativa
+Barra 1x06;genérico;2,54 mm;0.10;—;estimativa
+DE-9 fêmea;genérico;DE-9 fêmea 90° com fixação;1.50;—;estimativa
+Ponto de teste;—;pad na PCB;0.00;—;sem custo

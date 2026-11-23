@@ -1,0 +1,113 @@
+﻿Referências;Qtd;Valor;Footprint;Fabricante;Referência do fabricante;Preço unit. (€);Subtotal (€);Tipo de preço;Fonte
+C1, C2;2;4,7 uF 100 V;C_1210_3225Metric;Murata;GRM32 4,7 uF 100 V;0,60;1,20;estimativa;—
+C3;1;47 uF 100 V;CP_Elec_8x10;Panasonic;EEE-FK2A470P;0,50;0,50;estimativa;—
+C4;1;18 nF (SS);C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
+C5;1;56 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
+C6;1;2,2 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
+C7;1;4,7 uF 10 V (VCC);C_0603_1608Metric;Murata;GRM18 X5R (4,7–10 uF);0,08;0,08;estimativa;—
+C8, C10;2;100 nF 25 V;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,06;estimativa;—
+C9;1;180 pF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
+C11, C12, C13, C16;4;22 uF 10 V;C_1206_3216Metric;Murata;GRM31 X5R/X7R (10–22 uF);0,15;0,60;estimativa;—
+C14;1;100 uF 10 V polímero;CP_Elec_6.3x7.7;Panasonic;série OS-CON 10 V;0,80;0,80;estimativa;—
+C15;1;10 uF 10 V;C_0603_1608Metric;Murata;GRM18 X5R (4,7–10 uF);0,08;0,08;estimativa;—
+C20, C21, C22, C23, C24, C25, C26, C27, C28, C29, C30, C33, C36, C40, C41, C42, C48, C49, C61, C62, C66, C71, C72, C76, C81, C83, C84, C86, C87, C88, C89, C90, C92, C94, C100, C101, C102, C104, C106;39;100 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;1,17;estimativa;—
+C31, C43;2;4,7 uF;C_0603_1608Metric;Murata;GRM18 X5R (4,7–10 uF);0,08;0,16;estimativa;—
+C32, C44, C93, C95;4;1 uF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,12;estimativa;—
+C34, C35;2;2,2 uF (baixa ESR);C_0805_2012Metric;Murata;GRM21 X7R 2,2 uF;0,06;0,12;estimativa;—
+C37, C38, C46, C47;4;15 pF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,12;estimativa;—
+C45;1;470 pF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
+C50;1;1 nF 2 kV;C_1206_3216Metric;Vishay;VJ1206 1 nF 2 kV;0,30;0,30;estimativa;—
+C60, C64, C70, C74, C80, C82, C96, C103, C105;9;10 uF;C_1206_3216Metric;Murata;GRM31 X5R/X7R (10–22 uF);0,15;1,35;estimativa;—
+C63, C67, C73, C77, C85;5;10 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,15;estimativa;—
+C65, C75;2;220 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,06;estimativa;—
+C68, C78;2;4,7 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,06;estimativa;—
+D1;1;SMCJ60CA (V_BR 66,7 V);D_SMC;Littelfuse;SMCJ60CA;0,45;0,45;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+D2;1;MB510 (100 V, 5 A, SMC);D_SMC;Panjit;MB510_R1_00001;0,51;0,51;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+D3;1;Verde;LED_0603_1608Metric;Würth;150060VS75000;0,08;0,08;estimativa;—
+D4, D5;2;NUP2105L;SOT-23;onsemi;NUP2105LT1G;0,34;0,68;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+D6;1;SM712;SOT-23;Semtech;SM712.TCT;1,65;1,65;consultado;RS (EUR, 25 un., 23/11/2026)
+D7, D8;2;PRTR5V0U2X;SOT-143;Nexperia;PRTR5V0U2X,215;0,71;1,42;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+D9, D10;2;ESDA6V1-5SC6;SOT-23-6;STMicroelectronics;ESDA6V1-5SC6;0,25;0,50;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+F1;1;3 A;Fuse_1812_4532Metric;Bourns;MF-MSMF300-2;0,40;0,40;estimativa;—
+FB1, FB2, FB3, FB4, FB5, FB6;6;600 Ohm @ 100 MHz;L_0603_1608Metric;Murata;BLM18AG601SN1D;0,05;0,30;estimativa;—
+J1;1;Entrada 5-60 V;TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal;Phoenix Contact;MKDS 1,5/2-5,08;0,60;0,60;estimativa;—
+J2;1;SWD (CN4 da NUCLEO);PinHeader_1x06_P2.54mm_Vertical;genérico;2,54 mm;0,10;0,10;estimativa;—
+J3;1;HR911105A (magnéticos integrados);RJ45_Hanrun_HR911105A_Horizontal;HanRun;HR911105A;1,15;1,15;consultado;LCSC (1,24 USD, 1 un., 23/11/2026, conversão aproximada)
+J4;1;CAN FD 1;TerminalBlock_Phoenix_MKDS-1,5-3_1x03_P5.00mm_Horizontal;Phoenix Contact;MKDS 1,5/3-5,08;0,80;0,80;estimativa;—
+J5;1;CAN FD 2;TerminalBlock_Phoenix_MKDS-1,5-3_1x03_P5.00mm_Horizontal;Phoenix Contact;MKDS 1,5/3-5,08;0,80;0,80;estimativa;—
+J6;1;RS485 (A, B, GND isolada);TerminalBlock_Phoenix_MKDS-1,5-3_1x03_P5.00mm_Horizontal;Phoenix Contact;MKDS 1,5/3-5,08;0,80;0,80;estimativa;—
+J7;1;RS232 (DE-9 fêmea, DCE);DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset7.70mm_Housed_MountingHolesOffset9.12mm;genérico;DE-9 fêmea 90° com fixação;1,50;1,50;estimativa;—
+J8;1;I2C1 (VPU, SDA, SCL, GND);JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical;JST;B4B-PH-K-S;0,20;0,20;estimativa;—
+J9;1;I2C2 (VPU, SDA, SCL, GND);JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical;JST;B4B-PH-K-S;0,20;0,20;estimativa;—
+J10;1;GPS (3V3, GND, TX, RX, PPS);JST_PH_B5B-PH-K_1x05_P2.00mm_Vertical;JST;B5B-PH-K-S;0,25;0,25;estimativa;—
+J11;1;PWM isolado (PWM1-3, FALHA, VISO, GND_ISO);JST_PH_B6B-PH-K_1x06_P2.00mm_Vertical;JST;B6B-PH-K-S;0,30;0,30;estimativa;—
+JP1, JP2, JP3;3;Terminação 120 Ohm;PinHeader_1x02_P2.54mm_Vertical;genérico;2,54 mm;0,05;0,15;estimativa;—
+JP4, JP5;2;VPU: 3,3 V (1-2) ou 5 V (2-3);PinHeader_1x03_P2.54mm_Vertical;genérico;2,54 mm;0,05;0,10;estimativa;—
+JP6;1;BOOT0 (fechar = bootloader);PinHeader_1x02_P2.54mm_Vertical;genérico;2,54 mm;0,05;0,05;estimativa;—
+L1;1;SRP1245A-180M (18 uH, Isat 11 A);L_Bourns_SRP1245A;Bourns;SRP1245A-180M;1,25;1,25;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+L2;1;2,2 uH;L_Bourns_SRN6045TA;Bourns;SRN6045TA-2R2M;0,40;0,40;estimativa;—
+Q1;1;BSC160N10NS3 G (buck alto);TDSON-8-1;Infineon;BSC160N10NS3GATMA1;1,50;1,50;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+Q2;1;BSC160N10NS3 G (buck baixo);TDSON-8-1;Infineon;BSC160N10NS3GATMA1;1,50;1,50;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+Q3;1;BSC160N10NS3 G (boost alto);TDSON-8-1;Infineon;BSC160N10NS3GATMA1;1,50;1,50;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+Q4;1;BSC160N10NS3 G (boost baixo);TDSON-8-1;Infineon;BSC160N10NS3GATMA1;1,50;1,50;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+R1;1;53,6k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R2;1;20,5k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R3;1;13,3k (CFG);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R4;1;90,9k (SLOPE);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R5;1;75k (400 kHz);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R6;1;2,0k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R7;1;40,2k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R8, R9, R14, R20, R31, R32, R85, R90;8;10k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,16;estimativa;—
+R10;1;10 mOhm 1 W (R_CS);R_2512_6332Metric;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0,60;0,60;estimativa;—
+R11, R12;2;10;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
+R13;1;10 mOhm (R_ISNS);R_2512_6332Metric;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0,60;0,60;estimativa;—
+R21;1;1k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R30;1;12,1k 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R33;1;1,5k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R34, R35, R36, R37;4;49,9 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
+R38;1;1M;R_1206_3216Metric;Yageo;série RC1206;0,03;0,03;estimativa;—
+R41, R42, R43, R44;4;60,4 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
+R45;1;120 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R60, R70;2;200k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
+R61, R62, R71, R72;4;2,2k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
+R63, R64, R73, R74;4;4,7k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
+R80, R81;2;33;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
+R82;1;100;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R86;1;20k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
+R87, R88, R89;3;47;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,06;estimativa;—
+TP1;1;VIN;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP2;1;+5V;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP3;1;+3V3;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP4;1;GND;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP5;1;PWM1;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP6;1;PWM2;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP7;1;PWM3;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP8;1;GND_PWM;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+TP9;1;PPS;TestPoint_Pad_D1.5mm;—;pad na PCB;0,00;0,00;sem custo;—
+U1;1;LM5177;HTSSOP-38-1EP_4.4x9.7mm_P0.5mm_EP2.9x4.7mm;Texas Instruments;LM5177DCPR;6,45;6,45;consultado;Capítulo Projecto (nov. 2026)
+U2;1;TPS62162;WSON-8-1EP_2x2mm_P0.5mm_EP0.9x1.6mm_ThermalVias;Texas Instruments;TPS62162DSGR;1,35;1,35;consultado;Capítulo Projecto (nov. 2026)
+U3;1;STM32H743ZIT6;LQFP-144_20x20mm_P0.5mm;STMicroelectronics;STM32H743ZIT6;12,83;12,83;consultado;Capítulo Projecto (nov. 2026)
+U4;1;LAN8742A-CZ;VQFN-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias;Microchip;LAN8742A-CZ-TR;1,30;1,30;consultado;Capítulo Projecto (nov. 2026)
+U5, U6;2;ADM3057EBRWZ;SOIC-20W_7.5x12.8mm_P1.27mm;Analog Devices;ADM3057EBRWZ;13,67;27,34;consultado;Capítulo Projecto (nov. 2026)
+U7;1;ADM2582EBRWZ;SOIC-20W_7.5x12.8mm_P1.27mm;Analog Devices;ADM2582EBRWZ;13,97;13,97;consultado;Capítulo Projecto (nov. 2026)
+U8;1;MAX3227EEAE;SSOP-16_5.3x6.2mm_P0.65mm;Analog Devices (Maxim);MAX3227EEAE+;5,96;5,96;consultado;Capítulo Projecto (nov. 2026)
+U9, U10;2;PCA9306DR;SO-8_3.9x4.9mm_P1.27mm;Texas Instruments;PCA9306DR;0,65;1,30;consultado;Capítulo Projecto (nov. 2026)
+U11, U12, U13;3;74AHCT1G125;SOT-23-5;Texas Instruments;SN74AHCT1G125DBVR;0,12;0,36;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+U14;1;ADuM6401ARWZ;SOIC-16W_7.5x10.3mm_P1.27mm;Analog Devices;ADUM6401ARWZ;14,91;14,91;consultado;Capítulo Projecto (nov. 2026)
+Y1, Y2;2;25 MHz (C_L 10 pF);Crystal_SMD_3225-4Pin_3.2x2.5mm;CTS;425F22A025M0000 (C_L 10 pF);0,65;1,30;consultado;DigiKey (0,70 USD, 1 un., 23/11/2026, conversão aproximada)
+
+;;Placa: total consultado;;;;;100,68
+;;Placa: total estimativa;;;;;16,26
+;;Placa: total;;;;;116,94
+
+Fora do esquema;Qtd;Item;;Fabricante;Referência do fabricante;Preço unit. (€);Subtotal (€);Tipo de preço;Fonte
+;1;Placa de avaliação para o firmware;;STMicroelectronics;NUCLEO-H753ZI;34,68;34,68;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+;1;Recetor GPS com saída PPS;;Adafruit;746 (Ultimate GPS, PA1616S);39,37;39,37;consultado;RS (EUR, 1 un., 23/11/2026)
+;1;Fabrico da PCB (4 camadas, até 10x10 cm, 5 un.);;JLCPCB;FR4 1,6 mm, HASL;6,50;6,50;consultado;JLCPCB (desde 7 USD, 23/11/2026, conversão aproximada)
+;1;Envio e alfândega da PCB;;—;—;20,00;20,00;estimativa;—
+;4;Fichas JST PH (PHR-4 x2, PHR-5, PHR-6);;JST;PHR-4 / PHR-5 / PHR-6;0,10;0,40;consultado;RS (0,85 GBP por 10, conversão aproximada)
+;1;Contactos JST PH para cravar (fita de 250);;JST;SPH-002T-P0.5S;6,50;6,50;consultado;RS (EUR, 23/11/2026)
+;1;Cabos para ensaios (Ethernet, DE-9, par entrançado, alimentação);;—;—;15,00;15,00;estimativa;—
+;;Fora do esquema: total;;;;;122,45
+
+;;Projeto (placa + fora do esquema);;;;;239,39

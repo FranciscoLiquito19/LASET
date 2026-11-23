@@ -67,7 +67,8 @@ inversão) → **U1 LM5177** (buck-boost, 5 V) → **U2 TPS62162** (3,3 V).
 
 **Alteração face ao relatório inicial:** o LM74700-Q1 saiu. Aguenta no máximo 65 V e, com
 entrada nominal de 60 V, o TVS de proteção limita acima disso. Passou a ser um Schottky
-de 100 V (D2): mais simples e robusto, à custa de ~0,5 V de queda. O capítulo de Projeto
+de 100 V e 5 A em SMC (D2, Panjit MB510): mais simples e robusto, à custa de ~0,6 V de
+queda. O STPS5H100 que chegou a ser indicado só existe em DPAK. O capítulo de Projeto
 já reflete isto.
 
 ## Folha 2: Microcontrolador (`mcu.kicad_sch`)
@@ -129,6 +130,27 @@ Três 74AHCT1G125 a 5 V passam os PWM de 3,3 V para 5 V (o ADuM6401 a 5 V não r
 Saídas com 47 Ω, entrada de falha com pull-up para VISO, que volta ao MCU por um divisor
 10k/20k até ao TIM1_BKIN. ESDA6V1-5SC6 no lado isolado e conector JST-PH de 6 vias.
 
+## Lista de material
+
+`python3 -I gerador/bom.py` lê o esquema e escreve `bom/bom.csv` (abre no Excel), com
+referências, quantidades, fabricante, referência do fabricante, preço unitário e subtotal.
+Os preços estão em `bom/precos.csv`: os dos circuitos integrados e semicondutores foram
+consultados (fonte e data em cada linha); os dos passivos e conectores são estimativas e
+estão marcados como tal.
+
+O que não está no esquema (NUCLEO-H753ZI, recetor GPS com PPS, fabrico da PCB, fichas e
+contactos JST, cabos para os ensaios) está em `bom/extras.csv` e entra no mesmo ficheiro.
+
+| Parte | Total (23/11/2026) |
+|---|---|
+| Componentes da placa (100,68 € consultados + 16,26 € estimados) | 116,94 € |
+| Fora do esquema (87,45 € consultados + 35,00 € estimados) | 122,45 € |
+| **Projeto completo** | **239,39 €** |
+
+O fabrico assume uma placa até 10 × 10 cm (5 unidades na JLCPCB); se o layout ficar
+maior, o preço sobe. O envio e os cabos são estimativas. O HR911105A só aparece na LCSC;
+os restantes foram vistos na DigiKey, na RS ou no capítulo de Projeto.
+
 ## Consumo por barramento
 
 Valores máximos das folhas de características, salvo onde diz estimativa. Serve para
@@ -146,7 +168,7 @@ validar a corrente de 2 A usada na compensação do LM5177 e o limite de 1 A do 
 | 5 V | 3,3 V através do TPS62162 (2,2 W / 90 %) | ≈ 490 mA |
 | **5 V** | **Total (pior caso)** | **≈ 1,3 A** |
 
-Pior caso na entrada: ≈ 1,6 A a 4,5 V (fusível de 3 A, Schottky de 5 A, ≈ 0,8 W no D2).
+Pior caso na entrada: ≈ 1,6 A a 4,5 V (fusível de 3 A, Schottky de 5 A, ≈ 1 W no D2).
 A 60 V são ≈ 0,12 A.
 
 ## Ainda por fechar
