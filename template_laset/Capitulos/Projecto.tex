@@ -102,7 +102,7 @@ Ethernet & LAN8742A & PHY RMII usado nas placas Nucleo, compatível com o contro
 I2C ($\times2$) & PCA9306 & Tradução de nível entre 3,3 V e sensores de 1,8 a 5,5 V. & 0,65 € \\
 Fonte de 5 V & LM5177 & Buck-boost de 3,5 a 60 V; mantém 5 V com 5 V à entrada~\cite{ti_lm5177}. & 6,45 € \\
 Fonte de 3,3 V & TPS62162 & Buck síncrono de 1 A a partir dos 5 V. & 1,35 € \\
-Polaridade & STPS5H100 & Schottky de 100 V e 5 A em série com a entrada. Substitui o díodo ideal LM74700-Q1, que só aguenta 65 V, abaixo da tensão de limitação do TVS de entrada. & a confirmar \\
+Polaridade & MB510 & Schottky de 100 V e 5 A (SMC) em série com a entrada. Substitui o díodo ideal LM74700-Q1, que só aguenta 65 V, abaixo da tensão de limitação do TVS de entrada. & a confirmar \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -128,11 +128,17 @@ Comparam-se duas abordagens (DP05):
 \end{description}
 
 Ambos os valores incluem a placa NUCLEO e um recetor GPS para os ensaios
-de RF16, e excluem passivos, conectores e o fabrico da PCB. Excluem também
-os componentes acrescentados com o esquema elétrico e cujo preço ainda
-não foi confirmado: o díodo Schottky e o TVS de entrada, a bobina e os
-quatro MOSFET da fonte de 5 V, três 74AHCT1G125, as proteções contra ESD
-(NUP2105L, SM712, PRTR5V0U2X e ESDA6V1-5SC6) e os cristais. Propõe-se a abordagem B como solução
+de RF16, e excluem passivos, conectores e o fabrico da PCB.
+
+Com o esquema elétrico fechado, a lista de material completa da PCB,
+gerada a partir do esquema para o ficheiro \texttt{bom.csv} da pasta
+\texttt{hardware/bom}, tem 201 componentes e custa 116,94~€ por placa. Destes, 100,68~€ correspondem a
+preços consultados em distribuidores e 16,26~€ a estimativas para
+passivos e conectores. Os componentes acrescentados ao esquema depois da
+escolha inicial (díodo e TVS de entrada, bobina e MOSFET da fonte de 5 V,
+tradutores 74AHCT1G125, proteções contra ESD, cristais e conector RJ45)
+somam 15,27~€.
+O fabrico da PCB continua por orçamentar. Propõe-se a abordagem B como solução
 final, usando a NUCLEO para desenvolver o firmware enquanto a PCB é
 fabricada.
 

@@ -50,8 +50,8 @@ O Anexo A inclui o esquema elétrico diretamente de `hardware/laset_gateway.pdf`
 - `template_laset/Anexos/`: conteúdo dos anexos.
 - `template_laset/bibliografia.bib`: referências bibliográficas em BibTeX.
 - `template_laset/build/`: PDF oficial versionado e auxiliares de compilação ignorados pelo Git.
-- `hardware/`: projeto KiCad gerado por código (`hardware/gerador`); ver o
-  [README do hardware](hardware/README.md).
+- `hardware/`: projeto KiCad gerado por código (`hardware/gerador`), com a lista de
+  material em `hardware/bom/bom.csv`; ver o [README do hardware](hardware/README.md).
 - `.github/workflows/ci.yml`: compila o relatório, regenera e verifica o esquema e corre o
   ERC do KiCad em cada push e pull request.
 - `.vscode/settings.json`: configuração de compilação do LaTeX Workshop.

@@ -42,7 +42,7 @@ def folha():
            'TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal')
     f.comp('F1', 'Device:Polyfuse', '3 A', 45, 60, {1: '/VIN_RAW', 2: '/VIN_F'}, 'Fuse:Fuse_1812_4532Metric')
     f.comp('D1', 'Device:D_TVS', 'SMCJ60CA (V_BR 66,7 V)', 60, 75, {1: '/VIN_F', 2: 'GND'}, 'Diode_SMD:D_SMC')
-    f.comp('D2', 'Device:D_Schottky', 'STPS5H100 (100 V, 5 A)', 75, 60, {2: '/VIN_F', 1: 'VIN'}, 'Diode_SMD:D_SMC')
+    f.comp('D2', 'Device:D_Schottky', 'MB510 (100 V, 5 A, SMC)', 75, 60, {2: '/VIN_F', 1: 'VIN'}, 'Diode_SMD:D_SMC')
     f.comp('C1', C, '4,7 uF 100 V', 95, 75, {1: 'VIN', 2: 'GND'}, C1210)
     f.comp('C2', C, '4,7 uF 100 V', 105, 75, {1: 'VIN', 2: 'GND'}, C1210)
     f.comp('C3', 'Device:C_Polarized', '47 uF 100 V', 115, 75, {1: 'VIN', 2: 'GND'}, 'Capacitor_SMD:CP_Elec_8x10')
