@@ -1,6 +1,7 @@
 # Verificação automática em cada push e pull request:
 #  - compila o relatório (TeX Live completo) e guarda o PDF como artefacto;
-#  - verifica as ligações do esquema (hardware/gerador/verificar.py) e corre o ERC do KiCad 9.
+#  - verifica as ligações do esquema (hardware/gerador/verificar.py) e corre o ERC do KiCad 9;
+#  - compila o firmware para a NUCLEO e para a PCB e corre os testes no PC.
 # O ERC ainda não bloqueia o merge (continue-on-error): o relatório fica nos artefactos.
 # Quando o primeiro ERC estiver limpo, retirar o continue-on-error.
 name: CI
@@ -52,3 +53,32 @@ jobs:
         with:
           name: erc
           path: erc.rpt
+
+  firmware:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar o compilador ARM
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi
+      - name: Testes no PC
+        working-directory: firmware/testes
+        run: |
+          cmake -B build && cmake --build build && ./build/teste_modulos
+          python3 ../ferramentas/laset_pc.py autoteste
+      - name: Compilar para a NUCLEO-H753ZI
+        working-directory: firmware
+        run: |
+          cmake -B build-nucleo -DPLACA=NUCLEO -DCMAKE_TOOLCHAIN_FILE=cmake/gcc-arm-none-eabi.cmake
+          cmake --build build-nucleo
+      - name: Compilar para a PCB
+        working-directory: firmware
+        run: |
+          cmake -B build-laset -DPLACA=LASET -DCMAKE_TOOLCHAIN_FILE=cmake/gcc-arm-none-eabi.cmake
+          cmake --build build-laset
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            firmware/build-nucleo/laset_gateway.elf
+            firmware/build-nucleo/laset_gateway.bin
+            firmware/build-laset/laset_gateway.elf
