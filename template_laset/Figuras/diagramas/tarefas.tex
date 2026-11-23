@@ -1,0 +1,30 @@
+\begin{tikzpicture}[node distance=4mm]
+    % Receção
+    \node[mini,text width=2.2cm] (isr) at (0,0)
+        {\textbf{ISR / DMA}\\uma por interface};
+    \node[bloco,text width=1.9cm] (fin) at (2.95,0)
+        {\textbf{Fila de entrada}};
+    % Encaminhamento
+    \node[nucleo,text width=2.75cm] (enc) at (6.1,0)
+        {\textbf{Tarefa de encaminhamento}\\tabela configurada};
+    % Saídas
+    \node[bloco,text width=2.3cm] (fout) at (9.4,0)
+        {\textbf{Fila de saída}\\por interface\\urgente | normal};
+    \node[mini,text width=2.2cm] (tx) at (12.55,0)
+        {\textbf{Tarefa de transmissão}\\ao ritmo do barramento};
+    % Tarefas auxiliares
+    \node[auxiliar,text width=2.7cm] (sync) at (2.95,-2.3)
+        {\textbf{Sincronização}\\captura PPS (TIM2), NMEA, deriva};
+    \node[auxiliar,text width=2.7cm] (cfg) at (6.1,-2.3)
+        {\textbf{Configuração}\\pedidos do PC, flash (RF18)};
+    \node[auxiliar,text width=2.7cm] (pwm) at (9.4,-2.3)
+        {\textbf{PWM}\\TIM1, valor seguro sem comandos};
+    \draw[fluxo] (isr) -- (fin);
+    \draw[fluxo] (fin) -- (enc);
+    \draw[fluxo] (enc) -- (fout);
+    \draw[fluxo] (fout) -- (tx);
+    \draw[fluxo] (sync.north) -- node[legenda,right,pos=0.45] {marca temporal} (fin.south);
+    \draw[fluxo] (cfg.north) -- node[legenda,right,pos=0.45] {tabela} (enc.south);
+    \draw[fluxo] (enc.south east) to[out=-60,in=120] (pwm.north);
+    \node[legenda] at (6.1,1.25) {Uma mensagem por pedido; blocos de memória reservados no arranque};
+\end{tikzpicture}

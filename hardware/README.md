@@ -32,8 +32,9 @@ cd hardware/gerador
 python3 -I gerar.py
 python3 -I verificar.py
 kicad-cli sch export pdf -o ../laset_gateway.pdf ../laset_gateway.kicad_sch
-cp ../laset_gateway.pdf ../../template_laset/Anexos/esquema_eletrico.pdf
 ```
+
+O Anexo A do relatório lê este PDF diretamente; basta recompilar o relatório.
 
 O `gerar.py` recusa referências repetidas entre folhas. Não editar à mão os
 `.kicad_sch` gerados: as alterações perdem-se na próxima geração. Arrumar a posição dos
@@ -72,7 +73,10 @@ já reflete isto.
 ## Folha 2: Microcontrolador (`mcu.kicad_sch`)
 
 STM32H743ZIT6, 11 × 100 nF + 4,7 µF no 3,3 V, VDDA filtrado por ferrite, 2 × 2,2 µF nos
-VCAP, cristal de 25 MHz, BOOT0 a GND, conector SWD de 10 pinos e LED de estado.
+VCAP, cristal de 25 MHz, BOOT0 a GND com jumper (JP6) para entrar no bootloader, LED de
+estado e conector SWD de 6 pinos a 2,54 mm na mesma ordem do CN4 das NUCLEO (1 VDD,
+2 SWCLK, 3 GND, 4 SWDIO, 5 NRST, 6 SWO): programa-se com o ST-LINK de uma NUCLEO e um
+cabo direto.
 Atribuição de pinos (confirmada nas funções alternativas do STM32H743):
 
 | Função | Pinos |
@@ -110,25 +114,54 @@ VISOOUT ligado a VISOIN, SM712, terminação de 120 Ω por jumper. MAX3227E semp
 
 Dois PCA9306 com VREF1 = 3,3 V; VREF2/EN por 200 kΩ à tensão do sensor (VPU), escolhida
 por jumper entre 3,3 V e 5 V. Pull-ups de 2,2 kΩ do lado do MCU e 4,7 kΩ do lado do
-sensor. Conector GPS JST-PH de 5 vias (3V3, GND, TX, RX, PPS) com resistências em série.
+sensor. PRTR5V0U2X em cada conector I2C. Conector GPS JST-PH de 5 vias (3V3, GND, TX, RX,
+PPS) com resistências em série e ESDA6V1-5SC6.
+
+## Pontos de teste e mecânica
+
+TP1–TP4: VIN, 5 V, 3,3 V e GND. TP5–TP8: as três saídas PWM e a massa isolada. TP9: PPS.
+Quatro furos M3 (H1–H4).
 
 ## Folha 7: PWM isolado (`pwm.kicad_sch`)
 
 Três 74AHCT1G125 a 5 V passam os PWM de 3,3 V para 5 V (o ADuM6401 a 5 V não reconhece
 3,3 V como nível alto). ADuM6401 com VDD1 = VDDL = 5 V e VSEL a VISO (5 V isolados).
 Saídas com 47 Ω, entrada de falha com pull-up para VISO, que volta ao MCU por um divisor
-10k/20k até ao TIM1_BKIN. Conector JST-PH de 6 vias.
+10k/20k até ao TIM1_BKIN. ESDA6V1-5SC6 no lado isolado e conector JST-PH de 6 vias.
+
+## Consumo por barramento
+
+Valores máximos das folhas de características, salvo onde diz estimativa. Serve para
+validar a corrente de 2 A usada na compensação do LM5177 e o limite de 1 A do TPS62162.
+
+| Barramento | Carga | Corrente |
+|---|---|---|
+| 3,3 V | STM32H743 a 480 MHz (275 µA/MHz sem periféricos, + periféricos; estimativa) | 300 mA |
+| 3,3 V | ADM2582E a 16 Mbit/s com 54 Ω (máx.) | 230 mA |
+| 3,3 V | LAN8742A, MAX3227E, PCA9306, LED (estimativa) | 80 mA |
+| 3,3 V | Módulo GPS (estimativa) | 50 mA |
+| **3,3 V** | **Total (TPS62162: 1 A)** | **≈ 0,66 A** |
+| 5 V | 2 × ADM3057E, dominante em falha (máx. 260 mA cada) | 520 mA |
+| 5 V | ADuM6401 com VISO à carga máxima (máx.) | 290 mA |
+| 5 V | 3,3 V através do TPS62162 (2,2 W / 90 %) | ≈ 490 mA |
+| **5 V** | **Total (pior caso)** | **≈ 1,3 A** |
+
+Pior caso na entrada: ≈ 1,6 A a 4,5 V (fusível de 3 A, Schottky de 5 A, ≈ 0,8 W no D2).
+A 60 V são ≈ 0,12 A.
 
 ## Ainda por fechar
 
 - **Margem de fase do LM5177:** a compensação foi calculada pelas equações da folha de
   características; medir no protótipo (ou simular no WEBENCH) antes de fechar.
 - **Footprint do LM5177:** confirmar o pad exposto com o desenho DCP0038.
-- **TVS de entrada × LM5177:** confirmar que a tensão de limitação do SMCJ64CA fica abaixo
-  do máximo absoluto do LM5177 e dos MOSFET de 100 V.
+- **Surtos na entrada:** o LM5177 aguenta 85 V (máximo absoluto). Nenhum TVS com tensão de
+  trabalho de 60 V limita abaixo disso à corrente de pico: o SMCJ60CA começa a conduzir a
+  66,7 V mas chega a 96,8 V a 15,5 A. Protege contra ESD e transitórios curtos com pouca
+  energia. Se for preciso cumprir um ensaio de surto (por exemplo IEC 61000-4-5), é preciso
+  um limitador ativo à entrada (surge stopper). Fica como risco no relatório.
 - **PCA9306:** a TI pede VREF1 abaixo de VREF2 (cerca de 1 V). Com VPU = 5 V está bem; com
   VPU = 3,3 V funciona no limite. Para sensores de 1,8 V seria preciso trocar os lados ou
-  usar outro tradutor. Decidir que sensores se querem suportar.
+  usar outro tradutor. **Decisão do grupo:** que sensores se querem suportar.
 - **Cristais:** condensadores de 15 pF assumem C_L = 10 pF; ajustar ao cristal comprado.
-- **Conectores definitivos** e o primeiro ERC completo no KiCad 8/9.
+- **ERC completo:** corre na CI (KiCad 9) em cada PR; ver `.github/workflows/ci.yml`.
 - **Layout** (fase seguinte).

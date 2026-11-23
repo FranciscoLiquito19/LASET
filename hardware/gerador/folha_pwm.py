@@ -40,6 +40,11 @@ def folha():
     for k in range(3):
         f.comp(f'R{87 + k}', R, '47', 270, 95 + 12 * k, {1: f'/PWM{k + 1}_ISO', 2: f'/PWM{k + 1}_OUT'}, R0603)
     f.comp('R90', R, '10k', 270, 145, {1: viso, 2: '/FALHA_ISO'}, R0603)
+    f.comp('D10', 'Power_Protection:ESDA6V1-5SC6', 'ESDA6V1-5SC6', 300, 165, {
+        'IO1': '/PWM1_OUT', 'GND': gi, 'IO2': '/PWM2_OUT', 'IO3': '/PWM3_OUT', 'IO4': '/FALHA_ISO'}, nc=('IO5',))
+    for k in range(3):
+        f.comp(f'TP{5 + k}', 'Connector:TestPoint', f'PWM{k + 1}', 300 + 10 * k, 75, {1: f'/PWM{k + 1}_OUT'}, 'TestPoint:TestPoint_Pad_D1.5mm')
+    f.comp('TP8', 'Connector:TestPoint', 'GND_PWM', 330, 75, {1: gi}, 'TestPoint:TestPoint_Pad_D1.5mm')
     f.comp('J11', 'Connector_Generic:Conn_01x06', 'PWM isolado (PWM1-3, FALHA, VISO, GND_ISO)', 335, 120, {
         1: '/PWM1_OUT', 2: '/PWM2_OUT', 3: '/PWM3_OUT', 4: '/FALHA_ISO', 5: viso, 6: gi}, jst_ph(6))
     return f

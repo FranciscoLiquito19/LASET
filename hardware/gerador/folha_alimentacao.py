@@ -12,7 +12,9 @@ Compensação (equações 3 a 10 e 45 a 47 da folha de características), para
 I_O,max = 2 A, C_O efetiva ~140 uF, V_IN,min = 4,5 V (D_max = 0,19 com 90 % de rendimento):
   f_RHPZ = V_O (1-D)^2 / (2 pi I_O L) = 14,5 kHz -> f_BW = 4 kHz (< f_RHPZ/3)
   R_COMP = 2 pi f_BW / gm x (V_O/V_FB) x A_CS R_CS C_O / (1-D) x 1/(1+(f_BW/f_RHPZ)^2)
-         = 2,0 kOhm (gm = 1 mS e A_CS = 10, valores que reproduzem o exemplo da TI)
+         = 2,0 kOhm. A folha de características dá gm = 600 uS mas não dá A_CS; a razão
+           A_CS/gm foi calibrada pelo exemplo da TI (R_COMP = 1,9 kOhm), por isso o resultado não
+           depende de se conhecer A_CS em separado.
   f_pole = 2 I_O / (2 pi V_O C_O) = 0,91 kHz; f_CZ = 1,5 f_pole = 1,36 kHz -> C_COMP = 56 nF
   C_HF = 1 / (2 pi 10 f_BW R_COMP) = 2,0 nF -> 2,2 nF
   Confirmar a margem de fase no protótipo (ou no WEBENCH) antes de fechar.
@@ -29,6 +31,7 @@ MOSFET = 'Transistor_FET:BSC160N10NS3G'  # 100 V, 16 mOhm, TDSON-8 (o símbolo j
 def folha():
     f = Folha('Alimentação', 'alimentacao.kicad_sch', notas=[
         'Entrada 5 a 60 V (RNF08). LM5177 buck-boost gera 5 V mesmo com 5 V à entrada; TPS62162 gera 3,3 V.',
+        'D1 (SMCJ60CA) limita até 96,8 V à corrente de pico, acima dos 85 V máximos do LM5177: protege contra ESD e transitórios curtos, não contra surtos normalizados (ver README).',
         'Compensação calculada para f_BW = 4 kHz (ver gerador/folha_alimentacao.py); confirmar a margem de fase no protótipo.',
         'Footprint do LM5177 (HTSSOP-38 com pad 2,9 x 4,7 mm) criado em lib/laset.pretty: confirmar com o desenho DCP0038 da TI.',
     ])
@@ -38,7 +41,7 @@ def folha():
     f.comp('J1', 'Connector:Screw_Terminal_01x02', 'Entrada 5-60 V', 25, 60, {1: '/VIN_RAW', 2: 'GND'},
            'TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal')
     f.comp('F1', 'Device:Polyfuse', '3 A', 45, 60, {1: '/VIN_RAW', 2: '/VIN_F'}, 'Fuse:Fuse_1812_4532Metric')
-    f.comp('D1', 'Device:D_TVS', 'SMCJ64CA', 60, 75, {1: '/VIN_F', 2: 'GND'}, 'Diode_SMD:D_SMC')
+    f.comp('D1', 'Device:D_TVS', 'SMCJ60CA (V_BR 66,7 V)', 60, 75, {1: '/VIN_F', 2: 'GND'}, 'Diode_SMD:D_SMC')
     f.comp('D2', 'Device:D_Schottky', 'STPS5H100 (100 V, 5 A)', 75, 60, {2: '/VIN_F', 1: 'VIN'}, 'Diode_SMD:D_SMC')
     f.comp('C1', C, '4,7 uF 100 V', 95, 75, {1: 'VIN', 2: 'GND'}, C1210)
     f.comp('C2', C, '4,7 uF 100 V', 105, 75, {1: 'VIN', 2: 'GND'}, C1210)
@@ -97,4 +100,10 @@ def folha():
     f.comp('C16', C, '22 uF 10 V', 350, 240, {1: '+3V3', 2: 'GND'}, C1206)
     f.comp('R14', R, '10k', 265, 205, {1: '+3V3', 2: 'PG_3V3'}, R0603)
     f.flag('+3V3', 360, 200)
+
+    # Pontos de teste e furos de fixação
+    for i, (rede, x) in enumerate([('VIN', 30), ('+5V', 45), ('+3V3', 60), ('GND', 75)]):
+        f.comp(f'TP{i + 1}', 'Connector:TestPoint', rede, x, 255, {1: rede}, 'TestPoint:TestPoint_Pad_D1.5mm')
+    for i in range(4):
+        f.comp(f'H{i + 1}', 'Mechanical:MountingHole', 'M3', 110 + 15 * i, 260, {}, 'MountingHole:MountingHole_3.2mm_M3')
     return f

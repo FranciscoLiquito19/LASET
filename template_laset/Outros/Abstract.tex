@@ -1,4 +1,20 @@
 \section*{Abstract}
-...
+This report describes the design of a multi-protocol read/write unit that
+connects a PC to external devices over I2C, RS232, RS485, two CAN FD buses
+and Ethernet, and drives three isolated PWM outputs, with time stamping
+synchronised to a GPS PPS signal. The unit routes data between interfaces
+with different rates, keeps making progress under concurrent load and
+stores its configuration in non-volatile memory.
+
+Starting from the needs gathered with the supervisors, the report defines
+seven use cases, 18 functional and 8 non-functional requirements with
+their acceptance criteria, and a high-level architecture. In the design
+phase, an STM32H743 microcontroller running FreeRTOS is selected, together
+with isolated transceivers for CAN FD, RS485 and PWM and a buck-boost
+supply that accepts 5 to 60 V. The complete schematic is generated from
+code and checked automatically, and the firmware is organised as tasks
+with one queue per interface and two priority classes.
+
 \section*{Keywords}
-...
+Multi-protocol gateway, CAN FD, RS485, Ethernet, GPS PPS, isolated PWM,
+STM32H743, FreeRTOS.

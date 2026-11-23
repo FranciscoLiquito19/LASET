@@ -5,9 +5,9 @@
 \label{anexo:EETS}
 
 As páginas seguintes reproduzem as sete folhas do esquema elétrico da
-unidade, geradas a partir de \texttt{hardware/gerador} (KiCad). O ficheiro
-\texttt{Anexos/esquema\_eletrico.pdf} é copiado de
-\texttt{hardware/laset\_gateway.pdf} sempre que o esquema muda.
+unidade, geradas em KiCad a partir do código da pasta
+\texttt{hardware/gerador} do repositório. O anexo lê diretamente o PDF
+do esquema, pelo que acompanha sempre a versão mais recente.
 
 \begin{enumerate}
     \item Alimentação: entrada de 5 a 60 V, LM5177 (5 V) e TPS62162 (3,3 V).
@@ -19,4 +19,4 @@ unidade, geradas a partir de \texttt{hardware/gerador} (KiCad). O ficheiro
     \item PWM isolado (ADuM6401).
 \end{enumerate}
 
-\includepdf[pages=2-8,landscape,pagecommand={\thispagestyle{empty}}]{./Anexos/esquema_eletrico.pdf}
+\includepdf[pages=2-8,landscape,pagecommand={\thispagestyle{empty}}]{../hardware/laset_gateway.pdf}

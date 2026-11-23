@@ -1,5 +1,10 @@
 # Revisão final do relatório LaSET
 
+> **Estado atual (23 de novembro de 2026):** o relatório tem 18 RF e 8 RNF, dois CAN FD,
+> Ethernet só para o PC e configuração em flash (sem microSD). As secções abaixo de
+> outubro descrevem a versão de então (17 RF) e ficam como histórico. A fase de Projeto
+> está no Capítulo 5, com o estado das DP01–DP17 na Tabela 5.5, e o esquema no Anexo A.
+
 Revisão consolidada de 27 de outubro de 2026, sobre a branch
 `template-migration`, com base no commit `a3c2227`. Inclui a revisão de
 conteúdo e apresentação de 23 de outubro e a clarificação de RF17 descrita abaixo.

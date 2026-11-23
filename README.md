@@ -1,6 +1,7 @@
 # LASET
 
-Relatório de Laboratório de Sistemas Autónomos: **Sistema de Escrita/Leitura Multi-Protocolo**, com I2C, RS232, RS485, CAN e Ethernet.
+Relatório de Laboratório de Sistemas Autónomos: **Sistema de Escrita/Leitura Multi-Protocolo**, com I2C, RS232, RS485, dois CAN FD,
+Ethernet, três saídas PWM isoladas e sincronização por PPS/GPS.
 
 Autores: Francisco Liquito e Pedro Ribeiro. Ano letivo: 2026/2027.
 
@@ -34,12 +35,10 @@ No VS Code, a receita existente do LaTeX Workshop usa
 o resultado fica no mesmo caminho indicado acima. O PDF oficial é versionado;
 os ficheiros auxiliares de compilação em `build/` são ignorados pelo Git.
 
-A fase de Análise de Requisitos está configurada em
-`template_laset/Outros/Identificacao.tex`: `\Requisitostrue`, `\Projectofalse`
-e `\Finalfalse`. Inclui Introdução, Estado da Arte, Análise de Requisitos e
-Arquitetura de Alto Nível. O ficheiro `Anexos/AnexoA.tex` está reservado para
-o esquema elétrico da fase de projeto/final e contém apenas comentários,
-pelo que não gera um capítulo vazio nesta fase.
+A fase do relatório escolhe-se em `template_laset/Outros/Identificacao.tex`
+(`\Requisitostrue`, `\Projectotrue`, `\Finalfalse` na fase atual, de Projeto), onde
+estão também o título e a data da capa (`\DataRelatorio`, a atualizar em cada entrega).
+O Anexo A inclui o esquema elétrico diretamente de `hardware/laset_gateway.pdf`.
 
 ## Estrutura
 
@@ -51,6 +50,10 @@ pelo que não gera um capítulo vazio nesta fase.
 - `template_laset/Anexos/`: conteúdo dos anexos.
 - `template_laset/bibliografia.bib`: referências bibliográficas em BibTeX.
 - `template_laset/build/`: PDF oficial versionado e auxiliares de compilação ignorados pelo Git.
+- `hardware/`: projeto KiCad gerado por código (`hardware/gerador`); ver o
+  [README do hardware](hardware/README.md).
+- `.github/workflows/ci.yml`: compila o relatório, regenera e verifica o esquema e corre o
+  ERC do KiCad em cada push e pull request.
 - `.vscode/settings.json`: configuração de compilação do LaTeX Workshop.
 
 As [notas da revisão](docs/revisao_final.md) incluem os resultados de
@@ -81,6 +84,14 @@ git clone https://github.com/FranciscoLiquito19/LASET.git
 cd LASET
 ```
 
+Na primeira vez, em cada computador, configurar o autor dos commits (sem isto aparecem
+commits com autor «unknown»):
+
+```sh
+git config user.name "Nome Apelido"
+git config user.email "email@exemplo.pt"
+```
+
 Antes de começar uma alteração, atualizar a cópia local e criar um ramo:
 
 ```sh
@@ -91,9 +102,10 @@ git switch -c descricao-da-alteracao
 Depois de editar e compilar, guardar apenas os ficheiros pretendidos e publicar o ramo:
 
 ```sh
-git add template_laset/ README.md
+git add template_laset/ hardware/ README.md
 git commit -m "Descrever a alteração"
 git push -u origin descricao-da-alteracao
 ```
 
-No GitHub, abrir um pull request para rever e integrar a alteração no ramo principal. Usar um nome diferente para cada novo ramo.
+No GitHub, abrir um pull request para rever e integrar a alteração no ramo principal
+(`master`). Só integrar depois de a verificação automática (CI) passar. Usar um nome diferente para cada novo ramo.
