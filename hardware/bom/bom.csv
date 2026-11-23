@@ -96,6 +96,18 @@ U11, U12, U13;3;74AHCT1G125;SOT-23-5;Texas Instruments;SN74AHCT1G125DBVR;0,12;0,
 U14;1;ADuM6401ARWZ;SOIC-16W_7.5x10.3mm_P1.27mm;Analog Devices;ADUM6401ARWZ;14,91;14,91;consultado;Capítulo Projecto (nov. 2026)
 Y1, Y2;2;25 MHz (C_L 10 pF);Crystal_SMD_3225-4Pin_3.2x2.5mm;CTS;425F22A025M0000 (C_L 10 pF);0,65;1,30;consultado;DigiKey (0,70 USD, 1 un., 23/11/2026, conversão aproximada)
 
-;;Total consultado;;;;;100,68
-;;Total estimativa;;;;;16,26
-;;Total;;;;;116,94
+;;Placa: total consultado;;;;;100,68
+;;Placa: total estimativa;;;;;16,26
+;;Placa: total;;;;;116,94
+
+Fora do esquema;Qtd;Item;;Fabricante;Referência do fabricante;Preço unit. (€);Subtotal (€);Tipo de preço;Fonte
+;1;Placa de avaliação para o firmware;;STMicroelectronics;NUCLEO-H753ZI;34,68;34,68;consultado;DigiKey (EUR, 1 un., 23/11/2026)
+;1;Recetor GPS com saída PPS;;Adafruit;746 (Ultimate GPS, PA1616S);39,37;39,37;consultado;RS (EUR, 1 un., 23/11/2026)
+;1;Fabrico da PCB (4 camadas, até 10x10 cm, 5 un.);;JLCPCB;FR4 1,6 mm, HASL;6,50;6,50;consultado;JLCPCB (desde 7 USD, 23/11/2026, conversão aproximada)
+;1;Envio e alfândega da PCB;;—;—;20,00;20,00;estimativa;—
+;4;Fichas JST PH (PHR-4 x2, PHR-5, PHR-6);;JST;PHR-4 / PHR-5 / PHR-6;0,10;0,40;consultado;RS (0,85 GBP por 10, conversão aproximada)
+;1;Contactos JST PH para cravar (fita de 250);;JST;SPH-002T-P0.5S;6,50;6,50;consultado;RS (EUR, 23/11/2026)
+;1;Cabos para ensaios (Ethernet, DE-9, par entrançado, alimentação);;—;—;15,00;15,00;estimativa;—
+;;Fora do esquema: total;;;;;122,45
+
+;;Projeto (placa + fora do esquema);;;;;239,39

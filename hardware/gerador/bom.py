@@ -19,6 +19,7 @@ HW = os.path.join(AQUI, '..')
 SCH = os.path.join(HW, 'laset_gateway.kicad_sch')
 PRECOS = os.path.join(HW, 'bom', 'precos.csv')
 SAIDA = os.path.join(HW, 'bom', 'bom.csv')
+EXTRAS = os.path.join(HW, 'bom', 'extras.csv')
 
 DIRETOS = ['STM32H743ZIT6', 'LAN8742A-CZ', 'ADM3057EBRWZ', 'ADM2582EBRWZ', 'MAX3227EEAE',
            'ADuM6401ARWZ', 'PCA9306DR', 'TPS62162', '74AHCT1G125', 'BSC160N10NS3 G',
@@ -111,14 +112,34 @@ def main():
                     'Preço unit. (€)', 'Subtotal (€)', 'Tipo de preço', 'Fonte'])
         w.writerows(linhas)
         w.writerow([])
+        placa = sum(tot.values())
         for t in ('consultado', 'estimativa'):
-            w.writerow(['', '', f'Total {t}', '', '', '', '', f'{tot[t]:.2f}'.replace('.', ',')])
-        w.writerow(['', '', 'Total', '', '', '', '', f'{sum(tot.values()):.2f}'.replace('.', ',')])
+            w.writerow(['', '', f'Placa: total {t}', '', '', '', '', f'{tot[t]:.2f}'.replace('.', ',')])
+        w.writerow(['', '', 'Placa: total', '', '', '', '', f'{placa:.2f}'.replace('.', ',')])
+        # Itens fora do esquema: NUCLEO, GPS, fabrico da PCB, fichas e cabos
+        w.writerow([])
+        w.writerow(['Fora do esquema', 'Qtd', 'Item', '', 'Fabricante', 'Referência do fabricante',
+                    'Preço unit. (€)', 'Subtotal (€)', 'Tipo de preço', 'Fonte'])
+        ext = collections.Counter()
+        for e in csv.DictReader(open(EXTRAS, encoding='utf-8'), delimiter=';'):
+            sub = int(e['qtd']) * float(e['preco_eur'])
+            ext[e['tipo']] += sub
+            w.writerow(['', e['qtd'], e['item'], '', e['fabricante'], e['referencia'],
+                        e['preco_eur'].replace('.', ','), f'{sub:.2f}'.replace('.', ','), e['tipo'], e['fonte']])
+        extras = sum(ext.values())
+        w.writerow(['', '', 'Fora do esquema: total', '', '', '', '', f'{extras:.2f}'.replace('.', ',')])
+        w.writerow([])
+        w.writerow(['', '', 'Projeto (placa + fora do esquema)', '', '', '', '', f'{placa + extras:.2f}'.replace('.', ',')])
     n = sum(len(r) for r in grupos.values())
     print(f'{len(linhas)} linhas, {n} componentes')
     for t, v in tot.items():
         print(f'  {t}: {v:.2f} €')
-    print(f'  total: {sum(tot.values()):.2f} €')
+    print(f'  placa: {sum(tot.values()):.2f} €')
+    ext = collections.Counter()
+    for e in csv.DictReader(open(EXTRAS, encoding='utf-8'), delimiter=';'):
+        ext[e['tipo']] += int(e['qtd']) * float(e['preco_eur'])
+    print(f'  fora do esquema: {sum(ext.values()):.2f} € ({dict(ext)})')
+    print(f'  projeto: {sum(tot.values()) + sum(ext.values()):.2f} €')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,8 @@
+item;qtd;fabricante;referencia;preco_eur;fonte;tipo
+Placa de avaliação para o firmware;1;STMicroelectronics;NUCLEO-H753ZI;34.68;DigiKey (EUR, 1 un., 23/11/2026);consultado
+Recetor GPS com saída PPS;1;Adafruit;746 (Ultimate GPS, PA1616S);39.37;RS (EUR, 1 un., 23/11/2026);consultado
+Fabrico da PCB (4 camadas, até 10x10 cm, 5 un.);1;JLCPCB;FR4 1,6 mm, HASL;6.50;JLCPCB (desde 7 USD, 23/11/2026, conversão aproximada);consultado
+Envio e alfândega da PCB;1;—;—;20.00;—;estimativa
+Fichas JST PH (PHR-4 x2, PHR-5, PHR-6);4;JST;PHR-4 / PHR-5 / PHR-6;0.10;RS (0,85 GBP por 10, conversão aproximada);consultado
+Contactos JST PH para cravar (fita de 250);1;JST;SPH-002T-P0.5S;6.50;RS (EUR, 23/11/2026);consultado
+Cabos para ensaios (Ethernet, DE-9, par entrançado, alimentação);1;—;—;15.00;—;estimativa

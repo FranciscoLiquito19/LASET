@@ -138,10 +138,18 @@ Os preços estão em `bom/precos.csv`: os dos circuitos integrados e semiconduto
 consultados (fonte e data em cada linha); os dos passivos e conectores são estimativas e
 estão marcados como tal.
 
-Total por placa (23/11/2026): **116,94 €**, dos quais 100,68 € com preço consultado e
-16,26 € estimados. Não inclui o fabrico da PCB, as fichas fêmea dos conectores JST, a
-NUCLEO nem o recetor GPS. O HR911105A só aparece na LCSC; os restantes foram vistos na
-DigiKey, na RS ou no capítulo de Projeto.
+O que não está no esquema (NUCLEO-H753ZI, recetor GPS com PPS, fabrico da PCB, fichas e
+contactos JST, cabos para os ensaios) está em `bom/extras.csv` e entra no mesmo ficheiro.
+
+| Parte | Total (23/11/2026) |
+|---|---|
+| Componentes da placa (100,68 € consultados + 16,26 € estimados) | 116,94 € |
+| Fora do esquema (87,45 € consultados + 35,00 € estimados) | 122,45 € |
+| **Projeto completo** | **239,39 €** |
+
+O fabrico assume uma placa até 10 × 10 cm (5 unidades na JLCPCB); se o layout ficar
+maior, o preço sobe. O envio e os cabos são estimativas. O HR911105A só aparece na LCSC;
+os restantes foram vistos na DigiKey, na RS ou no capítulo de Projeto.
 
 ## Consumo por barramento
 
