@@ -30,3 +30,5 @@ build/*
 hardware/*-backups/
 hardware/*.kicad_prl
 hardware/gerador/__pycache__/
+firmware/build/
+firmware/testes/build/
