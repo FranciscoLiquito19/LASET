@@ -97,12 +97,12 @@ Bloco & Componente & Justificação & Preço \\
 CAN FD ($\times2$) & ADM3057E & Isolado 3 kV com alimentação isolada integrada; até 12 Mbit/s; proteção de $\pm40$ V no barramento~\cite{adi_adm3057e}. & 13,67 € \\
 RS485 & ADM2582E & Isolado 2,5 kV, 16 Mbit/s, até 256 nós, funciona a 3,3 V~\cite{adi_adm2582e}. & 13,97 € \\
 RS232 & MAX3227E & Taxa de 1 Mbit/s garantida, de 3,0 a 5,5 V~\cite{maxim_max3227e}. & 5,96 € \\
-PWM ($\times3$) & ADuM6401 & Três canais isolados de 5 kV mais um de retorno; alimentação isolada de 5 V integrada~\cite{adi_adum6401}. & 14,91 € \\
+PWM ($\times3$) & ADuM6401 & Três canais isolados de 5 kV mais um de retorno; alimentação isolada de 5 V integrada~\cite{adi_adum6401}. Alimentado a 5 V, recebe os PWM do MCU através de três 74AHCT1G125, que aceitam a lógica de 3,3 V. & 14,91 € \\
 Ethernet & LAN8742A & PHY RMII usado nas placas Nucleo, compatível com o controlador do CubeMX. & 1,30 € \\
 I2C ($\times2$) & PCA9306 & Tradução de nível entre 3,3 V e sensores de 1,8 a 5,5 V. & 0,65 € \\
 Fonte de 5 V & LM5177 & Buck-boost de 3,5 a 60 V; mantém 5 V com 5 V à entrada~\cite{ti_lm5177}. & 6,45 € \\
 Fonte de 3,3 V & TPS62162 & Buck síncrono de 1 A a partir dos 5 V. & 1,35 € \\
-Polaridade & LM74700-Q1 & Díodo ideal até 65 V com MOSFET externo~\cite{ti_lm74700}. & a confirmar \\
+Polaridade & STPS5H100 & Schottky de 100 V e 5 A em série com a entrada. Substitui o díodo ideal LM74700-Q1, que só aguenta 65 V, abaixo da tensão de limitação do TVS de entrada. & a confirmar \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -136,14 +136,33 @@ fabricada.
 \section{Descrição de \textit{Hardware}}
 \label{sec:proj-hardware}
 
-% TODO: esquema elétrico no Anexo A, depois de fechados passivos e conectores.
-O esquema elétrico completo será apresentado no Anexo~A. A árvore de
-alimentação é a seguinte: a entrada de 5 a 60 V passa pelo díodo ideal
-LM74700-Q1, o LM5177 gera o barramento de 5 V para os transceivers CAN FD
-e o isolador dos PWM, e o TPS62162 gera os 3,3 V para o microcontrolador,
-o PHY, o RS232 e o lado lógico dos isoladores. O sinal PPS do recetor GPS
-liga a uma entrada de captura de um temporizador de 32 bits e as
-mensagens NMEA a uma UART.
+O esquema elétrico completo está no Anexo~\ref{anexo:EETS}. É gerado por
+código a partir da pasta \texttt{hardware/gerador} do repositório, o que
+permite rever cada alteração como o resto do relatório, e está dividido em
+sete folhas: alimentação, microcontrolador, Ethernet, CAN FD, RS485 e RS232,
+I2C e GPS, e PWM isolado.
+
+A árvore de alimentação é a seguinte. A entrada de 5 a 60 V passa por um
+fusível rearmável, um TVS e o díodo Schottky de proteção contra inversão.
+O LM5177 gera o barramento de 5 V para os transceivers CAN FD e o isolador
+dos PWM, com quatro MOSFET BSC160N10NS3 de 100 V, uma bobina de 18~$\mu$H
+e comutação a 400 kHz. A malha de controlo foi compensada para uma largura
+de banda de 4 kHz, abaixo de um terço do zero no semiplano direito do modo
+elevador (14,5 kHz) com 2 A de carga. O TPS62162 gera os 3,3 V para o
+microcontrolador, o PHY, o RS232, o RS485 e o lado lógico dos isoladores
+CAN FD.
+
+A atribuição de pinos do STM32H743 segue a da placa NUCLEO-H743ZI na
+Ethernet RMII, para reaproveitar o projeto do CubeMX: FDCAN1 em PD0/PD1,
+FDCAN2 em PB5/PB6, RS232 no USART2, RS485 no USART6 com controlo automático
+do emissor (DE), GPS no UART7 e os três PWM nos canais 1 a 3 do TIM1. A
+linha de falha do conector PWM entra pela entrada de paragem do TIM1
+(BKIN), o que desliga as saídas por hardware sem depender do firmware. O
+PPS do recetor GPS liga a PA0, canal de captura do TIM2, que é de 32 bits.
+
+Ficam por fechar antes do fabrico: a margem de fase da fonte de 5 V,
+medida no protótipo, o footprint do LM5177, feito a partir do encapsulamento
+TSSOP-38 com o pad exposto, e a escolha dos conectores definitivos.
 
 \section{Descrição do \textit{Software}}
 \label{sec:proj-software}

@@ -4,9 +4,18 @@ Valores calculados a partir da folha de características do LM5177 (TI SNVSBU4F)
   UVLO: V_on = 1,25 V x (1 + 53,6k/20,5k) = 4,52 V
   FB:   V_out = 1,0 V x (1 + 40,2k/10k) = 5,02 V
   R_CS = 10 mOhm -> limite de corrente de pico 50 mV/10 mOhm = 5 A (mín. 3,85 A)
-  R_SLOPE = L/R_CS x 50e6 = 15 uH / 10 mOhm x 50e6 = 75 kOhm
-  R_RT = 78,7 kOhm -> 400 kHz (exemplo da folha de características)
-  L1 = 15 uH: ondulação ~0,76 A a 60 V -> 5 V, 400 kHz
+  R_SLOPE = L/R_CS x 50e6 = 18 uH / 10 mOhm x 50e6 = 90 kOhm -> 90,9 kOhm
+  R_RT = 75 kOhm -> 400 kHz (Eq. 17 e Tabela 8-3; o texto do exemplo diz 78,7k, que é gralha)
+  L1 = 18 uH (SRP1245A-180M, Isat 11 A): ondulação ~0,63 A a 60 V -> 5 V, 400 kHz
+
+Compensação (equações 3 a 10 e 45 a 47 da folha de características), para
+I_O,max = 2 A, C_O efetiva ~140 uF, V_IN,min = 4,5 V (D_max = 0,19 com 90 % de rendimento):
+  f_RHPZ = V_O (1-D)^2 / (2 pi I_O L) = 14,5 kHz -> f_BW = 4 kHz (< f_RHPZ/3)
+  R_COMP = 2 pi f_BW / gm x (V_O/V_FB) x A_CS R_CS C_O / (1-D) x 1/(1+(f_BW/f_RHPZ)^2)
+         = 2,0 kOhm (gm = 1 mS e A_CS = 10, valores que reproduzem o exemplo da TI)
+  f_pole = 2 I_O / (2 pi V_O C_O) = 0,91 kHz; f_CZ = 1,5 f_pole = 1,36 kHz -> C_COMP = 56 nF
+  C_HF = 1 / (2 pi 10 f_BW R_COMP) = 2,0 nF -> 2,2 nF
+  Confirmar a margem de fase no protótipo (ou no WEBENCH) antes de fechar.
 """
 from hw import Folha
 
@@ -14,13 +23,14 @@ R0603 = 'Resistor_SMD:R_0603_1608Metric'
 C0603 = 'Capacitor_SMD:C_0603_1608Metric'
 C1206 = 'Capacitor_SMD:C_1206_3216Metric'
 C1210 = 'Capacitor_SMD:C_1210_3225Metric'
-MOSFET = 'Package_TO_SOT_SMD:TDSON-8-1'
+MOSFET = 'Transistor_FET:BSC160N10NS3G'  # 100 V, 16 mOhm, TDSON-8 (o símbolo já tem os pinos do encapsulamento)
 
 
 def folha():
     f = Folha('Alimentação', 'alimentacao.kicad_sch', notas=[
         'Entrada 5 a 60 V (RNF08). LM5177 buck-boost gera 5 V mesmo com 5 V à entrada; TPS62162 gera 3,3 V.',
-        'A VERIFICAR antes do fabrico: rede de compensação (COMP), MOSFET e bobina com o WEBENCH da TI; footprint HTSSOP-38 com pad exposto.',
+        'Compensação calculada para f_BW = 4 kHz (ver gerador/folha_alimentacao.py); confirmar a margem de fase no protótipo.',
+        'Footprint do LM5177 (HTSSOP-38 com pad 2,9 x 4,7 mm) criado em lib/laset.pretty: confirmar com o desenho DCP0038 da TI.',
     ])
     R, C = 'Device:R', 'Device:C'
 
@@ -49,12 +59,12 @@ def folha():
         'LO2': '/LO2', 'VOUT': '+5V', 'ISNSP': '/5V_PRE', 'ISNSN': '+5V', 'AGND': 'GND', 'PGND': 'GND',
         'EP': 'GND'}, nc=('HO1_LL', 'HO2_LL'))
     f.comp('R3', R, '13,3k (CFG)', 110, 110, {1: '/CFG', 2: 'GND'}, R0603)
-    f.comp('R4', R, '75k (SLOPE)', 120, 110, {1: '/SLOPE', 2: 'GND'}, R0603)
-    f.comp('R5', R, '78,7k (400 kHz)', 130, 110, {1: '/RT', 2: 'GND'}, R0603)
+    f.comp('R4', R, '90,9k (SLOPE)', 120, 110, {1: '/SLOPE', 2: 'GND'}, R0603)
+    f.comp('R5', R, '75k (400 kHz)', 130, 110, {1: '/RT', 2: 'GND'}, R0603)
     f.comp('C4', C, '18 nF (SS)', 110, 140, {1: '/SS', 2: 'GND'}, C0603)
-    f.comp('R6', R, '1,91k (verificar)', 120, 140, {1: '/COMP', 2: '/CZ'}, R0603)
-    f.comp('C5', C, '47 nF (verificar)', 120, 160, {1: '/CZ', 2: 'GND'}, C0603)
-    f.comp('C6', C, '1,8 nF (verificar)', 130, 140, {1: '/COMP', 2: 'GND'}, C0603)
+    f.comp('R6', R, '2,0k', 120, 140, {1: '/COMP', 2: '/CZ'}, R0603)
+    f.comp('C5', C, '56 nF', 120, 160, {1: '/CZ', 2: 'GND'}, C0603)
+    f.comp('C6', C, '2,2 nF', 130, 140, {1: '/COMP', 2: 'GND'}, C0603)
     f.comp('R7', R, '40,2k', 110, 180, {1: '+5V', 2: '/FB'}, R0603)
     f.comp('R8', R, '10k', 110, 200, {1: '/FB', 2: 'GND'}, R0603)
     f.comp('C7', C, '4,7 uF 10 V (VCC)', 130, 185, {1: '/VCC', 2: 'GND'}, C0603)
@@ -62,16 +72,16 @@ def folha():
 
     # Andar de potência
     f.comp('C8', C, '100 nF 25 V', 225, 85, {1: '/HB1', 2: '/SW1'}, C0603)
-    f.comp('Q1', 'Device:Q_NMOS_DGS', 'NMOS 100 V (buck alto)', 250, 85, {'D': 'VIN', 'G': '/HO1', 'S': '/SW1'}, MOSFET)
-    f.comp('Q2', 'Device:Q_NMOS_DGS', 'NMOS 100 V (buck baixo)', 250, 115, {'D': '/SW1', 'G': '/LO1', 'S': 'GND'}, MOSFET)
+    f.comp('Q1', MOSFET, 'BSC160N10NS3 G (buck alto)', 250, 85, {'D': 'VIN', 'G': '/HO1', 'S': '/SW1'})
+    f.comp('Q2', MOSFET, 'BSC160N10NS3 G (buck baixo)', 250, 115, {'D': '/SW1', 'G': '/LO1', 'S': 'GND'})
     f.comp('R10', R, '10 mOhm 1 W (R_CS)', 275, 100, {1: '/SW1', 2: '/LA'}, 'Resistor_SMD:R_2512_6332Metric')
     f.comp('R11', R, '10', 275, 130, {1: '/SW1', 2: '/CSA'}, R0603)
     f.comp('R12', R, '10', 285, 130, {1: '/LA', 2: '/CSB'}, R0603)
     f.comp('C9', C, '180 pF', 280, 150, {1: '/CSA', 2: '/CSB'}, C0603)
-    f.comp('L1', 'Device:L', '15 uH, Isat >= 6 A', 305, 100, {1: '/LA', 2: '/SW2'}, 'Inductor_SMD:L_12x12mm_H8mm')
+    f.comp('L1', 'Device:L', 'SRP1245A-180M (18 uH, Isat 11 A)', 305, 100, {1: '/LA', 2: '/SW2'}, 'Inductor_SMD:L_Bourns_SRP1245A')
     f.comp('C10', C, '100 nF 25 V', 320, 70, {1: '/HB2', 2: '/SW2'}, C0603)
-    f.comp('Q3', 'Device:Q_NMOS_DGS', 'NMOS 40 V (boost alto)', 335, 85, {'D': '/5V_PRE', 'G': '/HO2', 'S': '/SW2'}, MOSFET)
-    f.comp('Q4', 'Device:Q_NMOS_DGS', 'NMOS 40 V (boost baixo)', 335, 115, {'D': '/SW2', 'G': '/LO2', 'S': 'GND'}, MOSFET)
+    f.comp('Q3', MOSFET, 'BSC160N10NS3 G (boost alto)', 335, 85, {'D': '/5V_PRE', 'G': '/HO2', 'S': '/SW2'})
+    f.comp('Q4', MOSFET, 'BSC160N10NS3 G (boost baixo)', 335, 115, {'D': '/SW2', 'G': '/LO2', 'S': 'GND'})
     f.comp('R13', R, '10 mOhm (R_ISNS)', 360, 85, {1: '/5V_PRE', 2: '+5V'}, 'Resistor_SMD:R_2512_6332Metric')
     for i, x in enumerate((345, 355, 365)):
         f.comp(f'C{11 + i}', C, '22 uF 10 V', x, 130, {1: '/5V_PRE' if i == 0 else '+5V', 2: 'GND'}, C1206)
