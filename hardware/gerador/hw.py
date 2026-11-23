@@ -156,11 +156,13 @@ class Folha:
         else:
             self.sch.globalLabels.append(GlobalLabel(text=rede, shape='bidirectional', position=Position(ex, ey, ang), effects=_fx(just=just), uuid=_u()))
 
-    def comp(self, ref, lib_id, valor, x, y, ligacoes, footprint='', nc=(), extra=None):
+    def comp(self, ref, lib_id, valor, x, y, ligacoes, footprint='', nc=(), extra=None, nc_resto=False):
         """Coloca um componente. ligacoes: {numero_ou_nome_do_pino: rede}.
 
         Redes começadas por '/' são locais à folha; as outras são globais
         (ligam entre folhas). GND, +5V e +3V3 usam símbolos de alimentação.
+        nc_resto=True marca como não ligados todos os pinos não listados
+        (usado no microcontrolador, onde a maioria dos GPIO fica livre).
         """
         sym = simbolo(lib_id)
         self._instancia(sym, ref, valor, x, y, footprint, extra=extra)
@@ -179,7 +181,7 @@ class Folha:
         for p in ps:
             if p.number in feitos:
                 continue
-            if p.electricalType == 'no_connect' or p.number in [str(n) for n in nc] or p.name in nc:
+            if nc_resto or p.electricalType == 'no_connect' or p.number in [str(n) for n in nc] or p.name in nc:
                 px, py = x + p.position.X, y - p.position.Y
                 self.sch.noConnects.append(NoConnect(position=Position(px, py), uuid=_u()))
             else:
@@ -226,3 +228,5 @@ def raiz(pasta, nome, folhas, titulo):
             fh.write('{\n  "meta": {"filename": "%s.kicad_pro", "version": 1}\n}\n' % nome)
     with open(os.path.join(pasta, 'sym-lib-table'), 'w') as fh:
         fh.write('(sym_lib_table\n  (lib (name "laset")(type "KiCad")(uri "${KIPRJMOD}/lib/laset.kicad_sym")(options "")(descr "Símbolos do projeto LASET"))\n)\n')
+    with open(os.path.join(pasta, 'fp-lib-table'), 'w') as fh:
+        fh.write('(fp_lib_table\n  (lib (name "laset")(type "KiCad")(uri "${KIPRJMOD}/lib/laset.pretty")(options "")(descr "Footprints do projeto LASET"))\n)\n')
