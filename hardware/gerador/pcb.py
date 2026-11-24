@@ -85,7 +85,7 @@ ANCORAS = {
     'R13': ('c', 17.0, 16.0, 270),
     'C12': ('c', 12.5, 25.5, 270), 'C13': ('c', 12.5, 20.0, 90),
     'U1': ('c', 40.0, 35.0, 90),
-    'TP1': ('c', 70.0, 14.5, 0),
+    'TP1': ('c', 54.5, 11.5, 0),
     # 3,3 V
     'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 5.5, 25.0, 0), 'U2': ('c', 10.0, 31.0, 0),
     # Microcontrolador
@@ -109,17 +109,24 @@ ANCORAS = {
     'J4': ('borda', 'baixo', 16.0, 0), 'J5': ('borda', 'baixo', 38.5, 0),
     'J6': ('borda', 'baixo', 63.5, 0), 'J11': ('borda', 'baixo', 84.0, 0),
 }
-# Andar de potência: zonas de cobre em F.Cu (x0, y0, x1, y1) por rede. Fazem as ligações de
-# corrente alta com o mínimo de indutância; as peças automáticas não entram nestas áreas.
+# Andar de potência: uma zona de cobre em F.Cu por rede (polígono de vértices (x, y)). Fazem
+# as ligações de corrente alta com o mínimo de indutância; as peças automáticas não entram
+# nestas áreas.
+def _r(x0, y0, x1, y1):
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
 POTENCIA = [
-    ('/Alimentação/VIN_RAW', [(16.8, 2.0, 27.3, 7.6)]),
-    ('/Alimentação/VIN_F', [(29.7, 3.0, 38.0, 10.5), (29.7, 8.4, 48.7, 10.5), (45.4, 3.0, 48.7, 10.5)]),
-    ('VIN', [(52.3, 4.0, 63.7, 23.0)]),
-    ('/Alimentação/SW1', [(49.4, 23.6, 60.0, 30.9)]),
-    ('/Alimentação/LA', [(43.6, 20.1, 53.6, 24.0)]),
-    ('/Alimentação/SW2', [(24.0, 18.6, 36.4, 26.0)]),
-    ('/Alimentação/5V_PRE', [(14.8, 11.9, 29.2, 16.0)]),
-    ('+5V', [(4.0, 16.9, 19.2, 21.9), (9.5, 16.9, 19.2, 25.8)]),
+    ('/Alimentação/VIN_RAW', _r(16.8, 2.0, 27.3, 7.6)),
+    # em U à volta do pad de massa do TVS (D1)
+    ('/Alimentação/VIN_F', [(29.7, 3.0), (38.0, 3.0), (38.0, 8.4), (45.4, 8.4), (45.4, 3.0),
+                            (48.7, 3.0), (48.7, 10.5), (29.7, 10.5)]),
+    ('VIN', _r(52.3, 4.0, 63.7, 23.0)),
+    ('/Alimentação/SW1', _r(49.4, 23.6, 60.0, 30.9)),
+    ('/Alimentação/LA', _r(43.6, 20.1, 53.6, 24.0)),
+    ('/Alimentação/SW2', _r(24.0, 18.6, 36.4, 26.0)),
+    ('/Alimentação/5V_PRE', _r(14.8, 11.9, 29.2, 16.0)),
+    ('+5V', [(4.0, 16.9), (19.2, 16.9), (19.2, 25.8), (9.5, 25.8), (9.5, 21.9), (4.0, 21.9)]),
 ]
 
 # Rotações permitidas para as peças colocadas automaticamente
@@ -288,6 +295,11 @@ def criar_placa(comps, redes):
         fp.SetReference(ref)
         fp.SetValue(c['valor'])
         fp.SetPath(pcbnew.KIID_PATH(c['caminho']))
+        # referências mais pequenas nos componentes pequenos (placa densa)
+        if nome.startswith(('R_0603', 'C_0603', 'L_0603', 'LED_0603', 'C_0805', 'SOT-23', 'TestPoint')):
+            r = fp.Reference()
+            r.SetTextSize(pcbnew.VECTOR2I(mm(0.8), mm(0.8)))
+            r.SetTextThickness(mm(0.12))
         fp.SetProperty('Sheetname', c['folha'].strip('/'))
         b.Add(fp)
         for pad in fp.Pads():
@@ -321,9 +333,9 @@ def dispor(b, fps, comps, redes):
             por_borda(fp, a[1], a[2], a[3])
         g.marcar(caixa(fp, 'crt'))
         colocados.add(ref)
-    for _, rs in POTENCIA:
-        for r in rs:
-            g.marcar(r)
+    for _, pol in POTENCIA:
+        xs, ys = [p[0] for p in pol], [p[1] for p in pol]
+        g.marcar((min(xs), min(ys), max(xs), max(ys)))
     # As âncoras não se podem sobrepor
     cx = {r: caixa(fps[r], 'crt') for r in ANCORAS}
     for i, r1 in enumerate(ANCORAS):
@@ -463,9 +475,12 @@ def zonas(b, netinfo):
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 63.5, W - m, BARREIRA[0], 1)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 32.0, 36.0, 1)
     # Andar de potência em F.Cu
-    for rede, rs in POTENCIA:
-        for r in rs:
-            zona(b, pcbnew.F_Cu, netinfo[rede], *r, 3, solida=True)
+    for rede, pol in POTENCIA:
+        z = zona(b, pcbnew.F_Cu, netinfo[rede], 0, 0, 1, 1, 3, solida=True)
+        z.Outline().RemoveAllContours()
+        z.Outline().NewOutline()
+        for x, y in pol:
+            z.Outline().Append(mm(OX + x), mm(OY + y))
     # Blindagem do RJ45: chassis nas camadas interiores à frente dos pinos, a 2 mm da
     # massa (a ligação à massa é só por C50 1 nF 2 kV e R38 1 MΩ)
     for camada in (pcbnew.In1_Cu, pcbnew.In2_Cu):
