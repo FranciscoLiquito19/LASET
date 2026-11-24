@@ -20,6 +20,8 @@ static void gpio_iniciar(void)
     g.Mode = GPIO_MODE_OUTPUT_PP; g.Pull = GPIO_NOPULL; g.Speed = GPIO_SPEED_FREQ_LOW;
     g.Pin = LED_PINO;                 HAL_GPIO_Init(LED_PORTA, &g);
     g.Pin = CAN1_SILENT_PINO | CAN2_SILENT_PINO; HAL_GPIO_Init(GPIOG, &g);
+    HAL_GPIO_WritePin(I2C_OE_PORTA, I2C_OE_PINO, GPIO_PIN_RESET);
+    g.Pin = I2C_OE_PINO;              HAL_GPIO_Init(I2C_OE_PORTA, &g);
 
     g.Mode = GPIO_MODE_INPUT; g.Pull = GPIO_PULLUP;      /* na PCB há pull-up externo */
     g.Pin = PG_5V_PINO | PG_3V3_PINO; HAL_GPIO_Init(PG_PORTA, &g);
@@ -187,4 +189,6 @@ void perifericos_iniciar(void)
     uarts_iniciar();
     i2c_iniciar(&hi2c1, I2C1);
     i2c_iniciar(&hi2c2, I2C2);
+    /* liga os tradutores I2C: nesta altura o 3,3 V e o 5 V já estão estáveis */
+    HAL_GPIO_WritePin(I2C_OE_PORTA, I2C_OE_PINO, GPIO_PIN_SET);
 }

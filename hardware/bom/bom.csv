@@ -57,7 +57,7 @@ R4;1;90,9k (SLOPE);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativ
 R5;1;75k (400 kHz);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
 R6;1;2,0k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
 R7;1;40,2k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
-R8, R9, R14, R20, R31, R32, R85, R90;8;10k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,16;estimativa;—
+R8, R9, R14, R20, R31, R32, R60, R85, R90;9;10k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,18;estimativa;—
 R10;1;10 mOhm 1 W (R_CS);R_2512_6332Metric;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0,60;0,60;estimativa;—
 R11, R12;2;10;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
 R13;1;10 mOhm (R_ISNS);R_2512_6332Metric;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0,60;0,60;estimativa;—
@@ -68,7 +68,6 @@ R34, R35, R36, R37;4;49,9 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08
 R38;1;1M;R_1206_3216Metric;Yageo;série RC1206;0,03;0,03;estimativa;—
 R41, R42, R43, R44;4;60,4 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
 R45;1;120 1%;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
-R60, R70;2;200k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
 R61, R62, R71, R72;4;2,2k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
 R63, R64, R73, R74;4;4,7k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,08;estimativa;—
 R80, R81;2;33;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
@@ -91,14 +90,14 @@ U4;1;LAN8742A-CZ;VQFN-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias;Microchip;LAN8
 U5, U6;2;ADM3057EBRWZ;SOIC-20W_7.5x12.8mm_P1.27mm;Analog Devices;ADM3057EBRWZ;13,67;27,34;consultado;Capítulo Projecto (nov. 2026)
 U7;1;ADM2582EBRWZ;SOIC-20W_7.5x12.8mm_P1.27mm;Analog Devices;ADM2582EBRWZ;13,97;13,97;consultado;Capítulo Projecto (nov. 2026)
 U8;1;MAX3227EEAE;SSOP-16_5.3x6.2mm_P0.65mm;Analog Devices (Maxim);MAX3227EEAE+;5,96;5,96;consultado;Capítulo Projecto (nov. 2026)
-U9, U10;2;PCA9306DR;SO-8_3.9x4.9mm_P1.27mm;Texas Instruments;PCA9306DR;0,65;1,30;consultado;Capítulo Projecto (nov. 2026)
+U9, U10;2;TCA9406DCUR;VSSOP-8_2.3x2mm_P0.5mm;Texas Instruments;TCA9406DCUR;0,83;1,66;consultado;DigiKey (24/11/2026)
 U11, U12, U13;3;74AHCT1G125;SOT-23-5;Texas Instruments;SN74AHCT1G125DBVR;0,12;0,36;consultado;DigiKey (EUR, 1 un., 23/11/2026)
 U14;1;ADuM6401ARWZ;SOIC-16W_7.5x10.3mm_P1.27mm;Analog Devices;ADUM6401ARWZ;14,91;14,91;consultado;Capítulo Projecto (nov. 2026)
 Y1, Y2;2;25 MHz (C_L 10 pF);Crystal_SMD_3225-4Pin_3.2x2.5mm;CTS;425F22A025M0000 (C_L 10 pF);0,65;1,30;consultado;DigiKey (0,70 USD, 1 un., 23/11/2026, conversão aproximada)
 
-;;Placa: total consultado;;;;;100,68
-;;Placa: total estimativa;;;;;16,26
-;;Placa: total;;;;;116,94
+;;Placa: total consultado;;;;;101,04
+;;Placa: total estimativa;;;;;16,24
+;;Placa: total;;;;;117,28
 
 Fora do esquema;Qtd;Item;;Fabricante;Referência do fabricante;Preço unit. (€);Subtotal (€);Tipo de preço;Fonte
 ;1;Placa de avaliação para o firmware;;STMicroelectronics;NUCLEO-H753ZI;34,68;34,68;consultado;DigiKey (EUR, 1 un., 23/11/2026)
@@ -110,4 +109,4 @@ Fora do esquema;Qtd;Item;;Fabricante;Referência do fabricante;Preço unit. (€
 ;1;Cabos para ensaios (Ethernet, DE-9, par entrançado, alimentação);;—;—;15,00;15,00;estimativa;—
 ;;Fora do esquema: total;;;;;122,45
 
-;;Projeto (placa + fora do esquema);;;;;239,39
+;;Projeto (placa + fora do esquema);;;;;239,73

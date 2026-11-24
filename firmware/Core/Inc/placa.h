@@ -15,6 +15,9 @@
 #define CAN1_SILENT_PINO  GPIO_PIN_2
 #define CAN2_SILENT_PORTA GPIOG
 #define CAN2_SILENT_PINO  GPIO_PIN_3
+/* OE dos tradutores I2C (TCA9406): alto depois de as alimentações estarem estáveis */
+#define I2C_OE_PORTA GPIOG
+#define I2C_OE_PINO  GPIO_PIN_0
 /* Power-good das fontes */
 #define PG_PORTA    GPIOF
 #define PG_5V_PINO  GPIO_PIN_2

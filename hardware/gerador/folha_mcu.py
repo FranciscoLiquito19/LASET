@@ -42,7 +42,7 @@ PINOS = {
     # GPS
     'PE8': 'GPS_TX', 'PE7': 'GPS_RX', 'PA0': 'GPS_PPS',
     # I2C
-    'PB8': 'I2C1_SCL', 'PB9': 'I2C1_SDA', 'PF1': 'I2C2_SCL', 'PF0': 'I2C2_SDA',
+    'PB8': 'I2C1_SCL', 'PB9': 'I2C1_SDA', 'PF1': 'I2C2_SCL', 'PF0': 'I2C2_SDA', 'PG0': 'I2C_OE',
     # PWM
     'PE9': 'PWM1', 'PE11': 'PWM2', 'PE13': 'PWM3', 'PE15': 'PWM_FALHA',
     # depuração e estado

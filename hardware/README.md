@@ -154,7 +154,7 @@ Atribuição de pinos (confirmada nas funções alternativas do STM32H743):
 | GPS (UART7) | PE8 TX, PE7 RX; PPS em PA0 = TIM2_CH1 (32 bits) |
 | I2C1 / I2C2 | PB8/PB9 e PF1/PF0 (SCL/SDA) |
 | PWM (TIM1) | PE9, PE11, PE13; falha em PE15 = TIM1_BKIN |
-| Estado | PB0 LED, PF2 PG_5V, PF3 PG_3V3 |
+| Estado | PB0 LED, PF2 PG_5V, PF3 PG_3V3, PG0 OE dos tradutores I2C |
 
 ## Folha 3: Ethernet (`ethernet.kicad_sch`)
 
@@ -178,9 +178,13 @@ VISOOUT ligado a VISOIN, SM712, terminação de 120 Ω por jumper. MAX3227E semp
 
 ## Folha 6: I2C e GPS (`i2c_gps.kicad_sch`)
 
-Dois PCA9306 com VREF1 = 3,3 V; VREF2/EN por 200 kΩ à tensão do sensor (VPU), escolhida
-por jumper entre 3,3 V e 5 V. Pull-ups de 2,2 kΩ do lado do MCU e 4,7 kΩ do lado do
-sensor. PRTR5V0U2X em cada conector I2C. Conector GPS JST-PH de 5 vias (3V3, GND, TX, RX,
+Dois TCA9406 com VCCA = 3,3 V (MCU) e VCCB à tensão do sensor (VPU), escolhida por
+jumper entre 3,3 V e 5 V; a VPU também alimenta o sensor pelo conector. **Sensores
+suportados: 3,3 V e 5 V.** Os de 1,8 V ligam-se por um módulo com tradutor próprio. O
+TCA9406 aceita VCCA = VCCB (o PCA9306 anterior ficava fora do recomendado com sensores
+de 3,3 V). OE dos dois em PG0, com 10 kΩ a GND: os tradutores só ligam depois de o
+firmware arrancar. Pull-ups de 2,2 kΩ do lado do MCU e 4,7 kΩ do lado do sensor, em
+paralelo com os 10 kΩ internos. PRTR5V0U2X em cada conector I2C. Conector GPS JST-PH de 5 vias (3V3, GND, TX, RX,
 PPS) com resistências em série e ESDA6V1-5SC6.
 
 ## Pontos de teste e mecânica
@@ -206,11 +210,11 @@ estão marcados como tal.
 O que não está no esquema (NUCLEO-H753ZI, recetor GPS com PPS, fabrico da PCB, fichas e
 contactos JST, cabos para os ensaios) está em `bom/extras.csv` e entra no mesmo ficheiro.
 
-| Parte | Total (23/11/2026) |
+| Parte | Total (24/11/2026) |
 |---|---|
-| Componentes da placa (100,68 € consultados + 16,26 € estimados) | 116,94 € |
+| Componentes da placa (101,04 € consultados + 16,24 € estimados) | 117,28 € |
 | Fora do esquema (87,45 € consultados + 35,00 € estimados) | 122,45 € |
-| **Projeto completo** | **239,39 €** |
+| **Projeto completo** | **239,73 €** |
 
 O fabrico assume uma placa até 10 × 10 cm (5 unidades na JLCPCB); se o layout ficar
 maior, o preço sobe. O envio e os cabos são estimativas. O HR911105A só aparece na LCSC;
@@ -225,7 +229,7 @@ validar a corrente de 2 A usada na compensação do LM5177 e o limite de 1 A do 
 |---|---|---|
 | 3,3 V | STM32H743 a 480 MHz (275 µA/MHz sem periféricos, + periféricos; estimativa) | 300 mA |
 | 3,3 V | ADM2582E a 16 Mbit/s com 54 Ω (máx.) | 230 mA |
-| 3,3 V | LAN8742A, MAX3227E, PCA9306, LED (estimativa) | 80 mA |
+| 3,3 V | LAN8742A, MAX3227E, TCA9406, LED (estimativa) | 80 mA |
 | 3,3 V | Módulo GPS (estimativa) | 50 mA |
 | **3,3 V** | **Total (TPS62162: 1 A)** | **≈ 0,66 A** |
 | 5 V | 2 × ADM3057E, dominante em falha (máx. 260 mA cada) | 520 mA |
@@ -246,9 +250,6 @@ A 60 V são ≈ 0,12 A.
   66,7 V mas chega a 96,8 V a 15,5 A. Protege contra ESD e transitórios curtos com pouca
   energia. Se for preciso cumprir um ensaio de surto (por exemplo IEC 61000-4-5), é preciso
   um limitador ativo à entrada (surge stopper). Fica como risco no relatório.
-- **PCA9306:** a TI pede VREF1 abaixo de VREF2 (cerca de 1 V). Com VPU = 5 V está bem; com
-  VPU = 3,3 V funciona no limite. Para sensores de 1,8 V seria preciso trocar os lados ou
-  usar outro tradutor. **Decisão do grupo:** que sensores se querem suportar.
 - **Cristais:** condensadores de 15 pF assumem C_L = 10 pF; ajustar ao cristal comprado.
 - **ERC completo:** corre na CI (KiCad 9) em cada PR; ver `.github/workflows/ci.yml`. Fica
   um erro aceite: os dois pinos VCAP do STM32H743 são saídas de alimentação ligadas entre
