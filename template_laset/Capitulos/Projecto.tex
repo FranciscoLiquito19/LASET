@@ -212,9 +212,37 @@ proteção cobre descargas eletrostáticas e transitórios curtos, mas não um
 ensaio de surto normalizado. Este ponto fica registado como risco
 (Secção~\ref{sec:proj-riscos}).
 
-Ficam por fechar antes do fabrico: a margem de fase da fonte de 5 V,
-medida no protótipo, o footprint do LM5177, feito a partir do encapsulamento
-TSSOP-38 com o pad exposto, e a escolha dos conectores definitivos.
+A placa tem 100 $\times$ 100 mm e quatro camadas, pela ordem sinal, massa,
+alimentação e sinal (Figura~\ref{fig:pcb}). Tal como o esquema, é gerada
+por código (\texttt{hardware/gerador/pcb.py}), o que mantém cada footprint
+ligado ao seu símbolo. Os conectores ficam nos bordos: entrada de
+alimentação e Ethernet em cima, RS232 à esquerda, I2C e GPS à direita, e os
+barramentos isolados (CAN FD 1 e 2, RS485 e PWM) em baixo. O andar de
+potência do LM5177 fica em linha no canto superior esquerdo, afastado do
+PHY Ethernet, e o microcontrolador ao centro.
+
+Os quatro isoladores ficam sobre uma faixa de 6,8 mm sem cobre em nenhuma
+camada, que separa o lado lógico dos lados isolados. Os lados isolados
+estão afastados 2,5 mm entre si e cada um tem o seu plano de massa na
+camada interior. No lado lógico, a camada 2 é o plano de massa e a camada 3
+leva os 3,3 V, com zonas de 5 V junto à fonte e aos isoladores. A blindagem
+do RJ45 tem uma zona própria a 2 mm da massa, ligada apenas pelo
+condensador de 2 kV e pela resistência de 1 M$\Omega$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{../hardware/laset_gateway_pcb.pdf}
+\caption[Disposição dos componentes na placa.]{Disposição dos componentes na placa (camada de cima e serigrafia). As ligações de sinal ainda não estão encaminhadas; os pinos de massa e alimentação já ligam aos planos interiores por vias.}
+\label{fig:pcb}
+\end{figure}
+
+Neste momento estão feitos a disposição dos 205 componentes e as cerca de
+200 vias que ligam os pinos de massa e alimentação aos planos, sem
+violações de afastamento no verificador de regras do KiCad. Ficam por fazer
+antes do fabrico: encaminhar as restantes ligações de sinal, rever à mão o
+andar de potência e os pares Ethernet, conferir o footprint do LM5177 com o
+desenho do encapsulamento, medir a margem de fase da fonte de 5 V no
+protótipo e escolher os conectores definitivos.
 
 \section{Descrição do \textit{Software}}
 \label{sec:proj-software}

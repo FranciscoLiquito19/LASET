@@ -4,7 +4,7 @@ Projeto KiCad do gateway multiprotocolo. O esquema é **gerado por código** a p
 `gerador/`: cada folha é um ficheiro Python com os componentes, os valores e a rede de
 cada pino. Assim cada alteração fica revista em PR, como o relatório.
 
-## Abrir o projeto
+## Abrir o projeto (esquema e placa)
 
 1. Abrir `laset_gateway.kicad_pro` no KiCad (8 ou 9). Se perguntar se quer atualizar o
    formato dos ficheiros, aceitar: o gerador escreve no formato do KiCad 6/7.
@@ -39,6 +39,59 @@ O Anexo A do relatório lê este PDF diretamente; basta recompilar o relatório.
 O `gerar.py` recusa referências repetidas entre folhas. Não editar à mão os
 `.kicad_sch` gerados: as alterações perdem-se na próxima geração. Arrumar a posição dos
 componentes na interface é seguro só depois de congelarmos o gerador (fase de layout).
+
+## Placa de circuito impresso (`laset_gateway.kicad_pcb`)
+
+Também é gerada por código, em dois passos, a partir do esquema:
+
+```sh
+cd hardware/gerador
+python3 pcb.py       # placa, disposição, planos e regras (refaz a placa de raiz)
+python3 fanout.py    # vias dos pinos de massa e alimentação para os planos
+```
+
+Precisam do módulo `pcbnew` (vem com o KiCad; no Windows correr com o Python do KiCad,
+"KiCad Command Prompt"). **Só se correm enquanto a placa não tiver pistas desenhadas à
+mão**: refazem o ficheiro. A partir do momento em que se começa a encaminhar no KiCad,
+as alterações ao esquema passam para a placa com `Ferramentas > Atualizar PCB a partir
+do esquema` (F8); os símbolos têm UUIDs fixos, por isso o F8 reconhece todas as peças.
+
+| Item | Valor |
+|---|---|
+| Dimensões | 100 × 100 mm (escalão mais barato da JLCPCB), furos M3 nos cantos |
+| Camadas | F.Cu sinal, In1 `GND`, In2 `PWR` (3,3 V, com zonas de 5 V), B.Cu sinal; 1,6 mm |
+| Regras mínimas | pista 0,15 mm, afastamento 0,15 mm, via 0,5/0,2 mm (as vias térmicas dos footprints são de 0,2 a 0,25 mm), cobre ao bordo 0,5 mm |
+| Classes | `HV` (VIN e nós de comutação): pista 1,5 mm, afastamento 0,6 mm (IPC-2221B, 60 V); `P5V`: 1,0 mm; `BUS` (CAN e RS485): 0,4 mm; `ETH`: 0,25 mm |
+| Regras próprias (`.kicad_dru`) | dentro do LM5177, dos MOSFET, dos díodos e do conector de entrada vale o passo do fabricante em vez dos 0,6 mm |
+
+Disposição (Figura 5.2 do relatório):
+
+- Conectores nos bordos: entrada (J1) e RJ45 (J3) em cima, DE-9 (J7) à esquerda, I2C e
+  GPS (J8 a J10) à direita, CAN FD (J4, J5), RS485 (J6) e PWM (J11) em baixo.
+- Fonte no canto superior esquerdo, em linha no sentido da corrente: D2 → condensadores
+  de entrada → Q1/Q2 → R10 → L1 → Q3/Q4 → condensadores de saída → R13. O TPS62162 fica
+  à esquerda.
+- Isolamento: faixa de 6,8 mm sem cobre (todas as camadas, área `isolamento`) por baixo
+  dos quatro isoladores, com o lado lógico em cima; os quatro lados isolados estão
+  separados por 2,5 mm e cada um tem a sua massa em In1.
+- Blindagem do RJ45: zona `CHASSIS` em In1 e In2 a 2 mm da massa; liga à massa só por
+  C50 (1 nF 2 kV) e R38 (1 MΩ).
+- As peças principais têm posição fixa (`ANCORAS` em `pcb.py`); os passivos são postos
+  automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
+  pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
+
+Estado: 205 componentes colocados, ~200 vias de ligação aos planos, DRC sem violações de
+afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
+
+1. Encaminhar as ~310 ligações de sinal (F.Cu e B.Cu). Começar pelo andar de potência
+   (pistas largas ou zonas em F.Cu para VIN, SW1, SW2 e 5V_PRE, com a malha de comutação
+   o mais pequena possível), depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos,
+   sem vias), o cristal do MCU e o resto.
+2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
+   mais de 3 mm do pino) e dos MOSFET.
+3. Arrumar a serigrafia (referências sobrepostas) e acrescentar o nome de cada conector.
+4. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
+   Gerbers para a JLCPCB.
 
 ## Bibliotecas do projeto
 
@@ -185,5 +238,8 @@ A 60 V são ≈ 0,12 A.
   VPU = 3,3 V funciona no limite. Para sensores de 1,8 V seria preciso trocar os lados ou
   usar outro tradutor. **Decisão do grupo:** que sensores se querem suportar.
 - **Cristais:** condensadores de 15 pF assumem C_L = 10 pF; ajustar ao cristal comprado.
-- **ERC completo:** corre na CI (KiCad 9) em cada PR; ver `.github/workflows/ci.yml`.
-- **Layout** (fase seguinte).
+- **ERC completo:** corre na CI (KiCad 9) em cada PR; ver `.github/workflows/ci.yml`. Fica
+  um erro aceite: os dois pinos VCAP do STM32H743 são saídas de alimentação ligadas entre
+  si, como a ST pede para o LQFP144 (2 × 2,2 µF e os VCAP unidos); o KiCad acusa duas
+  saídas de alimentação na mesma rede.
+- **Encaminhamento da placa** (ver "Placa de circuito impresso").

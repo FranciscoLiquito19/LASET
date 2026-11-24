@@ -85,6 +85,7 @@ ANCORAS = {
     'C13': ('c', 18.0, 22.0, 90), 'C16': ('c', 21.5, 22.0, 90),
     'R13': ('c', 19.5, 28.5, 0),
     'U1': ('c', 40.0, 35.0, 90),
+    'TP1': ('c', 70.0, 14.5, 0),
     # 3,3 V
     'C14': ('c', 5.5, 14.0, 90), 'L2': ('c', 5.5, 24.0, 0), 'U2': ('c', 10.0, 31.0, 0),
     # Microcontrolador
@@ -503,10 +504,22 @@ DRU = '''(version 1)
 '''
 
 
+def textos(b):
+    for i, (t, h) in enumerate((('LASET', 1.5), ('Gateway', 1.0), ('multiprotocolo', 1.0), ('v1.0  2026', 1.0))):
+        x = pcbnew.PCB_TEXT(b)
+        x.SetText(t)
+        x.SetLayer(pcbnew.F_SilkS)
+        x.SetTextSize(pcbnew.VECTOR2I(mm(h), mm(h)))
+        x.SetTextThickness(mm(0.15 * h / 1.0))
+        x.SetPosition(pt(70.5, 45.5 + 2.4 * i))
+        b.Add(x)
+
+
 def main():
     comps, redes = netlist()
     b, fps, netinfo = criar_placa(comps, redes)
     dispor(b, fps, comps, redes)
+    textos(b)
     zonas(b, netinfo)
     pcbnew.SaveBoard(PCB, b)
     projeto()
