@@ -158,6 +158,10 @@ def main():
             shutil.copy(COPIA, E.PCB)
             print(f'  {rede.split("/")[-1]}: sem ganho ({len(lista2)})', flush=True)
     os.remove(COPIA) if os.path.exists(COPIA) else None
+    # preencher as zonas com as vias novas (senão os planos ficam com a folga antiga)
+    b = pcbnew.LoadBoard(E.PCB)
+    pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+    pcbnew.SaveBoard(E.PCB, b)
     print(f'em falta: {melhor}')
 
 
