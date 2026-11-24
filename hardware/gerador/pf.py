@@ -26,6 +26,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import encaminhar as E  # noqa: E402
 
 ITER = int(os.environ.get('ITERACOES', 30))
+HIST = float(os.environ.get('HIST', 0.3))
+CRESCE = float(os.environ.get('CRESCE', 1.6))
 EST8 = ndimage.generate_binary_structure(2, 2)
 
 
@@ -218,7 +220,7 @@ def conflitos(rotas, oc, por_rede, marcar_hist=False):
             if m.any():
                 ruim = True
                 if marcar_hist:
-                    oc.hist[c][j0:j1, i0:i1] += 0.3 * m
+                    oc.hist[c][j0:j1, i0:i1] += HIST * m
         if ruim:
             mau.append(r)
     return mau
@@ -305,7 +307,7 @@ def main():
         if not maus and it > 0:
             break
         por_fazer = maus + [r for r in rotas if r.cam is None]
-        pres *= 1.6
+        pres = min(pres * CRESCE, 1e4)
 
     # escrever: as rotas sem conflito
     maus = set(id(r) for r in conflitos(rotas, oc, por_rede))

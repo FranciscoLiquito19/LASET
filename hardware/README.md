@@ -59,8 +59,13 @@ python3 pcb.py && python3 fanout.py
 python3 pf.py                       # encaminhamento por congestionamento negociado (~45 min)
 python3 encaminhar.py               # completa o que ficou em conflito
 FINO=1 python3 encaminhar.py        # passagem final com pistas de 0,15 mm
-python3 melhorar.py <base>          # opcional: pesquisa local (base = placa depois de fanout.py)
+python3 melhorar.py <base>          # pesquisa local (base = placa depois de fanout.py): 18 -> 16
 ```
+
+Variáveis do `pf.py`: `ITERACOES`, `HIST` (custo de histórico por conflito) e `CRESCE`
+(fator de subida do custo de ocupação por iteração). Mover o STM32 2 mm para baixo e
+alargar os corredores do LM5177 foi experimentado e deu 19 ligações em falta, pior que a
+disposição atual.
 
 O `pf.py` (PathFinder) encaminha todas as ligações ao mesmo tempo: o cobre das outras
 redes não bloqueia, custa, e o custo das zonas disputadas sobe a cada iteração até as
@@ -106,7 +111,7 @@ Disposição (Figura 5.2 do relatório):
 Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático da maior parte das ligações de sinal (`curtas.py` e `encaminhar.py`), DRC sem violações de
 afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
 
-1. Encaminhar as 18 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
+1. Encaminhar as 16 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
    VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
    LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
@@ -127,11 +132,11 @@ afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema)
    rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
    sempre usam a mesma orientação de referência.
 
-### Ligações que o encaminhador automático não fez (18)
+### Ligações que o encaminhador automático não fez (16)
 
 | Zona | Ligações |
 |---|---|
-| LM5177 (U1) | 5V_PRE, HB2, HO1, LA, LO2, SW1, SW2 (pinos de sinal), VIN (2) |
+| LM5177 (U1) | 5V_PRE, HB2, LA, LO2, SW1, VIN (2) |
 | LAN8742A (U4) | RXP até R36, MDIO, RXD0, TXD0, TX_EN, NRST |
 | STM32 (U3) | GPS_TX, PWM3, RS485_RX |
 
