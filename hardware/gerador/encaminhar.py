@@ -30,14 +30,18 @@ from fanout import plano, PLANO_IN1  # noqa: E402
 
 RES = 0.1                      # mm por célula
 NX, NY = int(W / RES), int(H / RES)
-BASE = 0.1 + 0.15 + 0.05       # meia pista de 0,2 mm + afastamento + margem de quantização
-LARG = {'Default': 0.2, 'ETH': 0.25, 'BUS': 0.4, 'HV': 0.4, 'P5V': 0.4}
+# FINO=1: passagem final com pistas de 0,15 mm (mínimo do fabricante) para as ligações
+# que não cabem com 0,2 mm
+FINO = bool(os.environ.get('FINO'))
+BASE = (0.075 if FINO else 0.1) + 0.15 + 0.04   # meia pista + afastamento + margem de quantização
+LARG = {'Default': 0.15 if FINO else 0.2, 'ETH': 0.25, 'BUS': 0.4, 'HV': 0.2 if FINO else 0.3, 'P5V': 0.2 if FINO else 0.3}
 AFAST = {'Default': 0.15, 'ETH': 0.15, 'BUS': 0.3, 'HV': 0.6, 'P5V': 0.2}
 VIA_D, VIA_F = 0.6, 0.3
 CUSTO_VIA = 30.0               # em células (3 mm)
 CUSTO_CURVA = 4.0
 JANELA = float(os.environ.get('JANELA', 12.0))                 # mm à volta da caixa das duas pontas
 LIMITE = [400000]
+PESO_H = float(os.environ.get('PESO_H', 1.5))   # A* ponderado: muito mais rápido, caminhos pouco mais longos
 DIRS = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
 
 
@@ -54,6 +58,12 @@ class Grelha:
         self.dono = [np.zeros((NY, NX), np.int32) for _ in range(2)]   # 0 livre, -1 bloqueado, k rede
         self.nucleo = [np.zeros((NY, NX), np.int32) for _ in range(2)]
         self.netcode_classe = {}
+        self.sem_via = np.zeros((NY, NX), bool)    # perto de um furo existente
+
+    def furo(self, x, y, raio=VIA_D + 0.35):
+        i0, i1, j0, j1, xs, ys = self._janela(x, y, x, y, raio)
+        d = np.hypot(xs[None, :] - x, ys[:, None] - y)
+        self.sem_via[j0:j1, i0:i1] |= d < raio
 
     def _janela(self, x0, y0, x1, y1, r):
         i0, i1 = max(0, int((x0 - r) / RES) - 1), min(NX, int((x1 + r) / RES) + 2)
@@ -70,7 +80,7 @@ class Grelha:
         dx = np.maximum(np.maximum(x0 - xs, xs - x1), 0)[None, :]
         dy = np.maximum(np.maximum(y0 - ys, ys - y1), 0)[:, None]
         d = np.hypot(dx, dy)
-        self._marcar(camada, rede, i0, i1, j0, j1, d <= r, d <= 0)
+        self._marcar(camada, rede, i0, i1, j0, j1, d < r, d <= 0)
 
     def segmento(self, camada, rede, xa, ya, xb, yb, w, r):
         i0, i1, j0, j1, xs, ys = self._janela(min(xa, xb), min(ya, yb), max(xa, xb), max(ya, yb), r + w / 2)
@@ -81,7 +91,7 @@ class Grelha:
         L2 = vx * vx + vy * vy
         u = np.zeros_like(X) if L2 == 0 else np.clip(((X - xa) * vx + (Y - ya) * vy) / L2, 0, 1)
         d = np.hypot(X - (xa + u * vx), Y - (ya + u * vy)) - w / 2
-        self._marcar(camada, rede, i0, i1, j0, j1, d <= r, d <= 0)
+        self._marcar(camada, rede, i0, i1, j0, j1, d < r, d <= 0)
 
     def _marcar(self, camada, rede, i0, i1, j0, j1, zona, nucleo):
         for c in ((0, 1) if camada is None else (camada,)):
@@ -96,21 +106,36 @@ class Grelha:
             if nucleo is not None:
                 self.nucleo[c][j0:j1, i0:i1][nucleo] = rede
 
-    def poligono(self, camada, rede, pts, r):
-        xs_, ys_ = [p[0] for p in pts], [p[1] for p in pts]
+    def poligono(self, camada, rede, aneis, r):
+        """Polígono com buracos (lista de anéis, regra par/ímpar)."""
+        if aneis and isinstance(aneis[0][0], (int, float)):
+            aneis = [aneis]
+        xs_ = [p[0] for a in aneis for p in a]
+        ys_ = [p[1] for a in aneis for p in a]
         i0, i1, j0, j1, xs, ys = self._janela(min(xs_), min(ys_), max(xs_), max(ys_), r)
         X, Y = np.meshgrid(xs, ys)
         dentro = np.zeros(X.shape, bool)
-        n = len(pts)
-        for k in range(n):
-            (xa, ya), (xb, yb) = pts[k], pts[(k + 1) % n]
-            cruza = ((ya > Y) != (yb > Y)) & (X < (xb - xa) * (Y - ya) / (yb - ya + 1e-12) + xa)
-            dentro ^= cruza
+        for pts in aneis:
+            n = len(pts)
+            for k in range(n):
+                (xa, ya), (xb, yb) = pts[k], pts[(k + 1) % n]
+                cruza = ((ya > Y) != (yb > Y)) & (X < (xb - xa) * (Y - ya) / (yb - ya + 1e-12) + xa)
+                dentro ^= cruza
         d = ndimage.distance_transform_edt(~dentro) * RES
-        self._marcar(camada, rede, i0, i1, j0, j1, d <= r, dentro)
+        self._marcar(camada, rede, i0, i1, j0, j1, d < r, dentro)
 
 
-def carregar(b):
+POTENCIA_REFS = {'U1', 'Q1', 'Q2', 'Q3', 'Q4', 'D1', 'D2', 'F1', 'J1'}
+
+
+def afast(item, ref=None):
+    """Afastamento da classe; dentro dos componentes de potência vale 0,15 mm (.kicad_dru)."""
+    if ref in POTENCIA_REFS:
+        return 0.15
+    return AFAST.get(item.GetNetClassName(), 0.15)
+
+
+def carregar(b, ignorar=None):
     g = Grelha()
     for f in b.GetFootprints():
         for p in f.Pads():
@@ -118,26 +143,38 @@ def carregar(b):
             bb = p.GetBoundingBox()
             x0, y0 = pcbnew.ToMM(bb.GetX()) - OX, pcbnew.ToMM(bb.GetY()) - OY
             x1, y1 = pcbnew.ToMM(bb.GetRight()) - OX, pcbnew.ToMM(bb.GetBottom()) - OY
-            r = BASE + AFAST.get(p.GetNetClassName(), 0.15) - 0.15
+            r = BASE + afast(p, f.GetReference()) - 0.15
             for c, cam in ((0, pcbnew.F_Cu), (1, pcbnew.B_Cu)):
                 if p.IsOnLayer(cam):
                     g.retangulo(c, k if k > 0 else -1, x0, y0, x1, y1, r)
+            if p.GetAttribute() in (pcbnew.PAD_ATTRIB_PTH, pcbnew.PAD_ATTRIB_NPTH):
+                px_, py_ = loc(p.GetPosition())
+                g.furo(px_, py_, max(x1 - x0, y1 - y0) / 2 + 0.6)
             if p.GetAttribute() == pcbnew.PAD_ATTRIB_NPTH:
                 g.retangulo(None, -1, x0, y0, x1, y1, BASE + 0.1)
     for t in b.GetTracks():
         k = t.GetNetCode()
+        if ignorar is not None and ignorar(t):
+            continue
         if t.GetClass() == 'PCB_VIA':
             x, y = loc(t.GetPosition())
             rr = pcbnew.ToMM(t.GetWidth()) / 2
             g.segmento(None, k, x, y, x, y, 2 * rr, BASE + AFAST.get(t.GetNetClassName(), 0.15) - 0.15)
+            g.furo(x, y)
         else:
             (xa, ya), (xb, yb) = loc(t.GetStart()), loc(t.GetEnd())
             c = 0 if t.GetLayer() == pcbnew.F_Cu else 1
             g.segmento(c, k, xa, ya, xb, yb, pcbnew.ToMM(t.GetWidth()), BASE + AFAST.get(t.GetNetClassName(), 0.15) - 0.15)
-    # zonas de potência em F.Cu (contorno inteiro, conservador)
-    for rede, pts in POTENCIA:
-        net = b.FindNet(rede)
-        g.poligono(0, net.GetNetCode(), pts, BASE + 0.45)
+    # zonas de potência em F.Cu: o cobre preenchido (com os recortes à volta dos pads)
+    for z in b.Zones():
+        if z.GetIsRuleArea() or not z.IsOnLayer(pcbnew.F_Cu):
+            continue
+        ps = z.GetFilledPolysList(pcbnew.F_Cu)
+        for i in range(ps.OutlineCount()):
+            aneis = []
+            for anel in [ps.Outline(i)] + [ps.Hole(i, h) for h in range(ps.HoleCount(i))]:
+                aneis.append([loc(anel.CPoint(j)) for j in range(anel.PointCount())])
+            g.poligono(0, z.GetNetCode(), aneis, BASE + 0.15)
     # áreas de isolamento e margem ao bordo
     g.retangulo(None, -1, 0, BARREIRA[0], W, BARREIRA[1], 0.3)
     xs = sorted(ISO.values())
@@ -160,16 +197,24 @@ def faltas(b):
         if not bloco.startswith('[unconnected_items]'):
             continue
         it = re.findall(r'@\(([\d.]+) mm, ([\d.]+) mm\): (\w+)[^\[]*\[([^\]]*)\]', bloco)
-        if len(it) != 2 or 'Zone' in (it[0][2], it[1][2]):
+        if len(it) != 2 or (it[0][2] == 'Zone' and it[1][2] == 'Zone'):
             continue
         a, c = it
         out.append((a[3], (float(a[0]) - OX, float(a[1]) - OY, a[2]), (float(c[0]) - OX, float(c[1]) - OY, c[2])))
     return out
 
 
-def celulas_item(b, g, rede_code, ponto):
-    """Células de núcleo da rede junto ao ponto (o pad ou a pista que lá está)."""
+def celulas_item(b, g, rede_code, ponto, outro=None):
+    """Células de núcleo da rede junto ao ponto (o pad ou a pista que lá está). Para
+    uma zona, todas as células da zona a menos de 15 mm da outra ponta."""
     x, y, tipo = ponto
+    if tipo == 'Zone' and outro is not None:
+        m = int(15 / RES)
+        oj, oi = int(outro[1] / RES), int(outro[0] / RES)
+        j0, j1, i0, i1 = max(0, oj - m), min(NY, oj + m), max(0, oi - m), min(NX, oi + m)
+        js, is_ = np.nonzero(g.nucleo[0][j0:j1, i0:i1] == rede_code)
+        sel = list(zip(js[::3], is_[::3]))
+        return [(0, j + j0, i + i0) for j, i in sel], None
     i, j = int(x / RES), int(y / RES)
     out = []
     r = 1 if tipo != 'Pad' else 0
@@ -225,6 +270,8 @@ def procurar(g, k, origem, destino, extra, via_ok, rede_plano=None):
     rv = int(round((VIA_D / 2 - LARG['Default'] / 2) / RES))
     est = ndimage.generate_binary_structure(2, 2)
     vias = ndimage.binary_erosion(passa[0] & passa[1], structure=est, iterations=rv) if via_ok or rede_plano else None
+    if vias is not None:
+        vias &= ~g.sem_via[j0:j1, i0:i1]
     alvo = {(c, j - j0, i - i0) for c, j, i in destino
             if j0 <= j < j1 and i0 <= i < i1 and passa[c][j - j0, i - i0]
             and (not rede_plano or vias[j - j0, i - i0])}
@@ -236,7 +283,7 @@ def procurar(g, k, origem, destino, extra, via_ok, rede_plano=None):
 
     def h(j, i):
         dj, di = abs(j - tjm), abs(i - tim)
-        return max(dj, di) + 0.414 * min(dj, di)
+        return PESO_H * (max(dj, di) + 0.414 * min(dj, di))
 
     abertos = []
     melhor = {}
@@ -324,6 +371,7 @@ def desenhar(b, g, net, caminho, w, pa, pb):
             v.SetNet(net)
             b.Add(v)
             g.segmento(None, k, a[1], a[2], a[1], a[2], VIA_D, R)
+            g.furo(a[1], a[2])
             itens.append(('V', None, (a[1], a[2]), (a[1], a[2])))
             nv += 1
             continue
@@ -450,7 +498,15 @@ def main():
         g = carregar(b)
         feitas = vias = 0
         rotas = []
-        lista.sort(key=lambda r: math.dist(r[1][:2], r[2][:2]))
+        # primeiro as redes críticas (Ethernet, comando dos MOSFET, CAN), das mais longas
+        # para as mais curtas; depois o resto, das mais curtas para as mais longas
+        def prioridade(r):
+            n = r[0]
+            critica = (n.startswith(('ETH_', '/Ethernet/', 'CAN')) or
+                       re.search(r'/Alimentação/(HO|LO|HB|SW|CS|VCC|RT|SLOPE|CFG|EN|FB|COMP|SS)', n) is not None)
+            d = math.dist(r[1][:2], r[2][:2])
+            return (0, -d) if critica else (1, d)
+        lista.sort(key=prioridade)
         for rede, a, c in lista:
             net = b.FindNet(rede)
             if net is None:
@@ -458,28 +514,34 @@ def main():
             k = net.GetNetCode()
             classe = net.GetNetClassName()
             w = LARG.get(classe, 0.2)
-            extra = int(math.ceil(max(0.0, (w / 2 + AFAST.get(classe, 0.15)) - (0.1 + 0.15)) / RES))
+            af = 0.15 if classe == 'HV' else AFAST.get(classe, 0.15)   # HV: vale a regra dos CI de potência
+            extra = int(math.ceil(max(0.0, (w / 2 + af) - (BASE - 0.04)) / RES))
             if rede in ('+3V3', '+5V') or rede in PLANO_IN1:
                 # pino de plano sem via: liga-o a uma via nova sobre o plano
                 ponto = a if a[2] == 'Pad' else c
-                if ponto[2] != 'Pad' or plano(rede, ponto[0], ponto[1]) is None:
-                    continue
+                tem_plano = ponto[2] == 'Pad' and plano(rede, ponto[0], ponto[1]) is not None
+            else:
+                tem_plano = False
+            if tem_plano:
                 orig, pa = celulas_item(b, g, k, ponto)
                 if not orig:
                     continue
                 cam = procurar(g, k, orig, [], 0, False, rede_plano=rede)
-                if cam is None:
+                if cam is not None:
+                    cam = cam + [(1, cam[-1][1], cam[-1][2])]   # termina numa via
+                    nv, itens, ok = desenhar(b, g, net, cam, 0.2, pa, None)
+                    rotas.append((rede, itens))
+                    feitas += 1
                     continue
-                cam = cam + [(1, cam[-1][1], cam[-1][2])]   # termina numa via
-                nv, itens, ok = desenhar(b, g, net, cam, 0.2, pa, None)
-                rotas.append((rede, itens))
-                feitas += 1
-                continue
+            if a[2] == 'Zone':
+                a, c = c, a
             orig, pa = celulas_item(b, g, k, a)
-            dest, pb = celulas_item(b, g, k, c)
+            dest, pb = celulas_item(b, g, k, c, outro=a)
             if not orig or not dest:
                 continue
             cam = procurar(g, k, orig, dest, extra, True)
+            if os.environ.get('DEBUG') and (rede.startswith('ETH') or 'Ethernet' in rede):
+                print('   ', rede, len(orig), len(dest), cam is not None, flush=True)
             if cam is None:
                 continue
             nv, itens, ok = desenhar(b, g, net, cam, w, pa if a[2] == 'Pad' else None, pb if c[2] == 'Pad' else None)

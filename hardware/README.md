@@ -52,7 +52,11 @@ python3 curtas.py    # rascunho: ligações de sinal curtas (F.Cu, ou B.Cu com d
 python3 encaminhar.py   # rascunho: encaminhador em grelha (A*) para o resto, com vias
 ```
 
-O `encaminhar.py` demora 10 a 20 minutos. Procura cada ligação em falta numa grelha de
+Ordem usada: `pcb.py`, `fanout.py`, `curtas.py`, `encaminhar.py` (4 rondas) e uma
+passagem final com pistas de 0,15 mm para o que não coube: `FINO=1 python3 encaminhar.py`.
+
+O `encaminhar.py` demora 10 a 20 minutos. Encaminha primeiro as redes críticas (Ethernet,
+comando dos MOSFET, CAN), das mais longas para as mais curtas, e depois o resto. Procura cada ligação em falta numa grelha de
 0,1 mm nas duas camadas exteriores, com afastamentos pela classe de cada rede, sem
 passar pelas zonas de potência nem pela faixa de isolamento, e retira as rotas que o
 DRC do KiCad acusar. Variáveis opcionais: `JANELA` (mm à volta das pontas), `LIMITE`
@@ -91,7 +95,7 @@ Disposição (Figura 5.2 do relatório):
 Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático da maior parte das ligações de sinal (`curtas.py` e `encaminhar.py`), DRC sem violações de
 afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
 
-1. Encaminhar as ~75 ligações que faltam (F.Cu e B.Cu) e rever o rascunho. O andar de potência já tem as
+1. Encaminhar as 32 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
    VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
    LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
@@ -111,6 +115,17 @@ afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema)
    a montagem (CPL, origem no canto inferior esquerdo). Na montagem da JLCPCB, confirmar a
    rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
    sempre usam a mesma orientação de referência.
+
+### Ligações que o encaminhador automático não fez (32)
+
+Concentram-se em três sítios apertados. Resolvem-se melhor mudando a posição de alguns
+passivos do que com mais tentativas automáticas.
+
+| Zona | Ligações |
+|---|---|
+| LM5177 (U1) | VIN, SW1, SW2, 5V_PRE, +5V, GND do pad térmico, RT, SLOPE, PG_5V, HO2, LA |
+| LAN8742A (U4) | pares TXP/TXN/RXP/RXN até às resistências de 49,9 Ω, nINTSEL, nRST, CRS_DV, TXD0, TX_EN, MDIO |
+| STM32 (U3) | I2C2, I2C_OE, GPS_TX, RS485_TX e alguns pinos de 3,3 V |
 
 ## Bibliotecas do projeto
 

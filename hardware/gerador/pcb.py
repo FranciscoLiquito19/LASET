@@ -89,14 +89,14 @@ ANCORAS = {
     # 3,3 V
     'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 5.5, 25.0, 0), 'U2': ('c', 10.0, 31.0, 0),
     # Microcontrolador
-    'U3': ('c', 46.0, 52.0, 0),
-    'Y1': ('c', 31.5, 49.0, 90),
+    'U3': ('c', 46.0, 55.5, 0),
+    'Y1': ('c', 31.5, 52.5, 90),
     'J2': ('c', 61.5, 37.5, 90),
-    'JP6': ('c', 27.0, 61.0, 90),
+    'JP6': ('c', 27.0, 64.5, 90),
     # Ethernet: RJ45 em cima à direita, a abrir para cima
     'J3': ('borda', 'cima', 82.0, 180),
-    'U4': ('c', 82.0, 30.0, 0),
-    'Y2': ('c', 75.0, 32.0, 0),
+    'U4': ('c', 82.0, 30.5, 270),   # RMII (pinos 7-18) virado para o MCU, pares diferenciais para o RJ45
+    'Y2': ('c', 79.0, 25.5, 0),
     # RS232: DE-9 no bordo esquerdo
     'J7': ('borda', 'esq', 54.0, 270),
     # I2C e GPS: conectores JST no bordo direito
