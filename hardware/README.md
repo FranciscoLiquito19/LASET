@@ -80,13 +80,16 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado: 205 componentes colocados, ~200 vias de ligação aos planos, DRC sem violações de
+Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, DRC sem violações de
 afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
 
-1. Encaminhar as ~310 ligações de sinal (F.Cu e B.Cu). Começar pelo andar de potência
-   (pistas largas ou zonas em F.Cu para VIN, SW1, SW2 e 5V_PRE, com a malha de comutação
-   o mais pequena possível), depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos,
-   sem vias), o cristal do MCU e o resto.
+1. Encaminhar as ~300 ligações de sinal (F.Cu e B.Cu). O andar de potência já tem as
+   ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
+   VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
+   LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
+   (C8, C10), a medição de corrente (CSA/CSB em par até ao LM5177) e o VIN do LM5177.
+   Depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos, sem vias), o cristal do
+   MCU e o resto.
 2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
    mais de 3 mm do pino) e dos MOSFET.
 3. Arrumar a serigrafia (referências sobrepostas) e acrescentar o nome de cada conector.

@@ -69,7 +69,7 @@ ANCORAS = {
     'J1': ('borda', 'cima', 16, 180),
     'F1': ('c', 28.5, 5.5, 0),
     'D1': ('c', 39.5, 6.0, 0),
-    'D2': ('c', 50.5, 6.0, 0),
+    'D2': ('c', 50.5, 6.0, 180),
     # Andar de potência da esquerda para a direita no sentido inverso da corrente:
     # entrada (D2) -> condensadores de entrada -> perna buck (Q1/Q2) -> R_CS -> L1 ->
     # perna boost (Q3/Q4) -> condensadores de saída -> R_ISNS -> +5 V.
@@ -79,15 +79,15 @@ ANCORAS = {
     'C1': ('c', 58.5, 15.0, 90), 'C2': ('c', 62.0, 15.0, 90),
     'Q1': ('c', 58.5, 21.5, 90), 'Q2': ('c', 58.5, 29.3, 90),
     'R10': ('c', 51.5, 25.5, 90),
-    'L1': ('c', 40.0, 23.0, 0),
+    'L1': ('c', 40.0, 23.0, 180),
     'Q3': ('c', 26.5, 16.5, 90), 'Q4': ('c', 26.5, 24.3, 90),
-    'C11': ('c', 18.0, 15.5, 90), 'C12': ('c', 21.5, 15.5, 90),
-    'C13': ('c', 18.0, 22.0, 90), 'C16': ('c', 21.5, 22.0, 90),
-    'R13': ('c', 19.5, 28.5, 0),
+    'C11': ('c', 21.5, 15.5, 270),
+    'R13': ('c', 17.0, 16.0, 270),
+    'C12': ('c', 12.5, 25.5, 270), 'C13': ('c', 12.5, 20.0, 90),
     'U1': ('c', 40.0, 35.0, 90),
     'TP1': ('c', 70.0, 14.5, 0),
     # 3,3 V
-    'C14': ('c', 5.5, 14.0, 90), 'L2': ('c', 5.5, 24.0, 0), 'U2': ('c', 10.0, 31.0, 0),
+    'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 5.5, 25.0, 0), 'U2': ('c', 10.0, 31.0, 0),
     # Microcontrolador
     'U3': ('c', 46.0, 52.0, 0),
     'Y1': ('c', 31.5, 49.0, 90),
@@ -109,6 +109,19 @@ ANCORAS = {
     'J4': ('borda', 'baixo', 16.0, 0), 'J5': ('borda', 'baixo', 38.5, 0),
     'J6': ('borda', 'baixo', 63.5, 0), 'J11': ('borda', 'baixo', 84.0, 0),
 }
+# Andar de potência: zonas de cobre em F.Cu (x0, y0, x1, y1) por rede. Fazem as ligações de
+# corrente alta com o mínimo de indutância; as peças automáticas não entram nestas áreas.
+POTENCIA = [
+    ('/Alimentação/VIN_RAW', [(16.8, 2.0, 27.3, 7.6)]),
+    ('/Alimentação/VIN_F', [(29.7, 3.0, 38.0, 10.5), (29.7, 8.4, 48.7, 10.5), (45.4, 3.0, 48.7, 10.5)]),
+    ('VIN', [(52.3, 4.0, 63.7, 23.0)]),
+    ('/Alimentação/SW1', [(49.4, 23.6, 60.0, 30.9)]),
+    ('/Alimentação/LA', [(43.6, 20.1, 53.6, 24.0)]),
+    ('/Alimentação/SW2', [(24.0, 18.6, 36.4, 26.0)]),
+    ('/Alimentação/5V_PRE', [(14.8, 11.9, 29.2, 16.0)]),
+    ('+5V', [(4.0, 16.9, 19.2, 21.9), (9.5, 16.9, 19.2, 25.8)]),
+]
+
 # Rotações permitidas para as peças colocadas automaticamente
 ROTS = (0, 90, 180, 270)
 
@@ -308,6 +321,9 @@ def dispor(b, fps, comps, redes):
             por_borda(fp, a[1], a[2], a[3])
         g.marcar(caixa(fp, 'crt'))
         colocados.add(ref)
+    for _, rs in POTENCIA:
+        for r in rs:
+            g.marcar(r)
     # As âncoras não se podem sobrepor
     cx = {r: caixa(fps[r], 'crt') for r in ANCORAS}
     for i, r1 in enumerate(ANCORAS):
@@ -404,14 +420,14 @@ def retangulo(z, x0, y0, x1, y1):
         o.Append(mm(OX + x), mm(OY + y))
 
 
-def zona(b, camada, rede, x0, y0, x1, y1, prioridade=0):
+def zona(b, camada, rede, x0, y0, x1, y1, prioridade=0, solida=False):
     z = pcbnew.ZONE(b)
     z.SetLayer(camada)
     z.SetNet(rede)
     z.SetAssignedPriority(prioridade)
     z.SetMinThickness(mm(0.2))
     z.SetLocalClearance(mm(0.3))
-    z.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
+    z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL if solida else pcbnew.ZONE_CONNECTION_THERMAL)
     retangulo(z, x0, y0, x1, y1)
     b.Add(z)
     return z
@@ -446,6 +462,10 @@ def zonas(b, netinfo):
     zona(b, pcbnew.In2_Cu, netinfo['+3V3'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 63.5, W - m, BARREIRA[0], 1)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 32.0, 36.0, 1)
+    # Andar de potência em F.Cu
+    for rede, rs in POTENCIA:
+        for r in rs:
+            zona(b, pcbnew.F_Cu, netinfo[rede], *r, 3, solida=True)
     # Blindagem do RJ45: chassis nas camadas interiores à frente dos pinos, a 2 mm da
     # massa (a ligação à massa é só por C50 1 nF 2 kV e R38 1 MΩ)
     for camada in (pcbnew.In1_Cu, pcbnew.In2_Cu):
