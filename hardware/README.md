@@ -91,6 +91,10 @@ afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema)
    (C8, C10), a medição de corrente (CSA/CSB em par até ao LM5177) e o VIN do LM5177.
    Depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos, sem vias), o cristal do
    MCU e o resto.
+   Para acelerar, o KiCad exporta a placa para o Freerouting (`Ficheiro > Exportar >
+   Specctra DSN`; correr o Freerouting, que precisa de Java; `Ficheiro > Importar >
+   Specctra Session`). Usar só para os sinais lentos e rever o resultado: não trata
+   pares diferenciais nem a malha de comutação.
 2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
    mais de 3 mm do pino) e dos MOSFET.
 3. Arrumar a serigrafia (referências sobrepostas) e acrescentar o nome de cada conector.
