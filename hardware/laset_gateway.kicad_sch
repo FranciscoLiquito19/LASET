@@ -1359,11 +1359,17 @@
     (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/ecc6f7b9-c6e9-59bb-bdd0-70aedc53f0c2"
       (reference "#PWR025") (unit 1) (value "GND") (footprint "")
     )
+    (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/20e81af4-2b0d-577e-bdb9-2034bebd9e00"
+      (reference "#FLG026") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/050a3e10-367a-5d4a-bc88-b34760cc1e74"
+      (reference "#FLG027") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
     (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/df0dbe1e-85d3-5680-87bc-b1e1b8170be7"
       (reference "R60") (unit 1) (value "10k") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
-    (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/9198e2a5-3dce-5ac1-9e67-b2dce2dde8bf"
-      (reference "#PWR026") (unit 1) (value "GND") (footprint "")
+    (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/d8c6592c-82d7-5f6d-a870-cb3c99864a9e"
+      (reference "#PWR028") (unit 1) (value "GND") (footprint "")
     )
     (path "/3a089eae-c5bf-5148-a884-7c224c62f440/983009f5-3fac-5240-aaf6-e7342ed1f1d4"
       (reference "U11") (unit 1) (value "74AHCT1G125") (footprint "Package_TO_SOT_SMD:SOT-23-5")

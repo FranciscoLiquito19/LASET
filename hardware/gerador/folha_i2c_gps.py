@@ -57,6 +57,9 @@ def folha():
         'IO1': '/GPS_TXD', 'GND': 'GND', 'IO2': '/GPS_RXD', 'IO3': '/GPS_PPS_IN'}, nc=('IO4', 'IO5'))
     f.comp('TP9', 'Connector:TestPoint', 'PPS', 250, 245, {1: 'GPS_PPS'}, 'TestPoint:TestPoint_Pad_D1.5mm')
     f.comp('C96', C, '10 uF', 290, 230, {1: '+3V3', 2: 'GND'}, C1206)
+    # PWR_FLAG: VPU vem do jumper (pinos passivos), não de uma saída de alimentação
+    f.flag('/VPU1', 395, 40)
+    f.flag('/VPU2', 395, 55)
     # OE dos tradutores: a GND até o firmware os ligar
     f.comp('R60', R, '10k', 120, 250, {1: 'I2C_OE', 2: 'GND'}, R0603)
     return f
