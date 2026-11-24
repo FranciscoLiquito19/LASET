@@ -705,6 +705,9 @@
     (path "/9d04728e-1d5e-5e53-991f-d1799d6d64d0/4af9c191-cb48-5f72-8d4e-d9fff10b6946"
       (reference "#PWR062") (unit 1) (value "GND") (footprint "")
     )
+    (path "/9d04728e-1d5e-5e53-991f-d1799d6d64d0/5c3e9803-357a-5f59-9b21-f101960c16c0"
+      (reference "#FLG063") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
     (path "/21ae1676-f6cb-5b92-b211-0c231034d1e1/5396c653-044c-5167-b9e6-a0d40257fc4b"
       (reference "U4") (unit 1) (value "LAN8742A-CZ") (footprint "Package_DFN_QFN:VQFN-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias")
     )
@@ -878,6 +881,9 @@
     )
     (path "/21ae1676-f6cb-5b92-b211-0c231034d1e1/c85c7ca4-9dc6-5945-90e8-6d3af56d5c25"
       (reference "#PWR035") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/21ae1676-f6cb-5b92-b211-0c231034d1e1/4ddefaa2-927e-5802-9a6c-76da336ff893"
+      (reference "#FLG036") (unit 1) (value "PWR_FLAG") (footprint "")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/20df62be-3f24-5c6e-9239-bbf01d31faad"
       (reference "U5") (unit 1) (value "ADM3057EBRWZ") (footprint "Package_SO:SOIC-20W_7.5x12.8mm_P1.27mm")
@@ -1188,6 +1194,12 @@
     (path "/0e204737-28b9-577f-a917-a945cb3573c5/5c160c50-8cae-5c91-bae8-7f3aecd931c8"
       (reference "#PWR020") (unit 1) (value "GND") (footprint "")
     )
+    (path "/0e204737-28b9-577f-a917-a945cb3573c5/8d9af687-def5-5fc5-9405-e5c7660a39a3"
+      (reference "#FLG021") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/0e204737-28b9-577f-a917-a945cb3573c5/45107fdd-a6c7-515c-adb9-fc16ed7cb45b"
+      (reference "#FLG022") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
     (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/8597a39c-8e37-559c-a2af-4e23f74780a4"
       (reference "U9") (unit 1) (value "PCA9306DR") (footprint "Package_SO:SO-8_3.9x4.9mm_P1.27mm")
     )
@@ -1350,6 +1362,12 @@
     (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/ecc6f7b9-c6e9-59bb-bdd0-70aedc53f0c2"
       (reference "#PWR025") (unit 1) (value "GND") (footprint "")
     )
+    (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/20e81af4-2b0d-577e-bdb9-2034bebd9e00"
+      (reference "#FLG026") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/be3201b2-c28d-56c8-acfe-bcc92c5ae3cb/050a3e10-367a-5d4a-bc88-b34760cc1e74"
+      (reference "#FLG027") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
     (path "/3a089eae-c5bf-5148-a884-7c224c62f440/983009f5-3fac-5240-aaf6-e7342ed1f1d4"
       (reference "U11") (unit 1) (value "74AHCT1G125") (footprint "Package_TO_SOT_SMD:SOT-23-5")
     )
@@ -1490,6 +1508,9 @@
     )
     (path "/3a089eae-c5bf-5148-a884-7c224c62f440/d33cb43e-5705-5f5a-afdf-c23515025a91"
       (reference "J11") (unit 1) (value "PWM isolado (PWM1-3, FALHA, VISO, GND_ISO)") (footprint "Connector_JST:JST_PH_B6B-PH-K_1x06_P2.00mm_Vertical")
+    )
+    (path "/3a089eae-c5bf-5148-a884-7c224c62f440/c56c9f73-9ceb-5bde-925a-cae8ead1a3bd"
+      (reference "#FLG025") (unit 1) (value "PWR_FLAG") (footprint "")
     )
   )
 )

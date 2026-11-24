@@ -52,4 +52,7 @@ def folha():
         'IO1': '/GPS_TXD', 'GND': 'GND', 'IO2': '/GPS_RXD', 'IO3': '/GPS_PPS_IN'}, nc=('IO4', 'IO5'))
     f.comp('TP9', 'Connector:TestPoint', 'PPS', 250, 245, {1: 'GPS_PPS'}, 'TestPoint:TestPoint_Pad_D1.5mm')
     f.comp('C96', C, '10 uF', 290, 230, {1: '+3V3', 2: 'GND'}, C1206)
+    # PWR_FLAG: redes alimentadas por ferrite, resistência ou regulador interno (ERC)
+    f.flag('/VREF2_1', 395, 40)
+    f.flag('/VREF2_2', 395, 55)
     return f

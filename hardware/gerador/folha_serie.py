@@ -47,4 +47,7 @@ def folha():
     f.comp('J7', 'Connector:DE9_Receptacle', 'RS232 (DE-9 fêmea, DCE)', 320, 205, {
         2: '/RS232_TXD', 3: '/RS232_RXD', 5: 'GND'}, nc=(1, 4, 6, 7, 8, 9),
         footprint='Connector_Dsub:DSUB-9_Female_Horizontal_P2.77x2.84mm_EdgePinOffset7.70mm_Housed_MountingHolesOffset9.12mm')
+    # PWR_FLAG: redes alimentadas por ferrite, resistência ou regulador interno (ERC)
+    f.flag('/GNDISO_485', 395, 40)
+    f.flag('/GND_485', 395, 55)
     return f

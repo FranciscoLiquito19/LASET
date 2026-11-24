@@ -91,4 +91,6 @@ def folha():
     # LED de estado
     f.comp('R21', R, '1k', 330, 130, {1: '/LED', 2: '/LED_A'}, R0603)
     f.comp('D3', 'Device:LED', 'Verde', 345, 130, {2: '/LED_A', 1: 'GND'}, LED0603)
+    # PWR_FLAG: redes alimentadas por ferrite, resistência ou regulador interno (ERC)
+    f.flag('/VDDA', 395, 40)
     return f

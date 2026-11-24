@@ -48,4 +48,6 @@ def folha():
         nc=(9, 10, 11, 12))
     f.comp('C50', C, '1 nF 2 kV', 320, 200, {1: '/CHASSIS', 2: 'GND'}, C1206)
     f.comp('R38', R, '1M', 335, 200, {1: '/CHASSIS', 2: 'GND'}, 'Resistor_SMD:R_1206_3216Metric')
+    # PWR_FLAG: redes alimentadas por ferrite, resistência ou regulador interno (ERC)
+    f.flag('/VDDCR', 395, 40)
     return f

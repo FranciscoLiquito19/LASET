@@ -47,4 +47,6 @@ def folha():
     f.comp('TP8', 'Connector:TestPoint', 'GND_PWM', 330, 75, {1: gi}, 'TestPoint:TestPoint_Pad_D1.5mm')
     f.comp('J11', 'Connector_Generic:Conn_01x06', 'PWM isolado (PWM1-3, FALHA, VISO, GND_ISO)', 335, 120, {
         1: '/PWM1_OUT', 2: '/PWM2_OUT', 3: '/PWM3_OUT', 4: '/FALHA_ISO', 5: viso, 6: gi}, jst_ph(6))
+    # PWR_FLAG: redes alimentadas por ferrite, resistência ou regulador interno (ERC)
+    f.flag('/GND_PWM', 395, 40)
     return f
