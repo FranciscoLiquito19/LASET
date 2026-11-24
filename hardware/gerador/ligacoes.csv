@@ -158,6 +158,7 @@ U3;61;GND
 U3;83;GND
 U3;94;GND
 U3;31;GND
+U3;143;+3V3
 U3;33;/Microcontrolador/VDDA
 U3;32;/Microcontrolador/VDDA
 U3;106;/Microcontrolador/VCAP
