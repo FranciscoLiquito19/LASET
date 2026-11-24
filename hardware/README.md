@@ -49,7 +49,14 @@ cd hardware/gerador
 python3 pcb.py       # placa, disposição, planos e regras (refaz a placa de raiz)
 python3 fanout.py    # vias dos pinos de massa e alimentação para os planos
 python3 curtas.py    # rascunho: ligações de sinal curtas (F.Cu, ou B.Cu com duas vias)
+python3 encaminhar.py   # rascunho: encaminhador em grelha (A*) para o resto, com vias
 ```
+
+O `encaminhar.py` demora 10 a 20 minutos. Procura cada ligação em falta numa grelha de
+0,1 mm nas duas camadas exteriores, com afastamentos pela classe de cada rede, sem
+passar pelas zonas de potência nem pela faixa de isolamento, e retira as rotas que o
+DRC do KiCad acusar. Variáveis opcionais: `JANELA` (mm à volta das pontas), `LIMITE`
+(nós por procura) e `RONDAS`.
 
 Precisam do módulo `pcbnew` (vem com o KiCad; no Windows correr com o Python do KiCad,
 "KiCad Command Prompt"). **Só se correm enquanto a placa não tiver pistas desenhadas à
@@ -81,10 +88,10 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, ~125 ligações de sinal curtas desenhadas (rascunho do `curtas.py`: retas ou em L, sem passar por zonas de potência nem pela faixa de isolamento), DRC sem violações de
+Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático da maior parte das ligações de sinal (`curtas.py` e `encaminhar.py`), DRC sem violações de
 afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
 
-1. Encaminhar as ~175 ligações de sinal que faltam (F.Cu e B.Cu) e rever as do rascunho. O andar de potência já tem as
+1. Encaminhar as ~75 ligações que faltam (F.Cu e B.Cu) e rever o rascunho. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
    VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
    LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
