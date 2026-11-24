@@ -48,6 +48,9 @@ jobs:
         run: |
           kicad-cli sch erc --format report --severity-error --exit-code-violations \
             -o erc.rpt hardware/laset_gateway.kicad_sch
+      - name: Mostrar o relatório do ERC
+        if: always()
+        run: cat erc.rpt || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

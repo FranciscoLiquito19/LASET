@@ -38,8 +38,8 @@ def folha():
 
     # Lado isolado
     for k in range(3):
-        f.comp(f'R{87 + k}', R, '47', 270, 95 + 12 * k, {1: f'/PWM{k + 1}_ISO', 2: f'/PWM{k + 1}_OUT'}, R0603)
-    f.comp('R90', R, '10k', 270, 145, {1: viso, 2: '/FALHA_ISO'}, R0603)
+        f.comp(f'R{87 + k}', R, '47', 270, 95 + 16 * k, {1: f'/PWM{k + 1}_ISO', 2: f'/PWM{k + 1}_OUT'}, R0603)
+    f.comp('R90', R, '10k', 270, 150, {1: viso, 2: '/FALHA_ISO'}, R0603)
     f.comp('D10', 'Power_Protection:ESDA6V1-5SC6', 'ESDA6V1-5SC6', 300, 165, {
         'IO1': '/PWM1_OUT', 'GND': gi, 'IO2': '/PWM2_OUT', 'IO3': '/PWM3_OUT', 'IO4': '/FALHA_ISO'}, nc=('IO5',))
     for k in range(3):
