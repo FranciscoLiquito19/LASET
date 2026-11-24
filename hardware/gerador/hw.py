@@ -6,6 +6,7 @@ mantém o esquema legível sem desenhar fios longos.
 """
 import copy
 import os
+import re
 import uuid
 
 from kiutils.items.common import Effects, Font, Justify, PageSettings, Position, Property, TitleBlock
@@ -123,7 +124,9 @@ class Folha:
         s.entryName = sym.entryName
         s.position = Position(x, y, rot)
         s.unit = 1
-        s.inBom = not ref.startswith('#')
+        # Furos de fixação e pontos de teste não se compram: fora da lista de material,
+        # como nos footprints da biblioteca (senão o DRC do KiCad 9 acusa a diferença)
+        s.inBom = not ref.startswith(('#', 'TP')) and not re.match(r'H\d', ref)
         s.onBoard = not ref.startswith('#')
         s.uuid = _u('sym:%s:%s' % (self.ficheiro, ref))
         base = {p.key: p.value for p in sym.properties}

@@ -3952,7 +3952,7 @@
   )
 
   (symbol (lib_id "Connector:TestPoint") (at 30 255 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid 7e4791a1-ea6b-51a6-87f1-3c80cda73be9)
     (property "Reference" "TP1" (id 0) (at 30 252 0)
       (effects (font (size 1.27 1.27)))
@@ -3970,7 +3970,7 @@
   )
 
   (symbol (lib_id "Connector:TestPoint") (at 45 255 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid 0738b985-2ca9-5e22-9f3b-d325cca6dbc8)
     (property "Reference" "TP2" (id 0) (at 45 252 0)
       (effects (font (size 1.27 1.27)))
@@ -4006,7 +4006,7 @@
   )
 
   (symbol (lib_id "Connector:TestPoint") (at 60 255 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid 787a1f30-583a-560e-b36d-977f15108793)
     (property "Reference" "TP3" (id 0) (at 60 252 0)
       (effects (font (size 1.27 1.27)))
@@ -4042,7 +4042,7 @@
   )
 
   (symbol (lib_id "Connector:TestPoint") (at 75 255 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid f764e411-8238-5873-bbc7-a6eaec0e9076)
     (property "Reference" "TP4" (id 0) (at 75 252 0)
       (effects (font (size 1.27 1.27)))
@@ -4078,7 +4078,7 @@
   )
 
   (symbol (lib_id "Mechanical:MountingHole") (at 110 260 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid 14cff172-593a-528f-98d0-ee19b9bfee3a)
     (property "Reference" "H1" (id 0) (at 110 257 0)
       (effects (font (size 1.27 1.27)))
@@ -4095,7 +4095,7 @@
   )
 
   (symbol (lib_id "Mechanical:MountingHole") (at 125 260 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid 71f14507-866c-52f3-a570-b3bc02e44b12)
     (property "Reference" "H2" (id 0) (at 125 257 0)
       (effects (font (size 1.27 1.27)))
@@ -4112,7 +4112,7 @@
   )
 
   (symbol (lib_id "Mechanical:MountingHole") (at 140 260 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid a5150757-a12f-53be-847d-0eb3669278c2)
     (property "Reference" "H3" (id 0) (at 140 257 0)
       (effects (font (size 1.27 1.27)))
@@ -4129,7 +4129,7 @@
   )
 
   (symbol (lib_id "Mechanical:MountingHole") (at 155 260 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid 6eed7d03-4da4-5ce9-8dfe-b3b92e08e428)
     (property "Reference" "H4" (id 0) (at 155 257 0)
       (effects (font (size 1.27 1.27)))

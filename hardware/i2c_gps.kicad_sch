@@ -2534,7 +2534,7 @@
   )
 
   (symbol (lib_id "Connector:TestPoint") (at 250 245 0) (unit 1)
-    (in_bom yes) (on_board yes)
+    (in_bom no) (on_board yes)
     (uuid f4abcc64-8f72-583d-9607-427b95ba4737)
     (property "Reference" "TP9" (id 0) (at 250 242 0)
       (effects (font (size 1.27 1.27)))
