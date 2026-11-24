@@ -1,0 +1,9 @@
+(version 1)
+
+(rule "HV dentro dos componentes de potência"
+  (constraint clearance (min 0.15mm))
+  (condition "A.NetClass == 'HV' && (A.intersectsCourtyard('U1') || A.intersectsCourtyard('Q1') || A.intersectsCourtyard('Q2') || A.intersectsCourtyard('Q3') || A.intersectsCourtyard('Q4') || A.intersectsCourtyard('D1') || A.intersectsCourtyard('D2') || A.intersectsCourtyard('F1') || A.intersectsCourtyard('J1'))"))
+
+(rule "Faixa de isolamento"
+  (constraint clearance (min 0.2mm))
+  (condition "A.insideArea('isolamento')"))
