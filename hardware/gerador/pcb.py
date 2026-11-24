@@ -443,7 +443,7 @@ def zonas(b, netinfo):
     # Lado lógico: GND em In1, 3,3 V em In2 (5 V na faixa dos isoladores e na fonte)
     zona(b, pcbnew.In1_Cu, netinfo['GND'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+3V3'], m, m, W - m, BARREIRA[0], 0)
-    zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 62.0, W - m, BARREIRA[0], 1)
+    zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 63.5, W - m, BARREIRA[0], 1)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 32.0, 36.0, 1)
     # Blindagem do RJ45: chassis nas camadas interiores à frente dos pinos, a 2 mm da
     # massa (a ligação à massa é só por C50 1 nF 2 kV e R38 1 MΩ)
