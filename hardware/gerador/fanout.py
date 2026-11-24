@@ -19,11 +19,11 @@ import tempfile
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from pcb import PCB, OX, OY, W, H, BARREIRA, ISO  # noqa: E402
+from pcb import PCB, OX, OY, W, H, BARREIRA, ISO, RESERVA  # noqa: E402
 
 VIA, FURO, PISTA = 0.6, 0.3, 0.3
 AFAST = 0.25           # afastamento mínimo a cobre de outras redes (mm), acima da regra de 0,15
-ZONAS_5V = [(0.5, 10.0, 32.0, 36.0), (0.5, 63.5, W - 0.5, BARREIRA[0])]
+ZONAS_5V = [(0.5, 10.0, 48.0, 41.5), (0.5, 63.5, W - 0.5, BARREIRA[0])]
 PLANO_IN1 = {'GND', '/CAN FD/GND_CAN1', '/CAN FD/GND_CAN2', '/RS485 e RS232/GND_485', '/PWM isolado/GND_PWM'}
 
 
@@ -92,7 +92,7 @@ def main():
     obst = []  # (caixa, rede)
     for p in pads:
         obst.append((caixa_pad(p, 0), p.GetNetname()))
-    keep = [(0, BARREIRA[0], W, BARREIRA[1])]
+    keep = [(0, BARREIRA[0], W, BARREIRA[1])] + list(RESERVA)
     xs = sorted(ISO.values())
     for (a0, a1), (b0, b1) in zip(xs, xs[1:]):
         keep.append((a1, BARREIRA[1], b0, H))

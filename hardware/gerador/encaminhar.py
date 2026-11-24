@@ -34,7 +34,9 @@ NX, NY = int(W / RES), int(H / RES)
 # que não cabem com 0,2 mm
 FINO = bool(os.environ.get('FINO'))
 BASE = (0.075 if FINO else 0.1) + 0.15 + 0.04   # meia pista + afastamento + margem de quantização
-LARG = {'Default': 0.15 if FINO else 0.2, 'ETH': 0.25, 'BUS': 0.4, 'HV': 0.2 if FINO else 0.3, 'P5V': 0.2 if FINO else 0.3}
+# HV e P5V: as correntes altas vão pelas zonas de cobre; o que o encaminhador liga são
+# pinos de passo fino (sensores, alimentação dos CI), onde só cabe 0,2 mm
+LARG = {'Default': 0.15 if FINO else 0.2, 'ETH': 0.25, 'BUS': 0.4, 'HV': 0.2, 'P5V': 0.2}
 AFAST = {'Default': 0.15, 'ETH': 0.15, 'BUS': 0.3, 'HV': 0.6, 'P5V': 0.2}
 VIA_D, VIA_F = 0.6, 0.3
 CUSTO_VIA = 30.0               # em células (3 mm)
@@ -485,6 +487,42 @@ def limpar():
         print(f'  limpeza {volta + 1}: retiradas {n} pistas/vias')
 
 
+def rotear_uma(b, g, rede, a, c):
+    """Encaminha uma ligação em falta; devolve (itens, número de vias) ou None."""
+    net = b.FindNet(rede)
+    if net is None:
+        return None
+    k = net.GetNetCode()
+    classe = net.GetNetClassName()
+    w = LARG.get(classe, 0.2)
+    af = 0.15 if classe in ('HV', 'P5V') else AFAST.get(classe, 0.15)   # vale a regra dos CI de potência
+    extra = int(math.ceil(round(max(0.0, (w / 2 + af) - (BASE - 0.04)) / RES, 6)))
+    if rede in ('+3V3', '+5V') or rede in PLANO_IN1:
+        # pino de plano sem via: liga-o a uma via nova sobre o plano
+        ponto = a if a[2] == 'Pad' else c
+        if ponto[2] == 'Pad' and plano(rede, ponto[0], ponto[1]) is not None:
+            orig, pa = celulas_item(b, g, k, ponto)
+            if orig:
+                cam = procurar(g, k, orig, [], 0, False, rede_plano=rede)
+                if cam is not None:
+                    cam = cam + [(1, cam[-1][1], cam[-1][2])]   # termina numa via
+                    nv, itens, ok = desenhar(b, g, net, cam, 0.2, pa, None)
+                    return itens, nv
+    if a[2] == 'Zone':
+        a, c = c, a
+    orig, pa = celulas_item(b, g, k, a)
+    dest, pb = celulas_item(b, g, k, c, outro=a)
+    if not orig or not dest:
+        return None
+    cam = procurar(g, k, orig, dest, extra, True)
+    if os.environ.get('DEBUG'):
+        print('   ', rede, len(orig), len(dest), cam is not None, flush=True)
+    if cam is None:
+        return None
+    nv, itens, ok = desenhar(b, g, net, cam, w, pa if a[2] == 'Pad' else None, pb if c[2] == 'Pad' else None)
+    return itens, nv
+
+
 def main():
     inicio = time.time()
     for ronda in range(int(os.environ.get('RONDAS', 4))):
@@ -508,45 +546,11 @@ def main():
             return (0, -d) if critica else (1, d)
         lista.sort(key=prioridade)
         for rede, a, c in lista:
-            net = b.FindNet(rede)
-            if net is None:
+            r = rotear_uma(b, g, rede, a, c)
+            if r is None:
                 continue
-            k = net.GetNetCode()
-            classe = net.GetNetClassName()
-            w = LARG.get(classe, 0.2)
-            af = 0.15 if classe == 'HV' else AFAST.get(classe, 0.15)   # HV: vale a regra dos CI de potência
-            extra = int(math.ceil(max(0.0, (w / 2 + af) - (BASE - 0.04)) / RES))
-            if rede in ('+3V3', '+5V') or rede in PLANO_IN1:
-                # pino de plano sem via: liga-o a uma via nova sobre o plano
-                ponto = a if a[2] == 'Pad' else c
-                tem_plano = ponto[2] == 'Pad' and plano(rede, ponto[0], ponto[1]) is not None
-            else:
-                tem_plano = False
-            if tem_plano:
-                orig, pa = celulas_item(b, g, k, ponto)
-                if not orig:
-                    continue
-                cam = procurar(g, k, orig, [], 0, False, rede_plano=rede)
-                if cam is not None:
-                    cam = cam + [(1, cam[-1][1], cam[-1][2])]   # termina numa via
-                    nv, itens, ok = desenhar(b, g, net, cam, 0.2, pa, None)
-                    rotas.append((rede, itens))
-                    feitas += 1
-                    continue
-            if a[2] == 'Zone':
-                a, c = c, a
-            orig, pa = celulas_item(b, g, k, a)
-            dest, pb = celulas_item(b, g, k, c, outro=a)
-            if not orig or not dest:
-                continue
-            cam = procurar(g, k, orig, dest, extra, True)
-            if os.environ.get('DEBUG') and (rede.startswith('ETH') or 'Ethernet' in rede):
-                print('   ', rede, len(orig), len(dest), cam is not None, flush=True)
-            if cam is None:
-                continue
-            nv, itens, ok = desenhar(b, g, net, cam, w, pa if a[2] == 'Pad' else None, pb if c[2] == 'Pad' else None)
-            rotas.append((rede, itens))
-            vias += nv
+            rotas.append((rede, r[0]))
+            vias += r[1]
             feitas += 1
         pcbnew.SaveBoard(PCB, b)
         print(f'  {feitas} encaminhadas, {vias} vias ({time.time() - inicio:.0f} s)')

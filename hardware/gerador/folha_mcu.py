@@ -12,7 +12,7 @@ projeto CubeMX da placa de avaliação):
   RS485 (USART6) PC6 TX, PC7 RX, PG8 DE (controlo automático do emissor)
   GPS (UART7)    PE8 TX, PE7 RX; PPS em PA0 = TIM2_CH1 (temporizador de 32 bits)
   I2C1           PB8 SCL, PB9 SDA
-  I2C2           PF1 SCL, PF0 SDA
+  I2C2           PB10 SCL, PB11 SDA (canto inferior direito, do lado dos conectores I2C)
   PWM (TIM1)     PE9 CH1, PE11 CH2, PE13 CH3; PE15 = TIM1_BKIN (falha isolada)
   SWD            PA13 SWDIO, PA14 SWCLK, PB3 SWO
   Estado         PB0 LED; PF2 PG_5V; PF3 PG_3V3
@@ -42,7 +42,7 @@ PINOS = {
     # GPS
     'PE8': 'GPS_TX', 'PE7': 'GPS_RX', 'PA0': 'GPS_PPS',
     # I2C
-    'PB8': 'I2C1_SCL', 'PB9': 'I2C1_SDA', 'PF1': 'I2C2_SCL', 'PF0': 'I2C2_SDA', 'PG0': 'I2C_OE',
+    'PB8': 'I2C1_SCL', 'PB9': 'I2C1_SDA', 'PB10': 'I2C2_SCL', 'PB11': 'I2C2_SDA', 'PG0': 'I2C_OE',
     # PWM
     'PE9': 'PWM1', 'PE11': 'PWM2', 'PE13': 'PWM3', 'PE15': 'PWM_FALHA',
     # depuração e estado

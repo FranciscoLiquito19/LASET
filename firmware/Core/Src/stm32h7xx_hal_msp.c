@@ -85,9 +85,9 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *h)
         __HAL_RCC_GPIOB_CLK_ENABLE();
         af(GPIOB, GPIO_PIN_8 | GPIO_PIN_9, GPIO_AF4_I2C1, GPIO_NOPULL, GPIO_MODE_AF_OD);
         __HAL_RCC_I2C1_CLK_ENABLE();
-    } else if (h->Instance == I2C2) {                 /* PF1 SCL, PF0 SDA */
-        __HAL_RCC_GPIOF_CLK_ENABLE();
-        af(GPIOF, GPIO_PIN_0 | GPIO_PIN_1, GPIO_AF4_I2C2, GPIO_NOPULL, GPIO_MODE_AF_OD);
+    } else if (h->Instance == I2C2) {                 /* PB10 SCL, PB11 SDA */
+        __HAL_RCC_GPIOB_CLK_ENABLE();
+        af(GPIOB, GPIO_PIN_10 | GPIO_PIN_11, GPIO_AF4_I2C2, GPIO_NOPULL, GPIO_MODE_AF_OD);
         __HAL_RCC_I2C2_CLK_ENABLE();
     }
 }

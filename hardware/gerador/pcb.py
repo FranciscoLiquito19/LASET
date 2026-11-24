@@ -38,6 +38,8 @@ W, H = 100.0, 100.0          # placa (mm)
 OX, OY = 100.0, 50.0         # canto superior esquerdo na folha
 RES = 0.25                   # resolução da grelha de ocupação (mm)
 FOLGA = 0.15                 # folga entre courtyards (mm)
+# Folga maior no lado lógico, para deixar canais às pistas entre os passivos
+FOLGA_LOGICO = float(os.environ.get("FOLGA", 0.45))
 
 # Faixa de isolamento (lado lógico em cima, lados isolados em baixo)
 BARREIRA = (74.6, 81.4)
@@ -87,7 +89,8 @@ ANCORAS = {
     'U1': ('c', 40.0, 35.0, 90),
     'TP1': ('c', 54.5, 11.5, 0),
     # 3,3 V
-    'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 5.5, 25.0, 0), 'U2': ('c', 10.0, 31.0, 0),
+    # L2 à direita do TPS62162, do lado do pino SW
+    'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 16.5, 31.5, 0), 'U2': ('c', 10.0, 31.0, 0),
     # Microcontrolador
     'U3': ('c', 46.0, 55.5, 0),
     'Y1': ('c', 31.5, 52.5, 90),
@@ -124,9 +127,18 @@ POTENCIA = [
     ('VIN', _r(52.3, 4.0, 63.7, 23.0)),
     ('/Alimentação/SW1', _r(49.4, 23.6, 60.0, 30.9)),
     ('/Alimentação/LA', _r(43.6, 20.1, 53.6, 24.0)),
-    ('/Alimentação/SW2', _r(24.0, 18.6, 36.4, 26.0)),
+    # bolsa à volta da porta de Q3 (HO2), para a pista de comando sair por cima
+    ('/Alimentação/SW2', [(24.0, 18.6), (27.8, 18.6), (27.8, 20.4), (29.5, 20.4), (29.5, 18.6),
+                          (36.4, 18.6), (36.4, 26.0), (24.0, 26.0)]),
     ('/Alimentação/5V_PRE', _r(14.8, 11.9, 29.2, 16.0)),
     ('+5V', [(4.0, 16.9), (19.2, 16.9), (19.2, 25.8), (9.5, 25.8), (9.5, 21.9), (4.0, 21.9)]),
+]
+
+# Áreas onde as peças automáticas não entram: canais de saída dos pinos de passo fino
+RESERVA = [
+    (34.0, 29.6, 46.0, 31.3),   # por cima da fila de pinos de cima do LM5177
+    (34.0, 38.7, 46.0, 40.4),   # por baixo da fila de baixo
+    (84.9, 27.5, 86.6, 33.5),   # à direita do LAN8742A (pares diferenciais)
 ]
 
 # Rotações permitidas para as peças colocadas automaticamente
@@ -229,6 +241,7 @@ def idx(v):
 class Grelha:
     def __init__(self):
         self.ocup = np.zeros((N[1], N[0]), dtype=bool)
+        self.folga = FOLGA
         self.dominio = {}
         lado_logico = np.zeros_like(self.ocup)
         lado_logico[:idx(BARREIRA[0]), :] = True
@@ -245,13 +258,14 @@ class Grelha:
 
     def marcar(self, c):
         x0, y0, x1, y1 = c
-        self.ocup[max(0, idx(y0 - FOLGA)):max(0, idx(y1 + FOLGA)), max(0, idx(x0 - FOLGA)):max(0, idx(x1 + FOLGA))] = True
+        f = self.folga
+        self.ocup[max(0, idx(y0 - f)):max(0, idx(y1 + f)), max(0, idx(x0 - f)):max(0, idx(x1 + f))] = True
 
     def livres(self, dominio, w, h):
         """Mapa booleano: True onde um retângulo w x h (mm) cabe com o canto sup. esq. na célula."""
         bloq = self.ocup | ~self.dominio[dominio] | self.borda
         a = np.pad(bloq.astype(np.int32), ((1, 0), (1, 0))).cumsum(0).cumsum(1)
-        kw, kh = int(np.ceil((w + 2 * FOLGA) / RES)), int(np.ceil((h + 2 * FOLGA) / RES))
+        kw, kh = int(np.ceil((w + 2 * self.folga) / RES)), int(np.ceil((h + 2 * self.folga) / RES))
         if kh >= a.shape[0] or kw >= a.shape[1]:
             return None, kw, kh
         s = a[kh:, kw:] - a[:-kh, kw:] - a[kh:, :-kw] + a[:-kh, :-kw]
@@ -338,6 +352,8 @@ def dispor(b, fps, comps, redes):
     for _, pol in POTENCIA:
         xs, ys = [p[0] for p in pol], [p[1] for p in pol]
         g.marcar((min(xs), min(ys), max(xs), max(ys)))
+    for r in RESERVA:
+        g.marcar(r)
     # As âncoras não se podem sobrepor
     cx = {r: caixa(fps[r], 'crt') for r in ANCORAS}
     for i, r1 in enumerate(ANCORAS):
@@ -379,6 +395,7 @@ def dispor(b, fps, comps, redes):
         ref = pendentes.pop(0)
         fp = fps[ref]
         dom = dominio_de(ref, comps, redes_de) or 'logico'
+        g.folga = FOLGA_LOGICO if dom == 'logico' else FOLGA
         alv = alvos(ref)
         if not alv:
             # desacoplamento: pino de alimentação mais perto que ainda tenha menos condensadores
@@ -405,8 +422,8 @@ def dispor(b, fps, comps, redes):
             if livre is None or not livre.any():
                 continue
             ys, xs = np.nonzero(livre)
-            cx = xs * RES + FOLGA + w / 2
-            cy = ys * RES + FOLGA + h / 2
+            cx = xs * RES + g.folga + w / 2
+            cy = ys * RES + g.folga + h / 2
             d2 = (cx - tx) ** 2 + (cy - ty) ** 2
             for i in np.argsort(d2)[:8]:
                 px, py = cx[i] - (x0 + x1) / 2, cy[i] - (y0 + y1) / 2
@@ -475,7 +492,7 @@ def zonas(b, netinfo):
     zona(b, pcbnew.In1_Cu, netinfo['GND'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+3V3'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 63.5, W - m, BARREIRA[0], 1)
-    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 32.0, 36.0, 1)
+    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 48.0, 41.5, 1)   # fonte e LM5177
     # Andar de potência em F.Cu
     for rede, pol in POTENCIA:
         z = zona(b, pcbnew.F_Cu, netinfo[rede], 0, 0, 1, 1, 3, solida=True)

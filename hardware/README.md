@@ -52,8 +52,19 @@ python3 curtas.py    # rascunho: ligações de sinal curtas (F.Cu, ou B.Cu com d
 python3 encaminhar.py   # rascunho: encaminhador em grelha (A*) para o resto, com vias
 ```
 
-Ordem usada: `pcb.py`, `fanout.py`, `curtas.py`, `encaminhar.py` (4 rondas) e uma
-passagem final com pistas de 0,15 mm para o que não coube: `FINO=1 python3 encaminhar.py`.
+Ordem usada para a placa atual:
+
+```sh
+python3 pcb.py && python3 fanout.py
+python3 pf.py                       # encaminhamento por congestionamento negociado (~45 min)
+python3 encaminhar.py               # completa o que ficou em conflito
+FINO=1 python3 encaminhar.py        # passagem final com pistas de 0,15 mm
+python3 melhorar.py <base>          # opcional: pesquisa local (base = placa depois de fanout.py)
+```
+
+O `pf.py` (PathFinder) encaminha todas as ligações ao mesmo tempo: o cobre das outras
+redes não bloqueia, custa, e o custo das zonas disputadas sobe a cada iteração até as
+redes se afastarem. Foi o que mais reduziu as ligações em falta.
 
 O `encaminhar.py` demora 10 a 20 minutos. Encaminha primeiro as redes críticas (Ethernet,
 comando dos MOSFET, CAN), das mais longas para as mais curtas, e depois o resto. Procura cada ligação em falta numa grelha de
@@ -95,7 +106,7 @@ Disposição (Figura 5.2 do relatório):
 Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático da maior parte das ligações de sinal (`curtas.py` e `encaminhar.py`), DRC sem violações de
 afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
 
-1. Encaminhar as 32 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
+1. Encaminhar as 18 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
    VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
    LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
@@ -116,16 +127,13 @@ afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema)
    rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
    sempre usam a mesma orientação de referência.
 
-### Ligações que o encaminhador automático não fez (32)
-
-Concentram-se em três sítios apertados. Resolvem-se melhor mudando a posição de alguns
-passivos do que com mais tentativas automáticas.
+### Ligações que o encaminhador automático não fez (18)
 
 | Zona | Ligações |
 |---|---|
-| LM5177 (U1) | VIN, SW1, SW2, 5V_PRE, +5V, GND do pad térmico, RT, SLOPE, PG_5V, HO2, LA |
-| LAN8742A (U4) | pares TXP/TXN/RXP/RXN até às resistências de 49,9 Ω, nINTSEL, nRST, CRS_DV, TXD0, TX_EN, MDIO |
-| STM32 (U3) | I2C2, I2C_OE, GPS_TX, RS485_TX e alguns pinos de 3,3 V |
+| LM5177 (U1) | 5V_PRE, HB2, HO1, LA, LO2, SW1, SW2 (pinos de sinal), VIN (2) |
+| LAN8742A (U4) | RXP até R36, MDIO, RXD0, TXD0, TX_EN, NRST |
+| STM32 (U3) | GPS_TX, PWM3, RS485_RX |
 
 ## Bibliotecas do projeto
 
@@ -174,7 +182,7 @@ Atribuição de pinos (confirmada nas funções alternativas do STM32H743):
 | RS232 (USART2) | PD5 TX, PD6 RX |
 | RS485 (USART6) | PC6 TX, PC7 RX, PG8 RTS/DE (emissor controlado pelo periférico) |
 | GPS (UART7) | PE8 TX, PE7 RX; PPS em PA0 = TIM2_CH1 (32 bits) |
-| I2C1 / I2C2 | PB8/PB9 e PF1/PF0 (SCL/SDA) |
+| I2C1 / I2C2 | PB8/PB9 e PB10/PB11 (SCL/SDA) |
 | PWM (TIM1) | PE9, PE11, PE13; falha em PE15 = TIM1_BKIN |
 | Estado | PB0 LED, PF2 PG_5V, PF3 PG_3V3, PG0 OE dos tradutores I2C |
 
