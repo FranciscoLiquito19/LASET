@@ -275,6 +275,8 @@ def criar_placa(comps, redes):
     s.SetLayer(pcbnew.Edge_Cuts)
     s.SetWidth(mm(0.1))
     b.Add(s)
+    # origem dos ficheiros de fabrico no canto inferior esquerdo da placa
+    b.GetDesignSettings().SetAuxOrigin(pt(0, H))
 
     # Redes
     netinfo = {}

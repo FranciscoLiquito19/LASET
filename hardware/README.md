@@ -94,7 +94,11 @@ afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema)
    mais de 3 mm do pino) e dos MOSFET.
 3. Arrumar a serigrafia (referências sobrepostas) e acrescentar o nome de cada conector.
 4. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
-   Gerbers para a JLCPCB.
+   ficheiros de fabrico com `python3 -I gerador/fabrico.py`: escreve em `hardware/fabrico/`
+   (fora do repositório) o zip dos Gerbers e da furação para a JLCPCB e as posições para
+   a montagem (CPL, origem no canto inferior esquerdo). Na montagem da JLCPCB, confirmar a
+   rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
+   sempre usam a mesma orientação de referência.
 
 ## Bibliotecas do projeto
 
