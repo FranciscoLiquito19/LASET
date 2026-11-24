@@ -6,6 +6,7 @@ mantém o esquema legível sem desenhar fios longos.
 """
 import copy
 import os
+import re
 import uuid
 
 from kiutils.items.common import Effects, Font, Justify, PageSettings, Position, Property, TitleBlock
@@ -61,8 +62,23 @@ def pinos(sym):
     return out
 
 
-def _u():
-    return str(uuid.uuid4())
+# UUIDs determinísticos: a mesma folha gerada duas vezes fica igual. O PCB liga cada
+# footprint ao símbolo pelo caminho folha/símbolo; com UUIDs aleatórios essa ligação
+# partia-se em cada regeneração.
+_NS = uuid.UUID('5d0f7c2e-6b1a-4c55-9a43-1a5e7b0c2d11')
+_ctx = {'nome': 'raiz', 'n': 0}
+
+
+def _contexto(nome):
+    _ctx['nome'] = nome
+    _ctx['n'] = 0
+
+
+def _u(chave=None):
+    if chave is None:
+        _ctx['n'] += 1
+        chave = '%s:%d' % (_ctx['nome'], _ctx['n'])
+    return str(uuid.uuid5(_NS, chave))
 
 
 def _fx(size=1.27, hide=False, just=None):
@@ -76,14 +92,16 @@ class Folha:
     def __init__(self, titulo, ficheiro, notas=()):
         self.titulo = titulo
         self.ficheiro = ficheiro
+        _contexto(ficheiro)
         self.sch = Schematic.create_new()
         self.sch.version = '20211123'
         self.sch.generator = 'eeschema'
-        self.sch.uuid = _u()
+        self.sch.uuid = _u('sch:' + ficheiro)
         self.sch.paper = PageSettings(paperSize='A3')
         self.sch.titleBlock = TitleBlock(title=titulo, company='LASET 2026/2027', comments={1: 'Francisco Liquito, Pedro Ribeiro', 2: 'Gerado por hardware/gerador'})
         self.libs = {}
         self.refs = []
+        self.ligacoes = []  # (ref, pino, rede pretendida): verificar.py compara com a netlist
         self.npwr = 0
         y = 20
         for n in notas:
@@ -106,9 +124,11 @@ class Folha:
         s.entryName = sym.entryName
         s.position = Position(x, y, rot)
         s.unit = 1
-        s.inBom = not ref.startswith('#')
+        # Furos de fixação e pontos de teste não se compram: fora da lista de material,
+        # como nos footprints da biblioteca (senão o DRC do KiCad 9 acusa a diferença)
+        s.inBom = not ref.startswith(('#', 'TP')) and not re.match(r'H\d', ref)
         s.onBoard = not ref.startswith('#')
-        s.uuid = _u()
+        s.uuid = _u('sym:%s:%s' % (self.ficheiro, ref))
         base = {p.key: p.value for p in sym.properties}
         fp = footprint or base.get('Footprint', '')
         hide_ref = ref.startswith('#')
@@ -120,7 +140,7 @@ class Folha:
         ]
         for i, (k, v) in enumerate((extra or {}).items()):
             s.properties.append(Property(key=k, value=v, id=4 + i, position=Position(x, y, 0), effects=_fx(hide=True)))
-        s.pins = {p.number: _u() for p in pinos(sym)}
+        s.pins = {p.number: _u('pin:%s:%s:%s' % (self.ficheiro, ref, p.number)) for p in pinos(sym)}
         self.sch.schematicSymbols.append(s)
         self.refs.append((ref, s))
         return s
@@ -177,6 +197,7 @@ class Folha:
                 raise KeyError(f'{ref}: pino {chave} não existe em {lib_id}')
             for p in alvo:
                 self._pino(p, x, y, rede)
+                self.ligacoes.append((ref, p.number, rede))
                 feitos.add(p.number)
         for p in ps:
             if p.number in feitos:
@@ -200,17 +221,18 @@ class Folha:
 
 def raiz(pasta, nome, folhas, titulo):
     """Cria o esquema raiz com uma caixa de folha por cada sub-folha."""
+    _contexto(nome)
     r = Schematic.create_new()
     r.version = '20211123'
     r.generator = 'eeschema'
-    r.uuid = _u()
+    r.uuid = _u('sch:' + nome)
     r.paper = PageSettings(paperSize='A3')
     r.titleBlock = TitleBlock(title=titulo, company='LASET 2026/2027', comments={1: 'Francisco Liquito, Pedro Ribeiro'})
     r.sheetInstances.append(HierarchicalSheetInstance(instancePath='/', page='1'))
     for i, f in enumerate(folhas):
         x = 30 + (i % 4) * 90
         y = 40 + (i // 4) * 60
-        hs = HierarchicalSheet(position=Position(x, y), width=70, height=40, uuid=_u())
+        hs = HierarchicalSheet(position=Position(x, y), width=70, height=40, uuid=_u('folha:' + f.ficheiro))
         hs.sheetName = Property(key='Sheet name', value=f.titulo, id=0, position=Position(x, y - 0.7, 0), effects=_fx(just='left'))
         hs.fileName = Property(key='Sheet file', value=f.ficheiro, id=1, position=Position(x, y + 40.7, 0), effects=_fx(just='left'))
         r.sheets.append(hs)

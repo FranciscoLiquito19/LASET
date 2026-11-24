@@ -4,6 +4,8 @@ Uso (depois de gerar.py):  python3 -I verificar.py
 Precisa do kicad-cli (KiCad 7 ou mais recente) no PATH.
 
 Assinala:
+  - pinos cuja rede na netlist não é a pretendida no gerador (ligacoes.csv): apanha
+    redes fundidas porque dois fios ou etiquetas se tocam no desenho;
   - redes com um só pino (etiqueta mal escrita ou pino esquecido), exceto pinos NC;
   - sinais globais que não saem da folha onde nascem (exceto os da lista LOCAIS_OK).
 Não substitui o ERC do KiCad (Inspecionar > Verificador de regras elétricas),
@@ -38,6 +40,18 @@ def main():
         global_ = not (nome.startswith('/') or nome.startswith('unconnected') or nome.startswith('Net-'))
         if global_ and nome not in ALIM | LOCAIS_OK and len({folha_de.get(r) for r in refs}) < 2:
             erros.append(f'sinal global numa só folha: {nome}')
+    rede_de = {}
+    for b in blocos:
+        nome = re.search(r'\(name "([^"]*)"\)', b).group(1)
+        for r, p in re.findall(r'\(node \(ref "([^"]+)"\) \(pin "([^"]+)"\)', b):
+            rede_de[(r, p)] = nome
+    lig = os.path.join(AQUI, 'ligacoes.csv')
+    if os.path.exists(lig):
+        for linha in open(lig, encoding='utf-8').read().splitlines()[1:]:
+            r, p, pretendida = linha.split(';')
+            real = rede_de.get((r, p))
+            if real != pretendida:
+                erros.append(f'{r}.{p}: pretendida {pretendida}, na netlist {real}')
     print(f'{len(blocos)} redes, {len(folha_de)} componentes')
     for e in erros:
         print('ERRO:', e)

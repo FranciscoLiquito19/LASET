@@ -48,11 +48,25 @@ jobs:
         run: |
           kicad-cli sch erc --format report --severity-error --exit-code-violations \
             -o erc.rpt hardware/laset_gateway.kicad_sch
+      - name: Mostrar o relatório do ERC
+        if: always()
+        run: cat erc.rpt || true
+      - name: DRC da placa e paridade com o esquema
+        if: always()
+        continue-on-error: true
+        run: |
+          kicad-cli pcb drc --schematic-parity --format report -o drc.rpt hardware/laset_gateway.kicad_pcb
+          echo "Violações por tipo (unconnected_items = ligações por encaminhar):"
+          grep -o '^\[[a-z_]*\]' drc.rpt | sort | uniq -c | sort -rn
+          grep -A4 -E '^\[(clearance|courtyards_overlap|shorting_items|hole_clearance|copper_edge_clearance|duplicate_footprints|missing_footprint|extra_footprint|net_conflict|footprint_symbol_mismatch|footprint_filters_mismatch)\]' drc.rpt | head -80 || true
+          tail -8 drc.rpt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: erc
-          path: erc.rpt
+          path: |
+            erc.rpt
+            drc.rpt
 
   firmware:
     runs-on: ubuntu-24.04

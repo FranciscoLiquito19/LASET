@@ -8,6 +8,7 @@
 #include "trama_pc.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 
 #define ISOTP_N_BS_MS  1000     /* tempo máximo à espera de um Flow Control (N_Bs) */
 
@@ -18,6 +19,11 @@ static uint8_t fila_isotp_buf[8 * sizeof(trama_t)], fila_fc_buf[2][sizeof(trama_
 static StaticTask_t isotp_tcb;
 static StackType_t isotp_pilha[768];
 static void tarefa_isotp(void *arg);
+/* Exclusão mútua por controlador: a tarefa de transmissão do CAN FD e a do ISO-TP (Flow
+ * Control) podem enviar ao mesmo FDCAN; sem isto, as duas podiam ver lugar livre na fila
+ * de transmissão e só caber uma trama. */
+static SemaphoreHandle_t mutex_tx[2];
+static StaticSemaphore_t mutex_tx_mem[2];
 
 static const uint8_t COMPRIMENTOS[16] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64 };
 static const uint32_t DLC[16] = {
@@ -91,7 +97,10 @@ int can_autoteste(void)
 void can_arrancar(void)
 {
     fila_isotp = xQueueCreateStatic(8, sizeof(trama_t), fila_isotp_buf, &fila_isotp_q);
-    for (int i = 0; i < 2; i++) fila_fc[i] = xQueueCreateStatic(1, sizeof(trama_t), fila_fc_buf[i], &fila_fc_q[i]);
+    for (int i = 0; i < 2; i++) {
+        fila_fc[i] = xQueueCreateStatic(1, sizeof(trama_t), fila_fc_buf[i], &fila_fc_q[i]);
+        mutex_tx[i] = xSemaphoreCreateMutexStatic(&mutex_tx_mem[i]);
+    }
     xTaskCreateStatic(tarefa_isotp, "isotp", 768, NULL, 4, isotp_pilha, &isotp_tcb);
 #if defined(LASET_CAN_LOOPBACK)
     can_configurar(FDCAN_MODE_INTERNAL_LOOPBACK);   /* NUCLEO sem transceivers */
@@ -145,14 +154,20 @@ static int can_trama(uint8_t canal, uint32_t endereco, const uint8_t *dados, uin
     FDCAN_TxHeaderTypeDef tx;
     if (n > 64) n = 64;
     cabecalho_tx(&tx, endereco, n);
-    /* espera por espaço na fila de transmissão do controlador (até 10 ms) */
-    for (int i = 0; HAL_FDCAN_GetTxFifoFreeLevel(h) == 0; i++) {
-        if (i >= 10) return -1;
-        vTaskDelay(pdMS_TO_TICKS(1));
-    }
     uint8_t d[64] = {0};
     memcpy(d, dados, n);                               /* bytes de enchimento a zero */
-    return HAL_FDCAN_AddMessageToTxFifoQ(h, &tx, d) == HAL_OK ? 0 : -2;
+    /* espera por espaço na fila de transmissão do controlador (até 10 ms), sem segurar
+     * o controlador enquanto espera */
+    for (int i = 0; i <= 10; i++) {
+        if (xSemaphoreTake(mutex_tx[canal ? 1 : 0], pdMS_TO_TICKS(10)) != pdTRUE) return -1;
+        int r = 1;
+        if (HAL_FDCAN_GetTxFifoFreeLevel(h) > 0)
+            r = HAL_FDCAN_AddMessageToTxFifoQ(h, &tx, d) == HAL_OK ? 0 : -2;
+        xSemaphoreGive(mutex_tx[canal ? 1 : 0]);
+        if (r <= 0) return r;
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+    return -1;
 }
 
 int can_enviar(uint8_t canal, const mensagem_t *m)

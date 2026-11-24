@@ -25,6 +25,9 @@ MCU = 'MCU_ST_STM32H7:STM32H743ZITx'
 PINOS = {
     # alimentação
     'VDD': '+3V3', 'VDD33_USB': '+3V3', 'VBAT': '+3V3', 'VSS': 'GND', 'VSSA': 'GND',
+    # PDR_ON a VDD liga o supervisor interno (reset por queda de tensão), como na NUCLEO;
+    # flutuante fica indefinido.
+    'PDR_ON': '+3V3',
     'VDDA': '/VDDA', 'VREF+': '/VDDA', 'VCAP': '/VCAP', 'NRST': 'NRST', 'BOOT0': '/BOOT0',
     'PH0': '/OSC_IN', 'PH1': '/OSC_OUT',
     # Ethernet RMII
@@ -91,4 +94,6 @@ def folha():
     # LED de estado
     f.comp('R21', R, '1k', 330, 130, {1: '/LED', 2: '/LED_A'}, R0603)
     f.comp('D3', 'Device:LED', 'Verde', 345, 130, {2: '/LED_A', 1: 'GND'}, LED0603)
+    # PWR_FLAG: redes alimentadas por ferrite, resistência ou regulador interno (ERC)
+    f.flag('/VDDA', 395, 40)
     return f

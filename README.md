@@ -50,11 +50,13 @@ O Anexo A inclui o esquema elétrico diretamente de `hardware/laset_gateway.pdf`
 - `template_laset/Anexos/`: conteúdo dos anexos.
 - `template_laset/bibliografia.bib`: referências bibliográficas em BibTeX.
 - `template_laset/build/`: PDF oficial versionado e auxiliares de compilação ignorados pelo Git.
-- `hardware/`: projeto KiCad gerado por código (`hardware/gerador`), com a lista de
-  material em `hardware/bom/bom.csv`; ver o [README do hardware](hardware/README.md).
+- `hardware/`: projeto KiCad gerado por código (`hardware/gerador`): esquema, placa de
+  quatro camadas (disposição e planos feitos, encaminhamento de sinais por fazer) e lista
+  de material em `hardware/bom/bom.csv`; ver o [README do hardware](hardware/README.md).
 - `firmware/`: firmware do STM32H7 com FreeRTOS (CMake); ver o [README do firmware](firmware/README.md).
-- `.github/workflows/ci.yml`: compila o relatório, regenera e verifica o esquema e corre o
-  ERC do KiCad, compila o firmware e corre os testes em cada push e pull request.
+- `.github/workflows/ci.yml`: compila o relatório, verifica o esquema, corre o ERC e o DRC
+  do KiCad 9 (com paridade esquema/placa), compila o firmware e corre os testes em cada
+  push e pull request.
 - `.vscode/settings.json`: configuração de compilação do LaTeX Workshop.
 
 As [notas da revisão](docs/revisao_final.md) incluem os resultados de

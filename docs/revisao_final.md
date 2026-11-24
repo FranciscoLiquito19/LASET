@@ -188,3 +188,15 @@ a tabela de verificações corresponde à revisão de 27 de outubro.
   flash e reposta após reinício, tolerante a interrupções durante a escrita (DP15).
 - Passam a existir 18 RF e 8 RNF.
 
+**Atualização de 24 de novembro de 2026**
+
+- Esquema: corrigidas as saídas PWM 2 e 3 (R88 e R89 fundiam redes por etiquetas
+  sobrepostas) e ligado o PDR_ON do STM32 a 3,3 V. O `verificar.py` passa a comparar
+  cada pino com a rede pretendida no gerador. ERC do KiCad 9 com um único erro, aceite
+  (VCAP unidos, como pede a ST).
+- Placa gerada por código (`hardware/gerador/pcb.py` e `fanout.py`): 100 × 100 mm,
+  quatro camadas, disposição por zonas, faixa de isolamento, andar de potência por zonas
+  em cobre e vias aos planos. Falta o encaminhamento dos sinais.
+- Relatório: Secção 5.3 com a descrição da placa e a Figura 5.2.
+- Firmware: exclusão mútua na transmissão de cada FDCAN.
+
