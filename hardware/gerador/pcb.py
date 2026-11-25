@@ -322,6 +322,15 @@ def criar_placa(comps, redes):
             nome_rede = pino_rede.get((ref, pad.GetNumber()))
             if nome_rede:
                 pad.SetNet(netinfo[nome_rede])
+
+        # pads expostos de massa dos circuitos integrados (pad grande SMD e as vias térmicas
+        # com o mesmo número): ligação sólida ao plano, sem alívio térmico (dissipação e
+        # evita o starved_thermal do DRC)
+        ep = {p.GetNumber() for p in fp.Pads() if p.GetNetname() == 'GND' and p.GetAttribute() == pcbnew.PAD_ATTRIB_SMD
+              and min(pcbnew.ToMM(p.GetSize().x), pcbnew.ToMM(p.GetSize().y)) > 2.0}
+        for pad in fp.Pads():
+            if pad.GetNumber() in ep:
+                pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
         fps[ref] = fp
     return b, fps, netinfo
 

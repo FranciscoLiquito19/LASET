@@ -240,8 +240,11 @@ Neste momento estão feitos a disposição dos 205 componentes, as ligações
 de corrente alta do andar de potência, por zonas de cobre na camada de
 cima, as cerca de 200 vias que ligam os pinos de massa e alimentação aos
 planos e um rascunho de encaminhamento automático da maior parte das
-ligações de sinal, sem violações de afastamento no verificador de regras
-do KiCad. Faltam 16 ligações, junto ao LM5177, ao PHY Ethernet e ao STM32. Ficam por fazer
+ligações de sinal e a serigrafia (referências e nome de cada conector), sem
+violações de afastamento nem de serigrafia no verificador de regras do KiCad.
+Faltam 16 ligações, junto ao LM5177, ao PHY Ethernet e ao STM32, que nem o
+Freerouting nem os encaminhadores próprios conseguem fechar sem mudar a
+disposição à volta destes circuitos. Ficam por fazer
 antes do fabrico: encaminhar as restantes ligações de sinal, incluindo o comando
 das portas dos MOSFET, rever à mão o andar de potência e os pares Ethernet, conferir o footprint do LM5177 com o
 desenho do encapsulamento, medir a margem de fase da fonte de 5 V no

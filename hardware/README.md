@@ -60,7 +60,22 @@ python3 pf.py                       # encaminhamento por congestionamento negoci
 python3 encaminhar.py               # completa o que ficou em conflito
 FINO=1 python3 encaminhar.py        # passagem final com pistas de 0,15 mm
 python3 melhorar.py <base>          # pesquisa local (base = placa depois de fanout.py): 18 -> 16
+python3 serigrafia.py               # referências sem sobreposição e nome dos conectores
 ```
+
+O `serigrafia.py` corre uma vez, no fim: põe cada referência (0,8 mm) no sítio livre mais
+perto da peça, sem tocar em pads, noutras linhas nem no bordo, e esconde as que não cabem
+(13 na placa atual, passivos em zonas apertadas). Acrescenta o nome de cada conector
+(VIN, ETH, SWD, RS232, I2C1, I2C2, GPS, CAN1, CAN2, RS485, PWM) e desloca o bloco de texto
+LASET se tocar em alguma peça. Recusa correr numa placa que já tenha os nomes.
+
+Freerouting (testado em 25/11, versão 1.9.0 sem janela e 2.1.0, Java 21): não fecha
+nenhuma das 16. Com as pistas atuais fixas só acrescenta cobre redundante; a refazer todo o
+encaminhamento de sinal (cobre de `pcb.py` e `fanout.py` fixo) volta às mesmas 16; com o
+afastamento da classe HV reduzido a 0,15 mm chega a 14, mas com 13 violações de 0,6 mm
+fora do LM5177, e depois de limpas ficam 19. O `encaminhar.py` com `JANELA=25` e o
+`melhorar.py` com `LIMITE=4000000` também não baixam das 16. O RXP nem tem caminho com
+só o cobre de base: as vias de fanout à volta do LAN8742A fecham a saída.
 
 Variáveis do `pf.py`: `ITERACOES`, `HIST` (custo de histórico por conflito) e `CRESCE`
 (fator de subida do custo de ocupação por iteração). Mover o STM32 2 mm para baixo e
@@ -108,8 +123,9 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático da maior parte das ligações de sinal (`curtas.py` e `encaminhar.py`), DRC sem violações de
-afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema). Falta:
+Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático de 279 das 295 ligações (`pf.py`, `encaminhar.py` e `melhorar.py`), serigrafia arrumada, DRC sem violações de
+afastamento, de courtyard nem de serigrafia (o KiCad 9 da CI confirma a paridade com o esquema). Os pads
+expostos do LM5177 e do LAN8742A ligam ao plano de massa sem alívio térmico. Falta:
 
 1. Encaminhar as 16 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
@@ -118,13 +134,12 @@ afastamento nem de courtyard (o KiCad 9 da CI confirma a paridade com o esquema)
    (C8, C10), a medição de corrente (CSA/CSB em par até ao LM5177) e o VIN do LM5177.
    Depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos, sem vias), o cristal do
    MCU e o resto.
-   Para acelerar, o KiCad exporta a placa para o Freerouting (`Ficheiro > Exportar >
-   Specctra DSN`; correr o Freerouting, que precisa de Java; `Ficheiro > Importar >
-   Specctra Session`). Usar só para os sinais lentos e rever o resultado: não trata
-   pares diferenciais nem a malha de comutação.
+   Os encaminhadores automáticos já não ajudam (ver acima): as 16 pedem mudar à mão a
+   disposição junto ao U1 e ao U4 (afastar R31 e R32 e as vias de fanout dos pinos do
+   LAN8742A; abrir corredor em B.Cu por baixo do andar de potência para o VIN e o 5V_PRE).
 2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
    mais de 3 mm do pino) e dos MOSFET.
-3. Arrumar a serigrafia (referências sobrepostas) e acrescentar o nome de cada conector.
+3. Mostrar à mão, se houver espaço depois do encaminhamento, as 13 referências escondidas.
 4. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
    ficheiros de fabrico com `python3 -I gerador/fabrico.py`: escreve em `hardware/fabrico/`
    (fora do repositório) o zip dos Gerbers e da furação para a JLCPCB e as posições para
