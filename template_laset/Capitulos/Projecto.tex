@@ -157,9 +157,12 @@ sete folhas: alimentação, microcontrolador, Ethernet, CAN FD, RS485 e RS232,
 I2C e GPS, e PWM isolado.
 
 A árvore de alimentação é a seguinte. A entrada de 5 a 60 V passa por um
-fusível rearmável, um TVS e o díodo Schottky de proteção contra inversão.
+fusível de 3 A para 125 V DC, um TVS e o díodo Schottky de proteção contra
+inversão. O limiar de arranque (UVLO) foi calculado com a corrente de histerese
+do LM5177 para a placa arrancar com 5 V à entrada, já descontada a queda do díodo.
 O LM5177 gera o barramento de 5 V para os transceivers CAN FD e o isolador
-dos PWM, com quatro MOSFET BSC160N10NS3 de 100 V, uma bobina de 18~$\mu$H
+dos PWM, com quatro MOSFET BSC070N10LS5 de 100 V e nível lógico (os drivers do LM5177
+funcionam a 5 V), uma bobina de 18~$\mu$H
 e comutação a 400 kHz. A malha de controlo foi compensada para uma largura
 de banda de 4 kHz, abaixo de um terço do zero no semiplano direito do modo
 elevador (14,5 kHz) com 2 A de carga. O TPS62162 gera os 3,3 V para o

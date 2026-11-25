@@ -67,30 +67,35 @@ Y_ISO = (BARREIRA[0] + BARREIRA[1]) / 2
 ANCORAS = {
     # Furos M3 nos cantos
     'H1': ('c', 4, 4, 0), 'H2': ('c', 96, 4, 0), 'H3': ('c', 4, 96, 0), 'H4': ('c', 96, 96, 0),
-    # Alimentação: entrada em cima à esquerda, andar de potência em linha
-    'J1': ('borda', 'cima', 16, 180),
-    'F1': ('c', 28.5, 5.5, 0),
-    'D1': ('c', 39.5, 6.0, 0),
-    'D2': ('c', 50.5, 6.0, 180),
-    # Andar de potência da esquerda para a direita no sentido inverso da corrente:
-    # entrada (D2) -> condensadores de entrada -> perna buck (Q1/Q2) -> R_CS -> L1 ->
-    # perna boost (Q3/Q4) -> condensadores de saída -> R_ISNS -> +5 V.
-    # Q1 e Q3 com a patilha (dreno) virada para os condensadores; Q2 e Q4 com o
-    # dreno virado para o nó de comutação.
-    'C3': ('c', 63.5, 8.0, 0),
-    'C1': ('c', 58.5, 15.0, 90), 'C2': ('c', 62.0, 15.0, 90),
-    'Q1': ('c', 58.5, 21.5, 90), 'Q2': ('c', 58.5, 29.3, 90),
-    'R10': ('c', 51.5, 25.5, 90),
-    'L1': ('c', 40.0, 23.0, 180),
-    'Q3': ('c', 26.5, 16.5, 90), 'Q4': ('c', 26.5, 24.3, 90),
-    'C11': ('c', 21.5, 15.5, 270),
-    'R13': ('c', 17.0, 16.0, 270),
-    'C12': ('c', 12.5, 25.5, 270), 'C13': ('c', 12.5, 20.0, 90),
+    # Alimentação (revista a 25/11 depois da revisão independente): o andar de potência foi
+    # espelhado para cada perna ficar do lado dos seus pinos no LM5177 (fila de cima, da
+    # esquerda para a direita: CS, SW1, HB1, HO1, LO1, VCC, PGND, LO2, HO2, HB2, SW2, ISNS, VOUT).
+    # Perna buck (Q1/Q2) à esquerda, perna boost (Q3/Q4) à direita; a entrada passou para cima
+    # ao centro-direita e corre da direita para a esquerda: J1 -> F1 -> D1 -> D2 -> C1-C3 -> Q1.
+    'J1': ('borda', 'cima', 64, 180),
+    'F1': ('c', 51.0, 5.5, 180),
+    'D1': ('c', 40.5, 6.0, 180),
+    'D2': ('c', 29.5, 6.0, 0),
+    'C3': ('c', 16.5, 8.0, 180),
+    'C1': ('c', 21.5, 15.0, 90), 'C2': ('c', 18.0, 15.0, 90),
+    'C108': ('c', 25.6, 15.0, 90),
+    'Q1': ('c', 21.5, 21.5, 90), 'Q2': ('c', 21.5, 29.3, 90),
+    'R10': ('c', 28.5, 25.5, 90),
+    'L1': ('c', 40.0, 23.0, 0),
+    'Q3': ('c', 53.5, 16.5, 90), 'Q4': ('c', 53.5, 24.3, 90),
+    'C11': ('c', 58.0, 14.5, 270), 'C109': ('c', 60.4, 14.5, 270), 'C110': ('c', 62.8, 14.5, 270),
+    'R13': ('c', 66.0, 16.0, 270),
+    'C12': ('c', 69.5, 25.5, 270), 'C13': ('c', 69.5, 20.0, 90),
     'U1': ('c', 40.0, 35.0, 90),
-    'TP1': ('c', 54.5, 11.5, 0),
+    # junto aos pinos: bootstrap (C8 em HB1/SW1, C10 em HB2/SW2), VCC (C7 em VCC/PGND da fila de
+    # baixo) e o condensador local do pino VIN (C107)
+    'C8': ('c', 32.9, 30.6, 0), 'C10': ('c', 47.0, 30.6, 0),
+    'C7': ('c', 40.6, 40.7, 180), 'C107': ('c', 35.9, 40.4, 0),
+    'TP1': ('c', 25.4, 11.0, 0),
     # 3,3 V
     # L2 à direita do TPS62162, do lado do pino SW
-    'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 16.5, 31.5, 0), 'U2': ('c', 10.0, 31.0, 0),
+    # (U2 e L2 subiram para a esquerda para deixar a perna buck junto ao LM5177)
+    'C14': ('c', 5.5, 15.5, 90), 'L2': ('c', 7.5, 32.0, 0), 'U2': ('c', 12.5, 26.0, 0),
     # Microcontrolador
     'U3': ('c', 46.0, 55.5, 0),
     'Y1': ('c', 31.5, 52.5, 90),
@@ -120,19 +125,25 @@ def _r(x0, y0, x1, y1):
 
 
 POTENCIA = [
-    ('/Alimentação/VIN_RAW', _r(16.8, 2.0, 27.3, 7.6)),
+    ('/Alimentação/VIN_RAW', _r(52.7, 2.0, 68.2, 7.6)),
     # em U à volta do pad de massa do TVS (D1)
-    ('/Alimentação/VIN_F', [(29.7, 3.0), (38.0, 3.0), (38.0, 8.4), (45.4, 8.4), (45.4, 3.0),
-                            (48.7, 3.0), (48.7, 10.5), (29.7, 10.5)]),
-    ('VIN', _r(52.3, 4.0, 63.7, 23.0)),
-    ('/Alimentação/SW1', _r(49.4, 23.6, 60.0, 30.9)),
-    ('/Alimentação/LA', _r(43.6, 20.1, 53.6, 24.0)),
-    # bolsa à volta da porta de Q3 (HO2), para a pista de comando sair por cima
-    ('/Alimentação/SW2', [(24.0, 18.6), (27.8, 18.6), (27.8, 20.4), (29.5, 20.4), (29.5, 18.6),
-                          (36.4, 18.6), (36.4, 26.0), (24.0, 26.0)]),
-    ('/Alimentação/5V_PRE', _r(14.8, 11.9, 29.2, 16.0)),
-    ('+5V', [(4.0, 16.9), (19.2, 16.9), (19.2, 25.8), (9.5, 25.8), (9.5, 21.9), (4.0, 21.9)]),
+    ('/Alimentação/VIN_F', [(50.3, 3.0), (42.0, 3.0), (42.0, 8.4), (34.6, 8.4), (34.6, 3.0),
+                            (31.3, 3.0), (31.3, 10.5), (50.3, 10.5)]),
+    ('VIN', [(13.0, 4.0), (27.7, 4.0), (27.7, 19.5), (25.8, 19.5), (25.8, 23.0), (13.0, 23.0)]),
+    # SW1: fontes de Q1, dreno de Q2 e R10; bolsa à volta da porta de Q1 (HO1), que fica do
+    # lado de dentro, para a pista de comando sair por uma via
+    ('/Alimentação/SW1', [(18.7, 23.6), (22.7, 23.6), (22.7, 25.2), (24.3, 25.2), (24.3, 23.6),
+                          (30.6, 23.6), (30.6, 30.4), (18.7, 30.4)]),
+    ('/Alimentação/LA', _r(26.4, 20.1, 36.4, 24.0)),
+    # SW2: fontes de Q3, dreno de Q4 e L1; bolsa à volta da porta de Q3 (HO2)
+    ('/Alimentação/SW2', [(43.6, 18.6), (54.7, 18.6), (54.7, 20.4), (56.4, 20.4), (56.4, 26.0),
+                          (43.6, 26.0)]),
+    ('/Alimentação/5V_PRE', _r(50.8, 11.6, 67.6, 16.0)),
+    ('+5V', _r(64.4, 17.2, 70.8, 26.5)),
 ]
+
+# Área à volta do LM5177 onde a classe HV usa 0,15 mm (sob máscara de solda; IPC-2221B B4)
+LM5177_AREA = (30.0, 26.0, 50.0, 42.0)
 
 # Áreas onde as peças automáticas não entram: canais de saída dos pinos de passo fino
 RESERVA = [
@@ -166,6 +177,19 @@ def netlist():
         nome = re.search(r'\(name "([^"]*)"\)', b).group(1)
         redes[nome] = re.findall(r'\(node \(ref "([^"]+)"\) \(pin "([^"]+)"\)', b)
     return comps, redes
+
+
+def posicoes_esquema():
+    """Posição (x, y) de cada símbolo na sua folha do esquema, por referência."""
+    out = {}
+    for nome in os.listdir(HW):
+        if not nome.endswith('.kicad_sch') or nome == os.path.basename(SCH):
+            continue
+        t = open(os.path.join(HW, nome), encoding='utf-8').read()
+        for m in re.finditer(r'\(symbol \(lib_id "[^"]+"\) \(at ([-\d.]+) ([-\d.]+)[^)]*\).*?\(property "Reference" "([^"]+)"',
+                             t, re.S):
+            out[m.group(3)] = (float(m.group(1)), float(m.group(2)))
+    return out
 
 
 def curto(nome):
@@ -383,6 +407,24 @@ def dispor(b, fps, comps, redes):
         p = pad.GetPosition()
         return pcbnew.ToMM(p.x) - OX, pcbnew.ToMM(p.y) - OY
 
+    # Cada condensador de desacoplamento pertence ao circuito integrado que está mais perto
+    # dele no esquema (o gerador desenha-os junto ao seu CI), e não só à rede: assim os de
+    # U5 não vão parar aos pinos de U6 nem os do ADM3057E aos de outro CI com a mesma rede.
+    pos_esq = posicoes_esquema()
+
+    def pinos_do_ci(ref):
+        rs = redes_de.get(ref, set())
+        cand = [p for p in pinos_alim if p[1] in rs and comps[p[0]]['folha'] == comps[ref]['folha']] or \
+               [p for p in pinos_alim if p[1] in rs]
+        if not cand:
+            return []
+        if ref in pos_esq:
+            cx_, cy_ = pos_esq[ref]
+            ci = min({p[0] for p in cand}, key=lambda u: (pos_esq.get(u, (1e9, 1e9))[0] - cx_) ** 2
+                     + (pos_esq.get(u, (1e9, 1e9))[1] - cy_) ** 2)
+            cand = [p for p in cand if p[0] == ci]
+        return cand
+
     def alvos(ref):
         """Pinos já colocados a que esta peça liga por redes de sinal."""
         out = []
@@ -400,7 +442,15 @@ def dispor(b, fps, comps, redes):
     pendentes = [r for r in fps if r not in colocados]
     while pendentes:
         # próxima peça: a que tem mais ligações a peças já colocadas
-        pendentes.sort(key=lambda r: (-len(alvos(r)), r))
+        # os condensadores de desacoplamento vão primeiro, mal o seu CI esteja colocado, para
+        # ficarem junto ao pino antes de os outros passivos ocuparem o espaço
+        def prioridade(r):
+            if r.startswith('C') and not alvos(r):
+                ps = pinos_do_ci(r)
+                if ps and ps[0][0] in colocados:
+                    return (-1000, r)
+            return (-len(alvos(r)), r)
+        pendentes.sort(key=prioridade)
         ref = pendentes.pop(0)
         fp = fps[ref]
         dom = dominio_de(ref, comps, redes_de) or 'logico'
@@ -408,9 +458,7 @@ def dispor(b, fps, comps, redes):
         alv = alvos(ref)
         if not alv:
             # desacoplamento: pino de alimentação mais perto que ainda tenha menos condensadores
-            rs = redes_de.get(ref, set())
-            cand = [p for p in pinos_alim if p[1] in rs and comps[p[0]]['folha'] == comps[ref]['folha']] or \
-                   [p for p in pinos_alim if p[1] in rs]
+            cand = [p for p in pinos_do_ci(ref) if p[0] in colocados]
             if cand:
                 cand.sort(key=lambda p: p[3])
                 p = cand[0]
@@ -490,7 +538,25 @@ def proibida(b, x0, y0, x1, y1, nome):
     b.Add(z)
 
 
+def area_lm5177(b):
+    """Área de regra sem restrições, só com nome, à volta do LM5177 e dos seus passivos:
+    lá dentro a classe HV usa 0,15 mm (.kicad_dru), sob máscara de solda."""
+    z = pcbnew.ZONE(b)
+    z.SetIsRuleArea(True)
+    z.SetZoneName('lm5177')
+    ls = pcbnew.LSET()
+    for l in (pcbnew.F_Cu, pcbnew.In1_Cu, pcbnew.In2_Cu, pcbnew.B_Cu):
+        ls.AddLayer(l)
+    z.SetLayerSet(ls)
+    for f in (z.SetDoNotAllowTracks, z.SetDoNotAllowVias, z.SetDoNotAllowCopperPour, z.SetDoNotAllowPads,
+              z.SetDoNotAllowFootprints):
+        f(False)
+    retangulo(z, *LM5177_AREA)
+    b.Add(z)
+
+
 def zonas(b, netinfo):
+    area_lm5177(b)
     m = 0.5
     # Faixa de isolamento e intervalos entre domínios isolados
     proibida(b, 0, BARREIRA[0], W, BARREIRA[1], 'isolamento')
@@ -501,7 +567,8 @@ def zonas(b, netinfo):
     zona(b, pcbnew.In1_Cu, netinfo['GND'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+3V3'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 63.5, W - m, BARREIRA[0], 1)
-    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 48.0, 41.5, 1)   # fonte e LM5177
+    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 71.0, 31.0, 1)   # fonte, LM5177 e saída de 5 V
+    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 31.0, 48.0, 41.5, 1)
     # Andar de potência em F.Cu
     for rede, pol in POTENCIA:
         z = zona(b, pcbnew.F_Cu, netinfo[rede], 0, 0, 1, 1, 3, solida=True)
@@ -554,12 +621,18 @@ def projeto():
 
 # Regras próprias. A classe HV pede 0,6 mm (IPC-2221B, 60 V, cobre exterior sem verniz),
 # mas os pinos do LM5177 (passo de 0,5 mm) e dos MOSFET não o permitem: dentro desses
-# footprints vale o afastamento do fabricante do circuito integrado.
+# footprints vale o afastamento do fabricante do circuito integrado. O mesmo nos passivos
+# pequenos ligados aos pinos do LM5177 (bootstrap C8/C10, filtro de corrente R11/R12/C9, C107
+# e R1 no VIN): sob máscara de solda, 0,13 mm chegam até 100 V (IPC-2221B, B4).
 DRU = '''(version 1)
 
 (rule "HV dentro dos componentes de potência"
   (constraint clearance (min 0.15mm))
-  (condition "A.NetClass == 'HV' && (A.intersectsCourtyard('U1') || A.intersectsCourtyard('Q1') || A.intersectsCourtyard('Q2') || A.intersectsCourtyard('Q3') || A.intersectsCourtyard('Q4') || A.intersectsCourtyard('D1') || A.intersectsCourtyard('D2') || A.intersectsCourtyard('F1') || A.intersectsCourtyard('J1'))"))
+  (condition "A.NetClass == 'HV' && (A.intersectsCourtyard('U1') || A.intersectsCourtyard('Q1') || A.intersectsCourtyard('Q2') || A.intersectsCourtyard('Q3') || A.intersectsCourtyard('Q4') || A.intersectsCourtyard('D1') || A.intersectsCourtyard('D2') || A.intersectsCourtyard('F1') || A.intersectsCourtyard('J1') || A.intersectsCourtyard('C8') || A.intersectsCourtyard('C10') || A.intersectsCourtyard('C107') || A.intersectsCourtyard('C9') || A.intersectsCourtyard('R11') || A.intersectsCourtyard('R12') || A.intersectsCourtyard('R1'))"))
+
+(rule "HV junto ao LM5177"
+  (constraint clearance (min 0.15mm))
+  (condition "A.NetClass == 'HV' && A.insideArea('lm5177')"))
 
 (rule "Faixa de isolamento"
   (constraint clearance (min 0.2mm))

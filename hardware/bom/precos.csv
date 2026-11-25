@@ -9,7 +9,7 @@ TCA9406DCUR;Texas Instruments;TCA9406DCUR;0.83;DigiKey (24/11/2026);consultado
 LM5177;Texas Instruments;LM5177DCPR;6.45;Capítulo Projecto (nov. 2026);consultado
 TPS62162;Texas Instruments;TPS62162DSGR;1.35;Capítulo Projecto (nov. 2026);consultado
 74AHCT1G125;Texas Instruments;SN74AHCT1G125DBVR;0.12;DigiKey (EUR, 1 un., 23/11/2026);consultado
-BSC160N10NS3 G;Infineon;BSC160N10NS3GATMA1;1.50;DigiKey (EUR, 1 un., 23/11/2026);consultado
+BSC070N10LS5;Infineon;BSC070N10LS5ATMA1;1.60;—;estimativa
 SRP1245A-180M;Bourns;SRP1245A-180M;1.25;DigiKey (EUR, 1 un., 23/11/2026);consultado
 SMCJ60CA;Littelfuse;SMCJ60CA;0.45;DigiKey (EUR, 1 un., 23/11/2026);consultado
 MB510;Panjit;MB510_R1_00001;0.51;DigiKey (EUR, 1 un., 23/11/2026);consultado
@@ -20,7 +20,7 @@ ESDA6V1-5SC6;STMicroelectronics;ESDA6V1-5SC6;0.25;DigiKey (EUR, 1 un., 23/11/202
 HR911105A;HanRun;HR911105A;1.15;LCSC (1,24 USD, 1 un., 23/11/2026, conversão aproximada);consultado
 25 MHz;CTS;425F22A025M0000 (C_L 10 pF);0.65;DigiKey (0,70 USD, 1 un., 23/11/2026, conversão aproximada);consultado
 SRN6045TA;Bourns;SRN6045TA-2R2M;0.40;—;estimativa
-Polyfuse 1812;Bourns;MF-MSMF300-2;0.40;—;estimativa
+Fusível 0451003.MRL;Littelfuse;0451003.MRL (3 A, 125 V DC);1.20;—;estimativa
 R 0603;Yageo;série RC0603 1 %;0.02;—;estimativa
 R 1206;Yageo;série RC1206;0.03;—;estimativa
 R 2512 shunt;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0.60;—;estimativa

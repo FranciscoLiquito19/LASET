@@ -24,6 +24,8 @@ def folha():
         'GND1': 'GND', 'VCC': '+3V3', 'RxD': 'RS485_RX', 5: 'GND', 'DE': 'RS485_DE', 'TxD': 'RS485_TX',
         11: gi, 14: gi, 16: g, 20: g, 'Visoout': '/VISO_485', 'Visoin': '/VISO_485',
         'Y': '/RS485_A', 'A': '/RS485_A', 'Z': '/RS485_B', 'B': '/RS485_B'})
+    # DE a 0 durante o reset do MCU (pino em alta impedância): o emissor não ocupa o barramento
+    f.comp('R95', R, '10k', 40, 250, {1: 'RS485_DE', 2: 'GND'}, R0603)
     desacoplamento(f, ['C80', 'C81'], ['10 uF', '100 nF'], '+3V3', 'GND', 40, 50)
     desacoplamento(f, ['C82', 'C83'], ['10 uF', '100 nF'], '/VISO_485', gi, 40, 90)
     desacoplamento(f, ['C84', 'C85'], ['100 nF', '10 nF'], '/VISO_485', g, 70, 90)

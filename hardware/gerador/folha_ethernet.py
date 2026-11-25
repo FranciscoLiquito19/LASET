@@ -22,7 +22,7 @@ def folha():
         5: '/XI', 4: '/XO', 24: '/RBIAS',
         2: '/NINTSEL', 3: '/REGOFF',
         7: 'ETH_RXD1', 8: 'ETH_RXD0', 11: 'ETH_CRS_DV', 12: 'ETH_MDIO', 13: 'ETH_MDC',
-        14: 'ETH_REF_CLK', 15: 'NRST', 16: 'ETH_TX_EN', 17: 'ETH_TXD0', 18: 'ETH_TXD1',
+        14: '/REF_CLK_PHY', 15: 'NRST', 16: 'ETH_TX_EN', 17: 'ETH_TXD0', 18: 'ETH_TXD1',
         21: '/TXP', 20: '/TXN', 23: '/RXP', 22: '/RXN'}, nc=(10,))
 
     desacoplamento(f, ['C40', 'C41', 'C42', 'C43'], ['100 nF', '100 nF', '100 nF', '4,7 uF'], '+3V3', 'GND', 40, 50)
@@ -32,6 +32,8 @@ def folha():
     f.comp('R31', R, '10k', 52, 110, {1: '/NINTSEL', 2: 'GND'}, R0603)
     f.comp('R32', R, '10k', 64, 110, {1: '/REGOFF', 2: 'GND'}, R0603)
     f.comp('R33', R, '1,5k', 76, 110, {1: '+3V3', 2: 'ETH_MDIO'}, R0603)
+    # série no relógio de 50 MHz, junto ao PHY (amortece reflexões)
+    f.comp('R94', R, '33', 110, 250, {1: '/REF_CLK_PHY', 2: 'ETH_REF_CLK'}, R0603)
 
     f.comp('Y2', 'Device:Crystal_GND24', '25 MHz (C_L 10 pF)', 60, 160, {1: '/XI', 3: '/XO', 2: 'GND', 4: 'GND'}, XTAL3225)
     f.comp('C46', C, '15 pF', 40, 180, {1: '/XI', 2: 'GND'}, C0603)

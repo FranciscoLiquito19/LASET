@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LASET gateway 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: an inspection view of a board before it goes to fab
+   IDEA the PCB lying on an ESD bench mat under a lamp, turned over in the hand
+   PICTURE the 3D board itself, full screen, both faces real (mask, copper, pads, silk) with parts on top
+   COLOUR bench slate #1b2127 / light grey #e6e9ec, solder-mask green from the board, gold accent for selection
+   TYPE Space Grotesk 600 for the title, Inter for labels
+   LAYOUT canvas fills the window; title and view buttons float top-left, part details bottom-left; phone: buttons wrap under the title */
+:root{color-scheme:light dark;--bg:light-dark(#e6e9ec,#1b2127);--ink:light-dark(#14191e,#eef1f3);--mute:light-dark(#4d5863,#a9b3bc);--panel:light-dark(rgba(255,255,255,.86),rgba(20,25,30,.82));--edge:light-dark(#c9cfd5,#33404b);--acc:#d6a740;--btn:light-dark(#ffffff,#26303a)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;overflow:hidden}
+#cena{position:fixed;inset:0;display:block;width:100%;height:100%;touch-action:none}
+.topo{position:fixed;left:16px;top:14px;right:16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;pointer-events:none}
+h1{font:600 clamp(22px,3vw,32px)/1.05 "Space Grotesk",Inter,sans-serif;letter-spacing:-.02em;margin:0;pointer-events:auto}
+.sub{color:var(--mute);font-size:13px;margin-top:4px}
+.vistas{display:flex;flex-wrap:wrap;gap:6px;pointer-events:auto}
+button{font:500 14px Inter,sans-serif;color:var(--ink);background:var(--btn);border:1px solid var(--edge);border-radius:8px;min-height:40px;padding:0 14px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#1b1407}
+.info{position:fixed;left:16px;bottom:16px;max-width:min(380px,calc(100% - 32px));background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:12px 14px;backdrop-filter:blur(6px)}
+.info b{font:600 18px "Space Grotesk",Inter,sans-serif}
+.info .v{color:var(--mute);font-size:13px;overflow-wrap:anywhere}
+.leg{position:fixed;right:16px;bottom:16px;background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;font-size:13px;display:grid;gap:4px}
+.leg span{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.leg i{width:14px;height:14px;border-radius:3px;display:inline-block}
+#carga{position:fixed;inset:0;display:grid;place-items:center;color:var(--mute);font-size:14px}
+@media(max-width:600px){.leg{display:none}.info{bottom:12px;left:12px}}
+</style>
+</head>
+<body>
+<canvas id="cena" aria-label="Placa LASET em 3D"></canvas>
+<div id="carga">A carregar a placa…</div>
+<div class="topo">
+  <div><h1>LASET gateway em 3D</h1><div class="sub">100 × 100 mm, 4 camadas, 1,6 mm · arrastar para rodar, roda ou dois dedos para aproximar</div></div>
+  <div class="vistas" role="group" aria-label="Vista">
+    <button id="v-ang" aria-pressed="true">Perspetiva</button>
+    <button id="v-cima" aria-pressed="false">Face de cima</button>
+    <button id="v-baixo" aria-pressed="false">Face de baixo</button>
+    <button id="v-pecas" aria-pressed="true">Componentes</button>
+  </div>
+</div>
+<div class="info" id="info"><b>Toque ou passe o cursor sobre uma peça</b><div class="v">Referência, valor e encapsulamento aparecem aqui.</div></div>
+<div class="leg" aria-label="Legenda">
+  <span><i style="background:#165434"></i>Máscara de solda</span>
+  <span><i style="background:#307a4a"></i>Cobre sob a máscara</span>
+  <span><i style="background:#d6af60"></i>Pads expostos</span>
+  <span><i style="background:#f5f5f0;border:1px solid #999"></i>Serigrafia</span>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+{
+const cv = document.getElementById('cena');
+const info = document.getElementById('info');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fundo = () => getComputedStyle(document.body).backgroundColor;
+
+const ren = new THREE.WebGLRenderer({canvas: cv, antialias: true});
+ren.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+ren.outputEncoding = THREE.sRGBEncoding;
+const cena = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(35, 1, 1, 2000);
+const ctl = new THREE.OrbitControls(cam, cv);
+ctl.enableDamping = true; ctl.dampingFactor = 0.09; ctl.minDistance = 40; ctl.maxDistance = 600;
+
+cena.add(new THREE.HemisphereLight(0xffffff, 0x3a4048, 0.75));
+const sol = new THREE.DirectionalLight(0xffffff, 0.75); sol.position.set(-60, 140, 90); cena.add(sol);
+const contra = new THREE.DirectionalLight(0xffffff, 0.35); contra.position.set(70, -120, -60); cena.add(contra);
+
+const T = 1.6, meio = T / 2;
+const placa = new THREE.Group(); cena.add(placa);
+const carregar = new THREE.TextureLoader();
+function face(url, emBaixo) {
+  const tx = carregar.load(url, () => ren.render(cena, cam));
+  tx.encoding = THREE.sRGBEncoding; tx.anisotropy = ren.capabilities.getMaxAnisotropy();
+  const g = new THREE.PlaneGeometry(100, 100);
+  if (emBaixo) { tx.flipY = false; g.rotateX(Math.PI / 2); } else g.rotateX(-Math.PI / 2);
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({map: tx, roughness: 0.55, metalness: 0.05}));
+  m.position.y = emBaixo ? -meio - 0.01 : meio + 0.01;
+  placa.add(m);
+}
+face('top.jpg', false); face('bottom.jpg', true);
+const nucleo = new THREE.Mesh(new THREE.BoxGeometry(100, T, 100), new THREE.MeshStandardMaterial({color: 0x8c7d4e, roughness: 0.8}));
+placa.add(nucleo);
+
+const pecas = new THREE.Group(); placa.add(pecas);
+const alvo = [];
+const mat = {};
+const material = c => mat[c] || (mat[c] = new THREE.MeshStandardMaterial({color: c, roughness: 0.6, metalness: c === '#c9ccd1' || c === '#b9bdc2' || c === '#a9adb3' || c === '#cfd3d8' ? 0.6 : 0.1}));
+const ouro = new THREE.MeshStandardMaterial({color: 0xd9b25f, roughness: 0.35, metalness: 0.8});
+const solda = new THREE.MeshStandardMaterial({color: 0xbfc3c7, roughness: 0.3, metalness: 0.9});
+
+function montar(lista) {
+  const pinoG = new THREE.CylinderGeometry(0.5, 0.75, 1.4, 10);
+  const pinoH = new THREE.BoxGeometry(0.64, 8.5, 0.64);
+  for (const p of lista) {
+    const w = Math.max(0.4, p.x1 - p.x0), d = Math.max(0.4, p.y1 - p.y0);
+    const cx = (p.x0 + p.x1) / 2 - 50, cz = (p.y0 + p.y1) / 2 - 50;
+    let m;
+    if (p.k === 'cyl') {
+      m = new THREE.Mesh(new THREE.CylinderGeometry(p.d / 2, p.d / 2, p.h, 32), material(p.c));
+      const tampa = new THREE.Mesh(new THREE.CylinderGeometry(p.d / 2 * 0.98, p.d / 2 * 0.98, 0.05, 32), material(p.top));
+      tampa.position.y = p.h / 2 + 0.03; m.add(tampa);
+    } else {
+      m = new THREE.Mesh(new THREE.BoxGeometry(w, p.h, d), material(p.c));
+    }
+    m.position.set(cx, meio + p.h / 2, cz);
+    m.userData = p;
+    pecas.add(m); alvo.push(m);
+    for (const [x, y] of p.p) {
+      const s = new THREE.Mesh(pinoG, solda); s.position.set(x - 50, -meio - 0.7, y - 50); pecas.add(s);
+      if (p.k === 'hdr') { const h = new THREE.Mesh(pinoH, ouro); h.position.set(x - 50, meio + 4.25, y - 50); pecas.add(h); }
+    }
+  }
+}
+
+const vistas = {
+  'v-ang': [-95, 120, 150], 'v-cima': [0, 230, 0.01], 'v-baixo': [0, -230, 0.01]
+};
+function ver(id) {
+  const [x, y, z] = vistas[id];
+  cam.position.set(x, y, z); cam.up.set(0, 1, 0);
+  if (id !== 'v-ang') cam.up.set(0, 0, id === 'v-cima' ? -1 : -1);
+  ctl.target.set(0, 0, 0); ctl.update();
+  for (const k of Object.keys(vistas)) document.getElementById(k).setAttribute('aria-pressed', String(k === id));
+}
+for (const k of Object.keys(vistas)) document.getElementById(k).addEventListener('click', () => ver(k));
+const bp = document.getElementById('v-pecas');
+bp.addEventListener('click', () => { pecas.visible = !pecas.visible; bp.setAttribute('aria-pressed', String(pecas.visible)); });
+
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let marcado = null;
+const realce = new THREE.MeshStandardMaterial({color: 0xd6a740, emissive: 0x5a3d00, roughness: 0.4});
+function apontar(ev) {
+  const r = cv.getBoundingClientRect();
+  ptr.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ptr, cam);
+  const hit = pecas.visible ? ray.intersectObjects(alvo, false)[0] : null;
+  const m = hit ? hit.object : null;
+  if (m === marcado) return;
+  if (marcado) marcado.material = marcado.userData._mat;
+  marcado = m;
+  if (m) {
+    m.userData._mat = m.userData._mat || m.material; m.material = realce;
+    const p = m.userData;
+    info.innerHTML = `<b>${esc(p.r)}</b><div>${esc(p.v)}</div><div class="v">${esc(p.f)} · ${(p.x1 - p.x0).toFixed(1)} × ${(p.y1 - p.y0).toFixed(1)} × ${p.h} mm</div>`;
+  }
+}
+cv.addEventListener('pointermove', apontar);
+cv.addEventListener('pointerdown', apontar);
+
+function medir() {
+  const w = window.innerWidth, h = window.innerHeight;
+  ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+  ren.setClearColor(new THREE.Color(fundo()));
+}
+const ro = new ResizeObserver(medir); ro.observe(document.body);
+new MutationObserver(medir).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', medir);
+
+fetch('parts.json').then(r => r.json()).then(l => {
+  montar(l);
+  document.getElementById('carga').remove();
+}).catch(() => { document.getElementById('carga').textContent = 'Não foi possível carregar a lista de componentes.'; });
+
+medir(); ver('v-ang');
+const parado = matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function anim() { requestAnimationFrame(anim); ctl.update(); ren.render(cena, cam); })();
+}
+</script>
+</body>
+</html>

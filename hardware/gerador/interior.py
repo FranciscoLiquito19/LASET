@@ -57,16 +57,50 @@ _src2 = _src2.replace("rv = int(round((VIA_D / 2 - LARG['Default'] / 2) / RES))"
 assert 'RELAXA[0][j0' in _src2 and 'RV[0]' in _src2
 exec(_src2, E.__dict__)
 E.RELAXA = RELAXA
+
+# Área do LM5177 (pcb.LM5177_AREA): lá dentro a classe HV usa 0,15 mm (.kicad_dru), por isso
+# os obstáculos HV e a própria rede HV usam esse afastamento na grelha
+from pcb import LM5177_AREA  # noqa: E402
+
+
+def _na_area(x, y):
+    x0, y0, x1, y1 = LM5177_AREA
+    return x0 <= x <= x1 and y0 <= y <= y1
+
+
+def _afast_t(t):
+    a = E.AFAST.get(t.GetNetClassName(), 0.15)
+    if t.GetNetClassName() == 'HV':
+        pts = [E.loc(t.GetPosition())] if t.GetClass() == 'PCB_VIA' else [E.loc(t.GetStart()), E.loc(t.GetEnd())]
+        if all(_na_area(*q) for q in pts):
+            return 0.15
+    return a
+
+
+def _afast_p(p, ref=None):
+    if p.GetNetClassName() == 'HV' and _na_area(*E.loc(p.GetPosition())):
+        return 0.15
+    return E.afast(p, ref)
+
+
+E.afast_t, E.afast_p = _afast_t, _afast_p
+_src3 = inspect.getsource(E.carregar).replace('def carregar(', 'def carregar_lm(').replace(
+    'AFAST.get(t.GetNetClassName(), 0.15)', 'afast_t(t)').replace('afast(p, f.GetReference())', 'afast_p(p, f.GetReference())')
+assert 'afast_t(t)' in _src3 and 'afast_p(p' in _src3
+exec(_src3, E.__dict__)
+_RES = E.RES
+MASCARA_LM = np.zeros((E.NY, E.NX), bool)
+MASCARA_LM[int(LM5177_AREA[1] / _RES):int(LM5177_AREA[3] / _RES), int(LM5177_AREA[0] / _RES):int(LM5177_AREA[2] / _RES)] = True
 # vias de saída mais pequenas (VIA=0.5): 0,5/0,25 mm, dentro das regras do projeto
 if os.environ.get('VIA'):
-    E.VIA_D, E.VIA_F = float(os.environ['VIA']), 0.25
+    E.VIA_D, E.VIA_F = float(os.environ['VIA']), 0.2      # anel de 0,15 mm (JLCPCB pede 0,13)
 E.RV = [1 if E.VIA_D <= 0.5 else 2]
 E.LIMITE[0] = int(os.environ.get('LIMITE', 3000000))
 
 
 def grelha(b, k, ignorar=None):
     """Grelha de duas camadas: 0 = F.Cu (como no encaminhar.py), 1 = In2."""
-    g = E.carregar(b, ignorar=ignorar)
+    g = E.carregar_lm(b, ignorar=ignorar)
     gi = E.Grelha()
     for f in b.GetFootprints():
         for p in f.Pads():
@@ -109,7 +143,8 @@ def grelha(b, k, ignorar=None):
                 rr = int(math.ceil((max(pcbnew.ToMM(p.GetSize().x), pcbnew.ToMM(p.GetSize().y)) / 2 + 0.5) / E.RES))
                 j, i = int(y / E.RES), int(x / E.RES)
                 furos[max(0, j - rr):j + rr + 1, max(0, i - rr):i + rr + 1] = True
-    sem_via = ndimage.binary_dilation(furos, structure=est, iterations=int((0.8 if E.VIA_D > 0.5 else 0.7) / E.RES))
+    # 0,8 mm entre centros: com furos de 0,2 a 0,3 mm ficam pelo menos 0,5 mm entre furos (JLCPCB)
+    sem_via = ndimage.binary_dilation(furos, structure=est, iterations=int(0.8 / E.RES))
     g3 = E.Grelha()
     g3.dono = [g.dono[0], gi.dono[0]]
     g3.nucleo = [g.nucleo[0], gi.nucleo[0]]
@@ -148,11 +183,22 @@ def cobre_perto(g, k, ponto, r=2.5):
     return out
 
 
+# Redes que não podem ir para In2: nós de comutação e potência (classes HV e P5V), pares
+# Ethernet (classe ETH) e o relógio de 50 MHz do RMII (revisão independente de 25/11)
+SEM_IN2_CLASSES = {'HV', 'P5V', 'ETH'}
+
+
+def pode_in2(net):
+    return net.GetNetClassName() not in SEM_IN2_CLASSES and 'REF_CLK' not in net.GetNetname()
+
+
 def rotear(b, rede, a, c):
     """Encaminha uma ligação em F.Cu + In2; devolve o número de vias ou None."""
     net = b.FindNet(rede)
     k = net.GetNetCode()
-    g = grelha(b, k)
+    so_fb = not pode_in2(net)
+    # redes que não podem ir para In2: mesma procura em F.Cu e B.Cu
+    g = E.carregar_lm(b) if so_fb else grelha(b, k)
     if a[2] == 'Zone':
         a, c = c, a
     orig, pa = E.celulas_item(b, g, k, a)
@@ -167,13 +213,16 @@ def rotear(b, rede, a, c):
     for _, j, i in orig + dest:
         rel[j, i] = True
     RELAXA[0] = ndimage.binary_dilation(rel, iterations=int(float(os.environ.get('PERTO', 0.8)) / E.RES))
+    if classe == 'HV':
+        RELAXA[0] |= MASCARA_LM
     cam = E.procurar_rel(g, k, orig, dest, extra, True)
     if os.environ.get('DEBUG'):
         print('    rotear', rede, a, c, len(orig), len(dest), extra, cam is not None, flush=True)
     RELAXA[0] = None
     if cam is None:
         return None
-    nv, itens, ok = E.desenhar_in2(b, g, net, cam, 0.2, pa if a[2] == 'Pad' else None, pb if c[2] == 'Pad' else None)
+    desenhar = E.desenhar if so_fb else E.desenhar_in2
+    nv, itens, ok = desenhar(b, g, net, cam, 0.2, pa if a[2] == 'Pad' else None, pb if c[2] == 'Pad' else None)
     return nv
 
 

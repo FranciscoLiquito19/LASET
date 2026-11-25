@@ -2,7 +2,11 @@
 
 (rule "HV dentro dos componentes de potência"
   (constraint clearance (min 0.15mm))
-  (condition "A.NetClass == 'HV' && (A.intersectsCourtyard('U1') || A.intersectsCourtyard('Q1') || A.intersectsCourtyard('Q2') || A.intersectsCourtyard('Q3') || A.intersectsCourtyard('Q4') || A.intersectsCourtyard('D1') || A.intersectsCourtyard('D2') || A.intersectsCourtyard('F1') || A.intersectsCourtyard('J1'))"))
+  (condition "A.NetClass == 'HV' && (A.intersectsCourtyard('U1') || A.intersectsCourtyard('Q1') || A.intersectsCourtyard('Q2') || A.intersectsCourtyard('Q3') || A.intersectsCourtyard('Q4') || A.intersectsCourtyard('D1') || A.intersectsCourtyard('D2') || A.intersectsCourtyard('F1') || A.intersectsCourtyard('J1') || A.intersectsCourtyard('C8') || A.intersectsCourtyard('C10') || A.intersectsCourtyard('C107') || A.intersectsCourtyard('C9') || A.intersectsCourtyard('R11') || A.intersectsCourtyard('R12') || A.intersectsCourtyard('R1'))"))
+
+(rule "HV junto ao LM5177"
+  (constraint clearance (min 0.15mm))
+  (condition "A.NetClass == 'HV' && A.insideArea('lm5177')"))
 
 (rule "Faixa de isolamento"
   (constraint clearance (min 0.2mm))

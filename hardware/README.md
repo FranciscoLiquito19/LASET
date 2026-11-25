@@ -133,9 +133,16 @@ Disposição (Figura 5.2 do relatório):
 
 - Conectores nos bordos: entrada (J1) e RJ45 (J3) em cima, DE-9 (J7) à esquerda, I2C e
   GPS (J8 a J10) à direita, CAN FD (J4, J5), RS485 (J6) e PWM (J11) em baixo.
-- Fonte no canto superior esquerdo, em linha no sentido da corrente: D2 → condensadores
-  de entrada → Q1/Q2 → R10 → L1 → Q3/Q4 → condensadores de saída → R13. O TPS62162 fica
-  à esquerda.
+- Fonte em cima, à esquerda do RJ45. Desde 25/11 (revisão independente) o andar de potência
+  está espelhado para cada perna ficar do lado dos seus pinos no LM5177: a entrada (J1) está
+  em cima ao centro e a corrente corre da direita para a esquerda, J1 → F1 → D1 → D2 →
+  C1 a C3 e C108 → perna buck Q1/Q2 (à esquerda do LM5177, junto a HO1, LO1, HB1 e SW1) →
+  R10 → L1 → perna boost Q3/Q4 (à direita, junto a HO2, LO2, HB2 e SW2) → C11, C109, C110
+  → R13 → +5 V. Os bootstrap C8 e C10 e o VCC (C7) estão junto aos pinos. O TPS62162 (U2,
+  L2) subiu para a esquerda, alimentado pelo plano de 5 V em In2.
+- Desacoplamento: cada condensador fica junto ao circuito integrado a que pertence no
+  esquema (o mais próximo na folha), e é colocado logo a seguir a esse CI, antes dos outros
+  passivos.
 - Isolamento: faixa de 6,8 mm sem cobre (todas as camadas, área `isolamento`) por baixo
   dos quatro isoladores, com o lado lógico em cima; os quatro lados isolados estão
   separados por 2,5 mm e cada um tem a sua massa em In1.
@@ -182,20 +189,23 @@ saem com `python3 -I gerador/fabrico.py`.
 
 ## Folha 1: Alimentação (`alimentacao.kicad_sch`)
 
-Percurso: J1 (entrada 5 a 60 V) → F1 (polyfuse) → D1 (TVS) → D2 (Schottky contra
+Percurso: J1 (entrada 5 a 60 V) → F1 (fusível 3 A, 125 V DC) → D1 (TVS) → D2 (Schottky contra
 inversão) → **U1 LM5177** (buck-boost, 5 V) → **U2 TPS62162** (3,3 V).
 
 | Bloco | Componentes | Como se chegou ao valor |
 |---|---|---|
-| UVLO | R1 53,6k, R2 20,5k | Liga a 1,25 V × (1 + 53,6/20,5) = 4,52 V |
+| UVLO | R1 41,2k, R2 20,5k | Eq. 1: 1,25 V × (1 + 41,2/20,5) + 41,2k × 5 µA = 3,97 V no pino VIN (máx. 4,10 V); com a queda do D2 arranca com cerca de 4,8 V à entrada. Desliga a 3,61 V. O valor antigo (53,6k) dava 4,79 V no pino porque a corrente de histerese se soma ao arranque, e a placa não arrancava a 5 V |
 | Tensão de saída | R7 40,2k, R8 10k | 1,0 V × (1 + 40,2/10) = 5,02 V |
 | Frequência | R5 75k | 400 kHz (Eq. 17 e Tabela 8-3; o texto do exemplo da TI diz 78,7k, que é gralha) |
 | Sensor de corrente | R10 10 mΩ, R11/R12 10 Ω, C9 180 pF | Limite 50 mV / 10 mΩ = 5 A típico (3,85 A mínimo) |
 | Rampa | R4 90,9k | L / R_CS × 50×10⁶ = 18 µH / 10 mΩ × 50×10⁶ = 90k |
 | Bobina | L1 SRP1245A-180M, 18 µH, Isat 11 A, 45 mΩ | Ondulação ≈ 0,63 A no pior caso (60 V → 5 V). Tem footprint na biblioteca do KiCad; o SRP1265A de 15 µH não tem |
-| MOSFET | Q1 a Q4 BSC160N10NS3 G (100 V, 16 mΩ, TDSON-8) | Os do lado de entrada têm de aguentar 60 V com margem; usa-se o mesmo nos quatro para ter uma só referência |
+| MOSFET | Q1 a Q4 BSC070N10LS5 (100 V, nível lógico, SuperSO8/TDSON-8, Qg 16 nC de 0 a 4,5 V) | O LM5177 tem drivers lógicos alimentados por VCC = 5 V e o patamar de Miller tem de ficar abaixo da tensão mínima de entrada; o BSC160N10NS3 G anterior era de nível normal (RDS(on) só especificado a 6 e 10 V). O mesmo nos quatro para ter uma só referência. Confirmar o patamar de Miller na folha de características |
+| Fusível | F1 Littelfuse 0451003.MRL (3 A, 125 V DC, 50 A de corte, NANO2 2410) | O polyfuse MF-MSMF300 anterior era de 6 V: num curto com mais de 6 V à entrada podia ser destruído |
+| VCC | C7 22 µF 10 V X7R 1206 | A folha de características pede 10 µF efetivos; o 4,7 µF 0603 anterior dava cerca de 2 µF a 5 V |
+| Condensadores extra | C107 100 nF 100 V no pino VIN, C108 100 nF 100 V de alta frequência junto a Q1, C109 e C110 22 µF em 5V_PRE junto a Q3 | Caminho curto para os picos de corrente das duas pernas |
 | Compensação | R6 2,0k, C5 56 nF, C6 2,2 nF | f_BW = 4 kHz, abaixo de f_RHPZ/3 (14,5 kHz no modo elevador a 4,5 V e 2 A); contas no cabeçalho de `folha_alimentacao.py` |
-| Pinos de modo | MODE e SYNC a VCC, DTRK e BIAS a GND | MODE alto = PWM forçado (frequência fixa, menos ruído) |
+| Pinos de modo | MODE e SYNC a VCC, DTRK e BIAS a GND | MODE alto = PWM forçado (frequência fixa, menos ruído). BIAS fica a GND: com 5 V de saída não se chega ao limiar de 6,5 V a partir do qual o VCC passa a vir de BIAS |
 | TPS62162 | FB a GND | Versão fixa de 3,3 V: a TI recomenda FB a AGND para melhor dissipação |
 
 **Alteração face ao relatório inicial:** o LM74700-Q1 saiu. Aguenta no máximo 65 V e, com

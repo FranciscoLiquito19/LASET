@@ -17,8 +17,8 @@ import pcbnew
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pcb import PCB, OX, OY, W, H  # noqa: E402
 
-ALTURA = 0.8          # mm (mínimo do .kicad_pro)
-ESPESSURA = 0.12
+ALTURA = 1.0          # mm (JLCPCB recomenda 1,0 mm de altura e 0,15 mm de traço)
+ESPESSURA = 0.15
 FOLGA = 0.15          # mm entre a serigrafia e os pads
 MARGEM_BORDO = 0.6
 

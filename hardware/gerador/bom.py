@@ -22,7 +22,7 @@ SAIDA = os.path.join(HW, 'bom', 'bom.csv')
 EXTRAS = os.path.join(HW, 'bom', 'extras.csv')
 
 DIRETOS = ['STM32H743ZIT6', 'LAN8742A-CZ', 'ADM3057EBRWZ', 'ADM2582EBRWZ', 'MAX3227EEAE',
-           'ADuM6401ARWZ', 'TCA9406DCUR', 'TPS62162', '74AHCT1G125', 'BSC160N10NS3 G',
+           'ADuM6401ARWZ', 'TCA9406DCUR', 'TPS62162', '74AHCT1G125', 'BSC070N10LS5',
            'SRP1245A-180M', 'SMCJ60CA', 'MB510', 'NUP2105L', 'SM712', 'PRTR5V0U2X',
            'ESDA6V1-5SC6', 'HR911105A', '25 MHz']
 
@@ -41,7 +41,7 @@ def chave(ref, valor, fp):
     if ref.startswith('FB'):
         return 'Ferrite 0603'
     if ref.startswith('F'):
-        return 'Polyfuse 1812'
+        return 'Fusível 0451003.MRL'
     if ref.startswith('D') and 'LED' in fp:
         return 'LED 0603'
     if ref.startswith('R'):

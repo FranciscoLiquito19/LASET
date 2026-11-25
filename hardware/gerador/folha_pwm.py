@@ -23,6 +23,10 @@ def folha():
             1: 'GND', 2: f'PWM{k + 1}', 3: 'GND', 4: f'/PWM{k + 1}_5V', 5: '+5V'}, SOT23_5)
         f.comp(f'C{100 + k}', C, '100 nF', 40, y, {1: '+5V', 2: 'GND'}, C0603)
 
+    # Pull-downs: durante o reset os pinos do MCU estão em alta impedância e as entradas
+    # CMOS dos buffers ficariam a flutuar; assim as saídas isoladas ficam a 0.
+    for k in range(3):
+        f.comp(f'R{91 + k}', R, '10k', 40 + 12 * k, 240, {1: f'PWM{k + 1}', 2: 'GND'}, R0603)
     gi, viso = '/GND_PWM', '/VISO_PWM'
     f.comp('U14', 'laset:ADuM6401', 'ADuM6401ARWZ', 190, 120, {
         'VDD1': '+5V', 'VDDL': '+5V', 'GND1': 'GND',

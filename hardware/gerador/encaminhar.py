@@ -127,7 +127,7 @@ class Grelha:
         self._marcar(camada, rede, i0, i1, j0, j1, d < r, dentro)
 
 
-POTENCIA_REFS = {'U1', 'Q1', 'Q2', 'Q3', 'Q4', 'D1', 'D2', 'F1', 'J1'}
+POTENCIA_REFS = {'U1', 'Q1', 'Q2', 'Q3', 'Q4', 'D1', 'D2', 'F1', 'J1', 'C8', 'C10', 'C107', 'C9', 'R11', 'R12', 'R1'}
 
 
 def afast(item, ref=None):
