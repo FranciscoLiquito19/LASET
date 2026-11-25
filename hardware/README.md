@@ -64,7 +64,20 @@ python3 serigrafia.py               # referências sem sobreposição e nome dos
 VIA=0.5 python3 interior.py         # F.Cu + In2 para as que já não cabem: 16 -> 9
 VIA=0.5 BASE=<base> python3 interior.py           # com arranque: 9 -> 8
 # arrancar_e_ordenar(): TXD1 a sair por baixo de TXD0, TX_EN e NRST, e REGOFF: 8 -> 5
+# fecho à mão por coordenadas (ver abaixo): 5 -> 0
 ```
+
+As últimas 5 foram fechadas com pistas e vias postas por coordenadas, com o afastamento
+verificado à mão e depois pelo DRC:
+
+- LAN8742A, coluna da esquerda: vias de saída de 0,5 mm em coluna a x = 79,0 (RXD0, +3V3 do
+  pino 30.25, que passou a via de 0,5 mm) e MDIO a (78,7; 32,15); CRS_DV refeito a partir
+  delas; REF_CLK desce do pino para uma via a (81,25; 33,6) e segue por In2. Uma pista em
+  F.Cu entre os +3V3 de C29 e C30 liga uma ilha do plano que ficou cortada.
+- LM5177: SW1 sai por uma via a (36,45; 30,6), já fora do courtyard e a 0,65 mm do HO1;
+  a via de massa do pino 30 passou a 0,5 mm em (39,45; 30,85), o que abre 0,55 mm para o
+  LO2 subir entre ela e a via do HO2; a via do HO2 passou a 0,5 mm em (40,5; 30,9), e o HB2
+  segue em diagonal entre o SW2 (0,6 mm, classe HV) e o LO2 até ao C10.
 
 O `interior.py` usa a camada In2 (plano de 3,3 V) para sinais lentos ou de baixa corrente:
 cada pista em In2 recorta o plano à volta e tem o plano de massa (In1) como referência. As
@@ -132,21 +145,19 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático de 290 das 295 ligações (`pf.py`, `encaminhar.py`, `melhorar.py` e `interior.py`), serigrafia arrumada, DRC sem violações de
+Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, encaminhamento completo das 295 ligações (`pf.py`, `encaminhar.py`, `melhorar.py`, `interior.py` e as últimas 5 por coordenadas), serigrafia arrumada, DRC sem violações de
 afastamento, de courtyard nem de serigrafia (o KiCad 9 da CI confirma a paridade com o esquema). Os pads
 expostos do LM5177 e do LAN8742A ligam ao plano de massa sem alívio térmico. Falta:
 
-1. Encaminhar as 5 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
+1. Rever o encaminhamento, que foi todo feito por programa. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
    VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
    LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
    (C8, C10), a medição de corrente (CSA/CSB em par até ao LM5177) e o VIN do LM5177.
    Depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos, sem vias), o cristal do
    MCU e o resto.
-   As 5 que faltam pedem mudar a disposição: na coluna da esquerda do LAN8742A só cabem
-   duas saídas entre os pinos e o C44 (afastar o C44 e o C45 ou mudar o +3V3 do pino 30.25
-   para outra via); na fila de cima do LM5177 o HB2, o LO2 e o SW1 ficam presos entre o
-   HO2, o LO1 e o SW2, que pede 0,6 mm fora do circuito integrado.
+   Em especial: os sinais que passam por In2 (RXN do par Ethernet, LA e SW1 do andar de
+   potência, VIN do LM5177, RMII, UART, PWM e reset) e as vias de 0,5/0,25 mm.
 2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
    mais de 3 mm do pino) e dos MOSFET.
 3. Mostrar à mão, se houver espaço depois do encaminhamento, as 13 referências escondidas.
@@ -157,12 +168,10 @@ expostos do LM5177 e do LAN8742A ligam ao plano de massa sem alívio térmico. F
    rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
    sempre usam a mesma orientação de referência.
 
-### Ligações que o encaminhador automático não fez (5)
+### Ligações em falta
 
-| Zona | Ligações |
-|---|---|
-| LM5177 (U1) | HB2 (até C10), LO2 (até Q4), SW1 |
-| LAN8742A (U4) | MDIO, RXD0 |
+Nenhuma: o DRC dá 0 ligações em falta e 0 violações de cobre. Os ficheiros de fabrico
+saem com `python3 -I gerador/fabrico.py`.
 
 ## Bibliotecas do projeto
 

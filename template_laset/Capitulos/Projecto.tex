@@ -232,23 +232,18 @@ condensador de 2 kV e pela resistência de 1 M$\Omega$.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.78\textwidth]{../hardware/laset_gateway_pcb.pdf}
-\caption[Disposição dos componentes na placa.]{Disposição dos componentes na placa (camada de cima e serigrafia). Os pinos de massa e alimentação ligam aos planos interiores por vias; parte das ligações de sinal ainda está por encaminhar.}
+\caption[Disposição dos componentes na placa.]{Disposição dos componentes na placa (camada de cima e serigrafia). Os pinos de massa e alimentação ligam aos planos interiores por vias; as ligações de sinal estão encaminhadas nas camadas exteriores e na camada interior de 3,3 V.}
 \label{fig:pcb}
 \end{figure}
 
 Neste momento estão feitos a disposição dos 205 componentes, as ligações
 de corrente alta do andar de potência, por zonas de cobre na camada de
 cima, as cerca de 200 vias que ligam os pinos de massa e alimentação aos
-planos e um rascunho de encaminhamento automático da maior parte das
-ligações de sinal e a serigrafia (referências e nome de cada conector), sem
-violações de afastamento nem de serigrafia no verificador de regras do KiCad.
-Faltam 5 ligações, três no comando das portas junto ao LM5177 e duas no PHY
-Ethernet, que nem o Freerouting nem os encaminhadores próprios conseguem fechar
-sem mudar a disposição à volta destes circuitos. Parte das ligações (UART, PWM, RMII,
-reset e alimentação do LM5177) passa pela camada interior de 3,3 V, com o plano
-de massa ao lado como referência. Ficam por fazer
-antes do fabrico: encaminhar as restantes ligações de sinal, incluindo o comando
-das portas dos MOSFET, rever à mão o andar de potência e os pares Ethernet, conferir o footprint do LM5177 com o
+planos, o encaminhamento das 295 ligações e a serigrafia (referências e
+nome de cada conector), sem violações no verificador de regras do KiCad.
+Parte das ligações (UART, PWM, RMII, reset e alimentação do LM5177) passa
+pela camada interior de 3,3 V, com o plano de massa ao lado como referência. Ficam por fazer
+antes do fabrico: rever à mão o comando das portas dos MOSFET, o andar de potência e os pares Ethernet, conferir o footprint do LM5177 com o
 desenho do encapsulamento, medir a margem de fase da fonte de 5 V no
 protótipo e escolher os conectores definitivos.
 

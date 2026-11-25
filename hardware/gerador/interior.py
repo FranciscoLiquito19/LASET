@@ -133,8 +133,8 @@ def violacoes(b):
     return sum(1 for x in re.findall(r'^\[(\w+)\]', t, re.M) if x in VIOLACOES)
 
 
-def cobre_perto(g, k, ponto, r=1.5):
-    """Numa ponta que é pista ou via, também o cobre da mesma rede até r mm (a via ao lado
+def cobre_perto(g, k, ponto, r=2.5):
+    """Numa ponta que é pista ou via, também o cobre da mesma rede até r mm (2,5) (a via ao lado
     do pino, quando o DRC aponta para o troço curto entre o pino e a via)."""
     if ponto[2] not in ('Track', 'Via'):
         return []
