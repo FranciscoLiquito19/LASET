@@ -133,6 +133,21 @@ def violacoes(b):
     return sum(1 for x in re.findall(r'^\[(\w+)\]', t, re.M) if x in VIOLACOES)
 
 
+def cobre_perto(g, k, ponto, r=1.5):
+    """Numa ponta que é pista ou via, também o cobre da mesma rede até r mm (a via ao lado
+    do pino, quando o DRC aponta para o troço curto entre o pino e a via)."""
+    if ponto[2] not in ('Track', 'Via'):
+        return []
+    n = int(r / E.RES)
+    j, i = int(ponto[1] / E.RES), int(ponto[0] / E.RES)
+    j0, i0 = max(0, j - n), max(0, i - n)
+    out = []
+    for c in (0, 1):
+        js, is_ = np.nonzero(g.nucleo[c][j0:j + n + 1, i0:i + n + 1] == k)
+        out += [(c, jj + j0, ii + i0) for jj, ii in zip(js, is_)]
+    return out
+
+
 def rotear(b, rede, a, c):
     """Encaminha uma ligação em F.Cu + In2; devolve o número de vias ou None."""
     net = b.FindNet(rede)
@@ -142,6 +157,7 @@ def rotear(b, rede, a, c):
         a, c = c, a
     orig, pa = E.celulas_item(b, g, k, a)
     dest, pb = E.celulas_item(b, g, k, c, outro=a)
+    orig, dest = orig + cobre_perto(g, k, a), dest + cobre_perto(g, k, c)
     if not orig or not dest:
         return None
     classe = net.GetNetClassName()
