@@ -242,9 +242,11 @@ cima, as cerca de 200 vias que ligam os pinos de massa e alimentação aos
 planos e um rascunho de encaminhamento automático da maior parte das
 ligações de sinal e a serigrafia (referências e nome de cada conector), sem
 violações de afastamento nem de serigrafia no verificador de regras do KiCad.
-Faltam 16 ligações, junto ao LM5177, ao PHY Ethernet e ao STM32, que nem o
-Freerouting nem os encaminhadores próprios conseguem fechar sem mudar a
-disposição à volta destes circuitos. Ficam por fazer
+Faltam 5 ligações, três no comando das portas junto ao LM5177 e duas no PHY
+Ethernet, que nem o Freerouting nem os encaminhadores próprios conseguem fechar
+sem mudar a disposição à volta destes circuitos. Parte das ligações (UART, PWM, RMII,
+reset e alimentação do LM5177) passa pela camada interior de 3,3 V, com o plano
+de massa ao lado como referência. Ficam por fazer
 antes do fabrico: encaminhar as restantes ligações de sinal, incluindo o comando
 das portas dos MOSFET, rever à mão o andar de potência e os pares Ethernet, conferir o footprint do LM5177 com o
 desenho do encapsulamento, medir a margem de fase da fonte de 5 V no

@@ -61,7 +61,16 @@ python3 encaminhar.py               # completa o que ficou em conflito
 FINO=1 python3 encaminhar.py        # passagem final com pistas de 0,15 mm
 python3 melhorar.py <base>          # pesquisa local (base = placa depois de fanout.py): 18 -> 16
 python3 serigrafia.py               # referências sem sobreposição e nome dos conectores
+VIA=0.5 python3 interior.py         # F.Cu + In2 para as que já não cabem: 16 -> 9
+VIA=0.5 BASE=<base> python3 interior.py           # com arranque: 9 -> 8
+# arrancar_e_ordenar(): TXD1 a sair por baixo de TXD0, TX_EN e NRST, e REGOFF: 8 -> 5
 ```
+
+O `interior.py` usa a camada In2 (plano de 3,3 V) para sinais lentos ou de baixa corrente:
+cada pista em In2 recorta o plano à volta e tem o plano de massa (In1) como referência. As
+vias de saída são de 0,5/0,25 mm, dentro das regras do projeto. Estão em In2: GPS_TX,
+RS485_RX, PWM3, NRST, ETH_TXD0, ETH_TXD1, ETH_TX_EN, RXN, RBIAS, VIN (alimentação do
+LM5177) e LA (65 pistas, 23 vias de 0,5 mm).
 
 O `serigrafia.py` corre uma vez, no fim: põe cada referência (0,8 mm) no sítio livre mais
 perto da peça, sem tocar em pads, noutras linhas nem no bordo, e esconde as que não cabem
@@ -123,20 +132,21 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático de 279 das 295 ligações (`pf.py`, `encaminhar.py` e `melhorar.py`), serigrafia arrumada, DRC sem violações de
+Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, rascunho de encaminhamento automático de 290 das 295 ligações (`pf.py`, `encaminhar.py`, `melhorar.py` e `interior.py`), serigrafia arrumada, DRC sem violações de
 afastamento, de courtyard nem de serigrafia (o KiCad 9 da CI confirma a paridade com o esquema). Os pads
 expostos do LM5177 e do LAN8742A ligam ao plano de massa sem alívio térmico. Falta:
 
-1. Encaminhar as 16 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
+1. Encaminhar as 5 ligações que faltam (lista no fim desta secção) e rever o rascunho. O andar de potência já tem as
    ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
    VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
    LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
    (C8, C10), a medição de corrente (CSA/CSB em par até ao LM5177) e o VIN do LM5177.
    Depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos, sem vias), o cristal do
    MCU e o resto.
-   Os encaminhadores automáticos já não ajudam (ver acima): as 16 pedem mudar à mão a
-   disposição junto ao U1 e ao U4 (afastar R31 e R32 e as vias de fanout dos pinos do
-   LAN8742A; abrir corredor em B.Cu por baixo do andar de potência para o VIN e o 5V_PRE).
+   As 5 que faltam pedem mudar a disposição: na coluna da esquerda do LAN8742A só cabem
+   duas saídas entre os pinos e o C44 (afastar o C44 e o C45 ou mudar o +3V3 do pino 30.25
+   para outra via); na fila de cima do LM5177 o HB2, o LO2 e o SW1 ficam presos entre o
+   HO2, o LO1 e o SW2, que pede 0,6 mm fora do circuito integrado.
 2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
    mais de 3 mm do pino) e dos MOSFET.
 3. Mostrar à mão, se houver espaço depois do encaminhamento, as 13 referências escondidas.
@@ -147,13 +157,12 @@ expostos do LM5177 e do LAN8742A ligam ao plano de massa sem alívio térmico. F
    rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
    sempre usam a mesma orientação de referência.
 
-### Ligações que o encaminhador automático não fez (16)
+### Ligações que o encaminhador automático não fez (5)
 
 | Zona | Ligações |
 |---|---|
-| LM5177 (U1) | 5V_PRE, HB2, LA, LO2, SW1, VIN (2) |
-| LAN8742A (U4) | RXP até R36, MDIO, RXD0, TXD0, TX_EN, NRST |
-| STM32 (U3) | GPS_TX, PWM3, RS485_RX |
+| LM5177 (U1) | HB2 (até C10), LO2 (até Q4), SW1 |
+| LAN8742A (U4) | MDIO, RXD0 |
 
 ## Bibliotecas do projeto
 
