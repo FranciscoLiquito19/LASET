@@ -364,13 +364,19 @@ A 60 V são ≈ 0,12 A.
 
 - **Margem de fase do LM5177:** a compensação foi calculada pelas equações da folha de
   características; medir no protótipo (ou simular no WEBENCH) antes de fechar.
-- **Footprint do LM5177:** confirmar o pad exposto com o desenho DCP0038.
+- **Footprint do LM5177:** conferido com o desenho DCP0038 (26/11; ver "Placa de circuito
+  impresso"). Os restantes valores à volta do LM5177 (RT, divisor, SLOPE, arranque suave,
+  UVLO, CFG, MODE, SYNC, DTRK, IMONOUT, VCC) também foram conferidos com a folha.
 - **Surtos na entrada:** o LM5177 aguenta 85 V (máximo absoluto). Nenhum TVS com tensão de
   trabalho de 60 V limita abaixo disso à corrente de pico: o SMCJ60CA começa a conduzir a
   66,7 V mas chega a 96,8 V a 15,5 A. Protege contra ESD e transitórios curtos com pouca
   energia. Se for preciso cumprir um ensaio de surto (por exemplo IEC 61000-4-5), é preciso
   um limitador ativo à entrada (surge stopper). Fica como risco no relatório.
-- **Cristais:** condensadores de 15 pF assumem C_L = 10 pF; ajustar ao cristal comprado.
+- **Cristais:** condensadores de 15 pF assumem C_L = 10 pF, o que bate com os cristais da
+  lista (X322525MMB4SI, 10 pF); se se comprar outro, ajustar.
+- **D2 a tensões baixas:** no pior caso a 4,5 V passa ≈ 1,6 A e dissipa ≈ 1 W, o que num
+  SMC aquece várias dezenas de graus. A 12 V ou mais fica abaixo de 0,3 W. Medir no
+  ensaio de alimentação a 5 V (`ARRANQUE.md`).
 - **ERC completo:** corre na CI (KiCad 9) em cada PR; ver `.github/workflows/ci.yml`. Fica
   um erro aceite: os dois pinos VCAP do STM32H743 são saídas de alimentação ligadas entre
   si, como a ST pede para o LQFP144 (2 × 2,2 µF e os VCAP unidos); o KiCad acusa duas
