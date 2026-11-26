@@ -18,6 +18,9 @@
 /* OE dos tradutores I2C (TCA9406): alto depois de as alimentações estarem estáveis */
 #define I2C_OE_PORTA GPIOG
 #define I2C_OE_PINO  GPIO_PIN_0
+/* Entrada de falha do PWM (TIM1_BKIN, ativa a nível baixo); lida também para o rearme */
+#define PWM_FALHA_PORTA GPIOE
+#define PWM_FALHA_PINO  GPIO_PIN_15
 /* Power-good das fontes */
 #define PG_PORTA    GPIOF
 #define PG_5V_PINO  GPIO_PIN_2

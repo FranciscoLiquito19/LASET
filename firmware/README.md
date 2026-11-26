@@ -61,15 +61,15 @@ firmware (`stm32h7xx_hal_msp.c` e `placa.h`) com a tabela do esquema
 | Parte | Estado |
 |---|---|
 | Relógios a 480 MHz, FDCAN a 80 MHz | feito |
-| FDCAN1/2: 1 Mbit/s + 8 Mbit/s (BRS), TDC, autoteste em loopback no arranque | feito |
+| FDCAN1/2: 1 Mbit/s + 8 Mbit/s (BRS), TDC, autoteste em loopback no arranque, recuperação de bus-off | feito |
 | Encaminhamento: fila de entrada, tabela, filas urgente/normal por saída, contadores de descarte | feito, com testes |
 | Ligação ao PC por RS232: COBS + CRC-16, cabeçalho de 20 bytes | feito, com testes |
 | Ligação ao PC por Ethernet: UDP para operações, TCP para configuração (LwIP) | feito (esboço) |
 | Ligação ao PC por CAN FD 1 ou 2: ISO 15765-2 com tramas de 64 bytes | feito (esboço), com testes |
 | Configuração persistente na flash, com dupla cópia (RF18) | feito (esboço), com testes |
-| RS485 (DE automático), RS232 em bruto | feito |
+| RS485 (DE automático, sem o eco do que emite), RS232 em bruto | feito |
 | I2C1/I2C2: escrita e leitura com registo | feito |
-| PWM: 3 canais a 50 Hz, 0,5 µs, valor seguro sem comandos, paragem por hardware (BKIN) | feito |
+| PWM: 3 canais a 50 Hz, 0,5 µs, valor seguro sem comandos, paragem por hardware (BKIN) com rearme no comando seguinte, se a falha já tiver passado | feito |
 | PPS no TIM2 (64 bits, compensação da deriva) + NMEA RMC | feito, com testes |
 
 Tudo isto compila sem avisos mas **ainda não correu numa placa**. Para a PCB, os passos

@@ -76,7 +76,7 @@ static void r_isotp(void)
         int e = isotp_rx_trama(&r, t, n, fc, &fcn);
         VERIFICA(r.total <= ISOTP_MAX && r.recebidos <= ISOTP_MAX, "isotp: total %u recebidos %u", r.total, r.recebidos);
         if (e == ISOTP_RX_COMPLETA) completas++;
-        if (e == ISOTP_RX_ENVIAR_FC) VERIFICA(fcn <= 64, "isotp: fc com %u bytes", fcn);
+        if (e == ISOTP_RX_ENVIAR_FC) VERIFICA(fcn <= 3, "isotp: fc com %u bytes", fcn);   /* tarefa_isotp guarda-o em 3 bytes */
     }
     /* emissão com Flow Control aleatório */
     uint8_t dados[ISOTP_MAX], out[64];

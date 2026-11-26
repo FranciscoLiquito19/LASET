@@ -21,6 +21,7 @@ BaseType_t encaminhamento_entrada(const mensagem_t *m, TickType_t espera);
 BaseType_t encaminhamento_entrada_isr(const mensagem_t *m, BaseType_t *acordar);
 void encaminhamento_estado(void);
 extern tabela_t tabela;
+extern volatile uint32_t can_bus_off[2];   /* recuperações de bus-off por controlador */
 
 /* can.c */
 int  can_autoteste(void);                 /* 0 = os dois FDCAN passaram em loopback */

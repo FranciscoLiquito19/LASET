@@ -23,6 +23,9 @@ static void tarefa_estado(void *arg)
                            (unsigned long)f, (long long)utc);
             encaminhamento_estado();
             eth_estado();
+            if (can_bus_off[0] || can_bus_off[1])
+                consola_printf("CAN FD: bus-off recuperados FDCAN1 %lu, FDCAN2 %lu\r\n",
+                               (unsigned long)can_bus_off[0], (unsigned long)can_bus_off[1]);
         }
     }
 }

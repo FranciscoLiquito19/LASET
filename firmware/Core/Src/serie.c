@@ -1,4 +1,5 @@
-/* RS232 (ligação ao PC, tramas COBS + CRC-16), RS485 (dados em bruto) e receção do GPS.
+/* RS232 (ligação ao PC, tramas COBS + CRC-16), RS485 (dados em bruto, sem o eco do que a
+ * própria unidade emite) e receção do GPS.
  * A receção usa ReceiveToIdle: cada bloco recebido até a linha ficar livre é tratado
  * de uma vez. */
 #include <string.h>
@@ -95,8 +96,16 @@ int rs232_enviar_bruto(const mensagem_t *m)
 
 int rs485_enviar(const mensagem_t *m)
 {
-    /* o USART6 ativa o DE durante a transmissão; o recetor fica sempre ligado (eco) */
-    return HAL_UART_Transmit(&huart6, (uint8_t *)m->dados, m->c.comprimento, 50) == HAL_OK ? 0 : -1;
+    /* O USART6 ativa o DE durante a transmissão. O recetor do ADM2582E está sempre
+     * ligado (~RE a GND), por isso a unidade recebe o próprio eco: pára-se a receção
+     * enquanto emite e deita-se fora o que entrou, para o eco não seguir para o
+     * encaminhamento como se fosse dado recebido. */
+    HAL_UART_AbortReceive(&huart6);
+    int r = HAL_UART_Transmit(&huart6, (uint8_t *)m->dados, m->c.comprimento, 50) == HAL_OK ? 0 : -1;
+    __HAL_UART_SEND_REQ(&huart6, UART_RXDATA_FLUSH_REQUEST);
+    __HAL_UART_CLEAR_FLAG(&huart6, UART_CLEAR_OREF | UART_CLEAR_IDLEF | UART_CLEAR_FEF | UART_CLEAR_NEF);
+    HAL_UARTEx_ReceiveToIdle_IT(&huart6, rx485, BLOCO);
+    return r;
 }
 
 void serie_iniciar(void)

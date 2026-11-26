@@ -3,7 +3,7 @@
 RS485, ADM2582E (Analog Devices):
   VCC a 3,3 V (aceita 3,0 a 5,5 V). Meio-duplex: A liga a Y e B liga a Z.
   DE ao USART6_DE do MCU (o periférico controla o emissor); ~RE a GND, o recetor fica
-  sempre ativo e a unidade lê o próprio eco, o que permite detetar colisões.
+  sempre ativo; o firmware para a receção enquanto emite e deita fora o eco.
   VISOOUT liga diretamente a VISOIN (obrigatório). GND2 dos pinos 11 e 14 liga aos
   restantes GND2 por uma ferrite.
   Terminação de 120 Ohm por jumper; SM712 dimensionado para -7 a 12 V.

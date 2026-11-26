@@ -31,6 +31,19 @@ static void cb_vigia(TimerHandle_t t)
     }
 }
 
+/* Depois de uma paragem (BKIN), o hardware deixa as saídas desligadas (MOE = 0) e o
+ * indicador de paragem fica preso. Só se volta a ligar num comando novo e se a entrada
+ * de falha já tiver voltado ao nível alto: uma falha transitória (por exemplo durante o
+ * arranque da alimentação isolada) não deixa o PWM desligado até ao próximo reset. */
+static int rearmar(void)
+{
+    if (!__HAL_TIM_GET_FLAG(&htim1, TIM_FLAG_BREAK)) return 0;
+    if (HAL_GPIO_ReadPin(PWM_FALHA_PORTA, PWM_FALHA_PINO) == GPIO_PIN_RESET) return -1;
+    __HAL_TIM_CLEAR_FLAG(&htim1, TIM_FLAG_BREAK);
+    __HAL_TIM_MOE_ENABLE(&htim1);
+    return 0;
+}
+
 int pwm_comando(const mensagem_t *m)
 {
     if (m->c.canal > 2 || m->c.comprimento < 2) return -1;
@@ -39,7 +52,7 @@ int pwm_comando(const mensagem_t *m)
     aplicar(m->c.canal, us);
     ultimo = xTaskGetTickCount();
     em_seguro = 0;
-    if (__HAL_TIM_GET_FLAG(&htim1, TIM_FLAG_BREAK)) return -3;   /* falha ativa: saídas desligadas */
+    if (rearmar() != 0) return -3;   /* falha ainda ativa: saídas desligadas pelo hardware */
     return 0;
 }
 

@@ -109,7 +109,8 @@ void can_arrancar(void)
 #endif
     FDCAN_HandleTypeDef *hs[2] = { &hfdcan1, &hfdcan2 };
     for (int i = 0; i < 2; i++) {
-        if (HAL_FDCAN_ActivateNotification(hs[i], FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0) != HAL_OK) Error_Handler();
+        if (HAL_FDCAN_ActivateNotification(hs[i], FDCAN_IT_RX_FIFO0_NEW_MESSAGE | FDCAN_IT_BUS_OFF, 0) != HAL_OK)
+            Error_Handler();
         if (HAL_FDCAN_Start(hs[i]) != HAL_OK) Error_Handler();
     }
 }
@@ -146,6 +147,21 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *h, uint32_t its)
         encaminhamento_entrada_isr(&m, &acordar);
     }
     portYIELD_FROM_ISR(acordar);
+}
+
+/* Bus-off (por exemplo com o barramento em curto ou com outra taxa): o controlador
+ * põe-se em INIT e deixa de emitir e de receber. Limpar INIT inicia a recuperação
+ * normalizada (o controlador espera 128 x 11 bits recessivos antes de voltar), sem a
+ * qual o CAN ficava parado até ao próximo reset. */
+volatile uint32_t can_bus_off[2];
+
+void HAL_FDCAN_ErrorStatusCallback(FDCAN_HandleTypeDef *h, uint32_t its)
+{
+    /* a interrupção dá-se ao entrar e ao sair do bus-off: só se atua ao entrar */
+    if ((its & FDCAN_IT_BUS_OFF) && (h->Instance->PSR & FDCAN_PSR_BO)) {
+        can_bus_off[h == &hfdcan1 ? 0 : 1]++;
+        CLEAR_BIT(h->Instance->CCCR, FDCAN_CCCR_INIT);
+    }
 }
 
 static int can_trama(uint8_t canal, uint32_t endereco, const uint8_t *dados, uint16_t n)
