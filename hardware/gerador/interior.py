@@ -148,7 +148,7 @@ def grelha(b, k, ignorar=None):
     g3 = E.Grelha()
     g3.dono = [g.dono[0], gi.dono[0]]
     g3.nucleo = [g.nucleo[0], gi.nucleo[0]]
-    g3.sem_via = sem_via | ocupado_b
+    g3.sem_via = sem_via | ocupado_b | E.mascara_pads_smd(b, via=E.VIA_D)
     return g3
 
 

@@ -137,8 +137,31 @@ def afast(item, ref=None):
     return AFAST.get(item.GetNetClassName(), 0.15)
 
 
+def mascara_pads_smd(b, folga=0.1, via=None):
+    """Células onde o centro de uma via ficaria dentro de um pad SMD ou a menos de
+    `folga` dele, seja de que rede for: uma via aberta num pad puxa a solda."""
+    via = VIA_D if via is None else via
+    m = np.zeros((NY, NX), bool)
+    r = via / 2 + folga
+    for f in b.GetFootprints():
+        for p in f.Pads():
+            if p.GetAttribute() != pcbnew.PAD_ATTRIB_SMD:
+                continue
+            s = p.GetSize()
+            if pcbnew.ToMM(s.x) * pcbnew.ToMM(s.y) > 3.0:     # pads térmicos: as vias são de propósito
+                continue
+            bb = p.GetBoundingBox()
+            x0, y0 = pcbnew.ToMM(bb.GetX()) - OX - r, pcbnew.ToMM(bb.GetY()) - OY - r
+            x1, y1 = pcbnew.ToMM(bb.GetRight()) - OX + r, pcbnew.ToMM(bb.GetBottom()) - OY + r
+            i0, i1 = max(0, int(x0 / RES)), min(NX, int(math.ceil(x1 / RES)) + 1)
+            j0, j1 = max(0, int(y0 / RES)), min(NY, int(math.ceil(y1 / RES)) + 1)
+            m[j0:j1, i0:i1] = True
+    return m
+
+
 def carregar(b, ignorar=None):
     g = Grelha()
+    g.sem_via |= mascara_pads_smd(b)
     for f in b.GetFootprints():
         for p in f.Pads():
             k = p.GetNetCode()

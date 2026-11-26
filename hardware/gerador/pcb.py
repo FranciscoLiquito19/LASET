@@ -642,6 +642,14 @@ DRU = '''(version 1)
 (rule "Faixa de isolamento"
   (constraint clearance (min 0.2mm))
   (condition "A.insideArea('isolamento')"))
+
+# Vias fora dos pads SMD (de qualquer rede): uma via aberta num pad puxa a solda. Aviso e
+# não erro enquanto houver vias destas por resolver. Os pads térmicos (Q1 a Q4, pad
+# exposto do LM5177 e do LAN8742A) ficam de fora, porque as vias lá são de propósito.
+(rule "Via fora dos pads SMD"
+  (severity warning)
+  (constraint physical_clearance (min 0.05mm))
+  (condition "A.Type == 'Via' && B.Type == 'Pad' && B.Pad_Type == 'SMD' && !(B.Size_X > 1.6mm && B.Size_Y > 1.6mm)"))
 '''
 
 
