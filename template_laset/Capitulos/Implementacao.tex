@@ -109,7 +109,8 @@ Encaminhamento, filas urgente/normal, contadores de descarte & feito, com testes
 Ligação ao PC por RS232 (COBS + CRC-16) & feito, com testes \\
 Ligação ao PC por Ethernet (UDP e TCP) & esboço \\
 Ligação ao PC por CAN FD (ISO 15765-2) & esboço, com testes \\
-Configuração na \textit{flash} com dupla cópia (RF18) & esboço, com testes \\
+Configuração na \textit{flash} com dupla cópia (RF18), protegida contra cópias meio escritas & esboço, com testes \\
+Vigilante independente (reinício automático em 4~s) & feito \\
 RS485, I2C, PWM a 50~Hz com paragem por \textit{hardware} & feito \\
 PPS no TIM2 e NMEA & feito, com testes \\
 \bottomrule
@@ -120,8 +121,17 @@ Os módulos que não dependem do \textit{hardware} (encaminhamento, política de
 filas, COBS, CRC-16, NMEA, ISO-TP, configuração e formato das tramas) são
 compilados também para o PC e testados na CI. Um teste lê uma trama gerada
 pela ferramenta do PC, o que garante que os dois lados usam o mesmo formato.
-Outro teste (\texttt{firmware/testes/pinos.py}) confere cada pino configurado
-no \textit{firmware} com a tabela de pinos do esquema.
+Um teste de robustez passa milhões de entradas aleatórias ou corrompidas pelos
+módulos que recebem dados de fora, compilado com verificação de acessos à memória
+(AddressSanitizer): nenhuma escrita fora dos limites e nenhuma trama corrompida
+aceite. Outro teste (\texttt{firmware/testes/pinos.py}) confere cada pino
+configurado no \textit{firmware} com a tabela de pinos do esquema.
+
+Ao rever o código foram corrigidos quatro casos que só se veriam na placa: o PWM
+ficava desligado depois de uma falha transitória na entrada de paragem, o CAN FD
+não recuperava de um \textit{bus-off}, o RS485 reencaminhava o eco do que a própria
+unidade emitia, e uma configuração meio gravada (falta de alimentação durante a
+gravação) bloqueava o arranque.
 
 \section{Ferramenta do PC}
 
