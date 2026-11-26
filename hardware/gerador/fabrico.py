@@ -2,7 +2,7 @@
 
 Uso:  python3 -I fabrico.py      (precisa do kicad-cli, KiCad 7 ou mais recente)
 
-Escreve em hardware/fabrico/ (fora do repositório):
+Escreve em hardware/fabrico/ (guardado no repositório; a pasta gerbers/ não):
   - laset_gateway_gerbers.zip: Gerbers das 4 camadas de cobre, máscaras, serigrafia,
     pasta e contorno, mais a furação Excellon; é este o ficheiro que se envia à JLCPCB;
   - laset_gateway_posicoes.csv: posição e rotação de cada componente (CPL), no formato

@@ -32,4 +32,4 @@ hardware/*.kicad_prl
 hardware/gerador/__pycache__/
 firmware/build/
 firmware/testes/build/
-hardware/fabrico/
+hardware/fabrico/gerbers/
