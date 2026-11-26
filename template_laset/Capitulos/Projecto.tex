@@ -239,13 +239,18 @@ condensador de 2 kV e pela resistência de 1 M$\Omega$.
 \label{fig:pcb}
 \end{figure}
 
-Neste momento estão feitos a disposição dos 205 componentes, as ligações
+Neste momento estão feitos a disposição dos 212 componentes, as ligações
 de corrente alta do andar de potência, por zonas de cobre na camada de
 cima, as cerca de 200 vias que ligam os pinos de massa e alimentação aos
 planos, o encaminhamento das 295 ligações e a serigrafia (referências e
 nome de cada conector), sem violações no verificador de regras do KiCad.
-Parte das ligações (UART, PWM, RMII, reset e alimentação do LM5177) passa
-pela camada interior de 3,3 V, com o plano de massa ao lado como referência. Ficam por fazer
+Depois de uma revisão independente, o andar de potência foi espelhado para
+cada perna ficar junto aos seus pinos no LM5177 (o comando da porta mais longo
+passou de 52 para 21~mm), o desacoplamento passou a ser atribuído ao circuito
+integrado a que pertence, e o fusível, o limiar de arranque, os MOSFET e o
+condensador de VCC foram corrigidos. Alguns sinais lentos (UART do GPS,
+CAN1\_TX, I2C\_OE) e o relógio de 50~MHz do RMII passam pela camada interior
+de 3,3~V. Ficam por fazer
 antes do fabrico: rever à mão o comando das portas dos MOSFET, o andar de potência e os pares Ethernet, conferir o footprint do LM5177 com o
 desenho do encapsulamento, medir a margem de fase da fonte de 5 V no
 protótipo e escolher os conectores definitivos.

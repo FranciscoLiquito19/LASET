@@ -189,6 +189,9 @@ SEM_IN2_CLASSES = {'HV', 'P5V', 'ETH'}
 
 
 def pode_in2(net):
+    # PERMITIR_IN2=rede,rede: exceção explícita (documentar no README)
+    if net.GetNetname().split('/')[-1] in os.environ.get('PERMITIR_IN2', '').split(','):
+        return True
     return net.GetNetClassName() not in SEM_IN2_CLASSES and 'REF_CLK' not in net.GetNetname()
 
 

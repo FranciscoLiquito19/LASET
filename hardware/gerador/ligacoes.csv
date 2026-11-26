@@ -280,7 +280,6 @@ U4;5;/Ethernet/XI
 U4;4;/Ethernet/XO
 U4;24;/Ethernet/RBIAS
 U4;2;/Ethernet/NINTSEL
-U4;3;/Ethernet/REGOFF
 U4;7;ETH_RXD1
 U4;8;ETH_RXD0
 U4;11;ETH_CRS_DV
@@ -311,8 +310,6 @@ R30;1;/Ethernet/RBIAS
 R30;2;GND
 R31;1;/Ethernet/NINTSEL
 R31;2;GND
-R32;1;/Ethernet/REGOFF
-R32;2;GND
 R33;1;+3V3
 R33;2;ETH_MDIO
 R94;1;/Ethernet/REF_CLK_PHY

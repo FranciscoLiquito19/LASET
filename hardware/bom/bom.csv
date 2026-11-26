@@ -59,7 +59,7 @@ R4;1;90,9k (SLOPE);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativ
 R5;1;75k (400 kHz);R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
 R6;1;2,0k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
 R7;1;40,2k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,02;estimativa;—
-R8, R9, R14, R20, R31, R32, R60, R85, R90, R91, R92, R93, R95;13;10k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,26;estimativa;—
+R8, R9, R14, R20, R31, R60, R85, R90, R91, R92, R93, R95;12;10k;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,24;estimativa;—
 R10;1;10 mOhm 1 W (R_CS);R_2512_6332Metric;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0,60;0,60;estimativa;—
 R11, R12;2;10;R_0603_1608Metric;Yageo;série RC0603 1 %;0,02;0,04;estimativa;—
 R13;1;10 mOhm (R_ISNS);R_2512_6332Metric;Vishay;WSL2512R0100FEA (10 mOhm 1 W);0,60;0,60;estimativa;—
@@ -98,8 +98,8 @@ U14;1;ADuM6401ARWZ;SOIC-16W_7.5x10.3mm_P1.27mm;Analog Devices;ADUM6401ARWZ;14,91
 Y1, Y2;2;25 MHz (C_L 10 pF);Crystal_SMD_3225-4Pin_3.2x2.5mm;CTS;425F22A025M0000 (C_L 10 pF);0,65;1,30;consultado;DigiKey (0,70 USD, 1 un., 23/11/2026, conversão aproximada)
 
 ;;Placa: total consultado;;;;;95,04
-;;Placa: total estimativa;;;;;23,97
-;;Placa: total;;;;;119,01
+;;Placa: total estimativa;;;;;23,95
+;;Placa: total;;;;;118,99
 
 Fora do esquema;Qtd;Item;;Fabricante;Referência do fabricante;Preço unit. (€);Subtotal (€);Tipo de preço;Fonte
 ;1;Placa de avaliação para o firmware;;STMicroelectronics;NUCLEO-H753ZI;34,68;34,68;consultado;DigiKey (EUR, 1 un., 23/11/2026)
@@ -111,4 +111,4 @@ Fora do esquema;Qtd;Item;;Fabricante;Referência do fabricante;Preço unit. (€
 ;1;Cabos para ensaios (Ethernet, DE-9, par entrançado, alimentação);;—;—;15,00;15,00;estimativa;—
 ;;Fora do esquema: total;;;;;122,45
 
-;;Projeto (placa + fora do esquema);;;;;241,46
+;;Projeto (placa + fora do esquema);;;;;241,44

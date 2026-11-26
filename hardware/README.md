@@ -52,46 +52,63 @@ python3 curtas.py    # rascunho: ligações de sinal curtas (F.Cu, ou B.Cu com d
 python3 encaminhar.py   # rascunho: encaminhador em grelha (A*) para o resto, com vias
 ```
 
-Ordem usada para a placa atual:
+Ordem usada para a placa atual (refeita a 25 e 26/11 depois da revisão independente):
 
 ```sh
-python3 pcb.py && python3 fanout.py
-python3 pf.py                       # encaminhamento por congestionamento negociado (~45 min)
-python3 encaminhar.py               # completa o que ficou em conflito
-FINO=1 python3 encaminhar.py        # passagem final com pistas de 0,15 mm
-python3 melhorar.py <base>          # pesquisa local (base = placa depois de fanout.py): 18 -> 16
-python3 serigrafia.py               # referências sem sobreposição e nome dos conectores
-VIA=0.5 python3 interior.py         # F.Cu + In2 para as que já não cabem: 16 -> 9
-VIA=0.5 BASE=<base> python3 interior.py           # com arranque: 9 -> 8
-# arrancar_e_ordenar(): TXD1 a sair por baixo de TXD0, TX_EN e NRST, e REGOFF: 8 -> 5
-# fecho à mão por coordenadas (ver abaixo): 5 -> 0
+python3 pcb.py && python3 fanout.py      # 302 ligações por fazer
+python3 pf.py                            # encaminhamento por congestionamento negociado (~60 min): 80
+python3 encaminhar.py && FINO=1 python3 encaminhar.py               # 28 -> 21
+VIA=0.5 python3 interior.py              # F.Cu + In2 (sinais lentos) e F/B com HV: 21 -> 16
+python3 melhorar.py <base>               # pesquisa local (base = placa depois de fanout.py): 16 -> 12
+VIA=0.5 BASE=<base> python3 interior.py  # com arranque: 12 -> 11
+# fecho por coordenadas e arrancar_e_ordenar() (ver abaixo): 11 -> 0
+python3 serigrafia.py                    # referências sem sobreposição e nome dos conectores
+python3 vista3d.py                       # texturas e componentes para hardware/3d/index.html
 ```
 
-As últimas 5 foram fechadas com pistas e vias postas por coordenadas, com o afastamento
-verificado à mão e depois pelo DRC:
+As últimas 11 foram fechadas com pistas e vias postas por coordenadas (afastamento
+verificado à mão e depois pelo DRC) ou arrancando e voltando a encaminhar só as redes
+vizinhas:
 
-- LAN8742A, coluna da esquerda: vias de saída de 0,5 mm em coluna a x = 79,0 (RXD0, +3V3 do
-  pino 30.25, que passou a via de 0,5 mm) e MDIO a (78,7; 32,15); CRS_DV refeito a partir
-  delas; REF_CLK desce do pino para uma via a (81,25; 33,6) e segue por In2. Uma pista em
-  F.Cu entre os +3V3 de C29 e C30 liga uma ilha do plano que ficou cortada.
-- LM5177: SW1 sai por uma via a (36,45; 30,6), já fora do courtyard e a 0,65 mm do HO1;
-  a via de massa do pino 30 passou a 0,5 mm em (39,45; 30,85), o que abre 0,55 mm para o
-  LO2 subir entre ela e a via do HO2; a via do HO2 passou a 0,5 mm em (40,5; 30,9), e o HB2
-  segue em diagonal entre o SW2 (0,6 mm, classe HV) e o LO2 até ao C10.
+- LM5177: SW2 do pino ao C10 e à zona SW2 por B.Cu, à volta da diagonal do HO2; LA, EN e VIN
+  pelo `interior.py` com a área `lm5177` (ver abaixo).
+- LAN8742A: via de 0,5 mm do +3V3 do pino 30.25 em (79,1; 30,4), com o GND do C41 a partilhar
+  a via do C48; NRST, TX_EN e TXD0 descem em paralelo pelo corredor entre C44 e C42; TXP em
+  F.Cu entre RXN e TXN até baixo do R37 e depois por B.Cu entre as resistências de terminação
+  (a via do TXN desceu 0,35 mm para lhe dar passagem). R32 saiu do esquema: o REGOFF tem
+  pull-down interno e a flutuar o regulador de 1,2 V fica ligado (folha do LAN8742A, 3.7.3.2).
+- STM32: I2C1_SCL e GPS_TX com o vizinho (SDA, RX) arrancado e encaminhado depois.
+- ETH_REF_CLK: o único caminho é por In2 (25 mm, mais 6,7 mm em F.Cu), autorizado só para
+  esta rede com `PERMITIR_IN2=ETH_REF_CLK`; tem agora 33 Ω em série junto ao PHY (R94).
 
-O `interior.py` usa a camada In2 (plano de 3,3 V) para sinais lentos ou de baixa corrente:
-cada pista em In2 recorta o plano à volta e tem o plano de massa (In1) como referência. As
-vias de saída são de 0,5/0,25 mm, dentro das regras do projeto. Estão em In2: GPS_TX,
-RS485_RX, PWM3, NRST, ETH_TXD0, ETH_TXD1, ETH_TX_EN, RXN, RBIAS, VIN (alimentação do
-LM5177) e LA (65 pistas, 23 vias de 0,5 mm).
+Área `lm5177`: área de regra sem restrições à volta do LM5177 e dos seus passivos (x 30 a
+50, y 26 a 42). Lá dentro a classe HV usa 0,15 mm em vez de 0,6 mm (`.kicad_dru`): sob
+máscara de solda, 0,13 mm chegam até 100 V (IPC-2221B, B4). O `interior.py` usa o mesmo
+afastamento na grelha.
 
-O `serigrafia.py` corre uma vez, no fim: põe cada referência (0,8 mm) no sítio livre mais
-perto da peça, sem tocar em pads, noutras linhas nem no bordo, e esconde as que não cabem
-(13 na placa atual, passivos em zonas apertadas). Acrescenta o nome de cada conector
+O `interior.py` usa a camada In2 (plano de 3,3 V) para sinais lentos: cada pista em In2
+recorta o plano. Não podem ir para In2 as classes HV e P5V (nós de comutação e potência), a
+classe ETH (pares) nem o REF_CLK, a não ser por exceção explícita. As vias de saída são de
+0,5/0,2 mm (anel de 0,15 mm) com pelo menos 0,8 mm entre centros. Estão em In2: GPS_TX
+(32 mm), GPS_RX (30 mm), CAN1_TX (27 mm), ETH_REF_CLK (25 mm), I2C_OE (19 mm) e RBIAS (4 mm).
+Sem a pilha de camadas definida, In2 fica mais perto de B.Cu do que de In1 (na JLC04161H-7628,
+cerca de 0,2 mm contra 1,1 mm): a referência destas pistas é sobretudo o cobre de B.Cu e o
+plano de 3,3 V à volta, não o plano de massa.
+
+O `serigrafia.py` corre uma vez, no fim: põe cada referência (1,0 mm de altura e 0,15 mm de
+traço, o que a JLCPCB recomenda) no sítio livre mais perto da peça, sem tocar em pads,
+noutras linhas nem no bordo, e esconde as que não cabem (36 na placa atual, passivos em zonas
+apertadas). Acrescenta o nome de cada conector
 (VIN, ETH, SWD, RS232, I2C1, I2C2, GPS, CAN1, CAN2, RS485, PWM) e desloca o bloco de texto
 LASET se tocar em alguma peça. Recusa correr numa placa que já tenha os nomes.
 
-Freerouting (testado em 25/11, versão 1.9.0 sem janela e 2.1.0, Java 21): não fecha
+Visualização 3D: `python3 vista3d.py` gera as texturas das duas faces e a lista de
+componentes para `3d/index.html` (three.js; abre-se com `python3 -m http.server` na pasta
+`3d`). Os footprints têm os modelos 3D do KiCad (o do LM5177 usa o do TSSOP-38), por isso
+no KiCad basta `Ver > Visualizador 3D` (Alt+3); se o KiCad 9 não encontrar os modelos,
+`Ferramentas > Atualizar footprints a partir da biblioteca` corrige o caminho.
+
+Freerouting (testado em 25/11 na placa anterior, versão 1.9.0 sem janela e 2.1.0, Java 21): não fecha
 nenhuma das 16. Com as pistas atuais fixas só acrescenta cobre redundante; a refazer todo o
 encaminhamento de sinal (cobre de `pcb.py` e `fanout.py` fixo) volta às mesmas 16; com o
 afastamento da classe HV reduzido a 0,15 mm chega a 14, mas com 13 violações de 0,6 mm
@@ -152,28 +169,26 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado: 205 componentes colocados, andar de potência ligado por zonas em F.Cu, ~200 vias de ligação aos planos, encaminhamento completo das 295 ligações (`pf.py`, `encaminhar.py`, `melhorar.py`, `interior.py` e as últimas 5 por coordenadas), serigrafia arrumada, DRC sem violações de
-afastamento, de courtyard nem de serigrafia (o KiCad 9 da CI confirma a paridade com o esquema). Os pads
-expostos do LM5177 e do LAN8742A ligam ao plano de massa sem alívio térmico. Falta:
+Estado (26/11): 212 componentes colocados, andar de potência espelhado e ligado por zonas em
+F.Cu, cerca de 200 vias de ligação aos planos, encaminhamento completo, serigrafia arrumada,
+DRC sem violações de cobre, de courtyard nem de serigrafia. Comprimentos no andar de potência:
+HO1 18 mm (era 52), LO1 17, HO2 21, LO2 19, HB1 6, HB2 8. Vias: 401 de 0,6/0,3 mm e 45 de
+0,5/0,2 mm; nenhum par de furos de redes diferentes a menos de 0,5 mm (regra da JLCPCB). Os
+pads expostos do LM5177 e do LAN8742A, o pino 3 do J2 e o pino 1 do JP6 ligam aos planos sem
+alívio térmico. Falta:
 
-1. Rever o encaminhamento, que foi todo feito por programa. O andar de potência já tem as
-   ligações de corrente alta feitas por zonas sólidas em F.Cu (`POTENCIA` em `pcb.py`:
-   VIN_RAW, VIN_F, VIN, SW1, LA, SW2, 5V_PRE e +5V); falta o comando das portas (HO1,
-   LO1, HO2, LO2, curtas e cada uma junto à sua referência SW1/SW2/GND), os bootstrap
-   (C8, C10), a medição de corrente (CSA/CSB em par até ao LM5177) e o VIN do LM5177.
-   Depois os pares Ethernet (TXP/TXN e RXP/RXN juntos, curtos, sem vias), o cristal do
-   MCU e o resto.
-   Em especial: os sinais que passam por In2 (RXN do par Ethernet, LA e SW1 do andar de
-   potência, VIN do LM5177, RMII, UART, PWM e reset) e as vias de 0,5/0,25 mm.
-2. Rever à mão a posição dos condensadores de desacoplamento do STM32 (alguns ficaram a
-   mais de 3 mm do pino) e dos MOSFET.
-3. Mostrar à mão, se houver espaço depois do encaminhamento, as 13 referências escondidas.
-4. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
+1. Rever o encaminhamento, que foi todo feito por programa: comando das portas dos MOSFET e
+   o seu retorno, CSA/CSB, os pares Ethernet (TXP e TXN têm vias), o REF_CLK em In2 e os
+   condensadores de desacoplamento que ficaram a mais de 3 mm do pino (VCAP do STM32 a 7 a
+   8 mm, VIO do U5 a 9 a 11 mm).
+2. Definir a pilha de camadas (por exemplo JLC04161H-7628) e pedir à JLCPCB as vias do pad
+   do LM5177 tapadas ou cheias (a pasta de solda pode escorrer por elas).
+3. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
    ficheiros de fabrico com `python3 -I gerador/fabrico.py`: escreve em `hardware/fabrico/`
    (fora do repositório) o zip dos Gerbers e da furação para a JLCPCB e as posições para
    a montagem (CPL, origem no canto inferior esquerdo). Na montagem da JLCPCB, confirmar a
-   rotação de cada peça na pré-visualização: as bibliotecas do KiCad e da JLCPCB nem
-   sempre usam a mesma orientação de referência.
+   rotação de cada peça polarizada na pré-visualização: as bibliotecas do KiCad e da JLCPCB
+   nem sempre usam a mesma orientação de referência.
 
 ### Ligações em falta
 
