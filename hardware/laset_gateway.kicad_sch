@@ -238,7 +238,7 @@
       (reference "#PWR024") (unit 1) (value "GND") (footprint "")
     )
     (path "/e1fa7857-44d4-574c-a274-4200b1f5ed64/a9a4449e-e82c-52c7-ac0c-6ac9cbc71644"
-      (reference "C7") (unit 1) (value "22 uF 10 V X7R (VCC)") (footprint "Capacitor_SMD:C_1206_3216Metric")
+      (reference "C7") (unit 1) (value "47 uF 10 V X5R (VCC)") (footprint "Capacitor_SMD:C_1206_3216Metric")
     )
     (path "/e1fa7857-44d4-574c-a274-4200b1f5ed64/e35a24d2-f3d2-5889-91a6-bbdb06eb29b2"
       (reference "#PWR025") (unit 1) (value "GND") (footprint "")

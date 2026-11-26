@@ -2945,7 +2945,7 @@
     (property "Reference" "C7" (id 0) (at 130 182 0)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "22 uF 10 V X7R (VCC)" (id 1) (at 130 188 0)
+    (property "Value" "47 uF 10 V X5R (VCC)" (id 1) (at 130 188 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "Capacitor_SMD:C_1206_3216Metric" (id 2) (at 130 185 0)

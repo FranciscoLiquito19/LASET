@@ -62,8 +62,6 @@ def chave(ref, valor, fp):
             return 'C 1 nF 2 kV 1206'
         if '100 V' in valor:
             return f'C {num} 100V {tam}'.replace(' 0603', ' 0603').strip()
-        if '22 uF' in num and 'X7R' in valor:
-            return 'C 22 uF 10V 1206 X7R'
         return f'C {num} {tam}'
     if letras in ('J', 'JP'):
         if 'TerminalBlock' in fp:

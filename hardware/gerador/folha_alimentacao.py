@@ -8,6 +8,8 @@ Valores calculados a partir da folha de características do LM5177 (TI SNVSBU4F)
   MOSFET de nível lógico (BSC070N10LS5): o LM5177 tem drivers lógicos alimentados por VCC
         = 5 V e o patamar de Miller tem de ficar abaixo da tensão mínima de entrada.
   BIAS a GND: com saída de 5 V não se atinge o limiar de 6,5 V de comutação para BIAS.
+  C7 (VCC): 47 uF 10 V X5R. A folha pede 10 uF efetivos no mínimo; um 22 uF 10 V a 5 V
+        de polarização fica perto dos 11 uF, um 47 uF fica com cerca de 18 uF.
   FB:   V_out = 1,0 V x (1 + 40,2k/10k) = 5,02 V
   R_CS = 10 mOhm -> limite de corrente de pico 50 mV/10 mOhm = 5 A (mín. 3,85 A)
   R_SLOPE = L/R_CS x 50e6 = 18 uH / 10 mOhm x 50e6 = 90 kOhm -> 90,9 kOhm
@@ -77,7 +79,7 @@ def folha():
     f.comp('C6', C, '2,2 nF', 130, 140, {1: '/COMP', 2: 'GND'}, C0603)
     f.comp('R7', R, '40,2k', 110, 180, {1: '+5V', 2: '/FB'}, R0603)
     f.comp('R8', R, '10k', 110, 200, {1: '/FB', 2: 'GND'}, R0603)
-    f.comp('C7', C, '22 uF 10 V X7R (VCC)', 130, 185, {1: '/VCC', 2: 'GND'}, C1206)
+    f.comp('C7', C, '47 uF 10 V X5R (VCC)', 130, 185, {1: '/VCC', 2: 'GND'}, C1206)
     f.comp('C107', C, '100 nF 100 V (VIN do LM5177)', 190, 250, {1: 'VIN', 2: 'GND'}, C0603)
     f.comp('R9', R, '10k', 140, 205, {1: '+3V3', 2: 'PG_5V'}, R0603)
 

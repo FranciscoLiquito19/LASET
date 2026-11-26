@@ -4,7 +4,7 @@ C3;1;47 uF 100 V;CP_Elec_8x10;Panasonic;EEE-FK2A470P;0,50;0,50;estimativa;—
 C4;1;18 nF (SS);C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
 C5;1;56 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
 C6;1;2,2 nF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
-C7;1;22 uF 10 V X7R (VCC);C_1206_3216Metric;Murata;GRM31 X5R/X7R (10–22 uF);0,15;0,15;estimativa;—
+C7;1;47 uF 10 V X5R (VCC);C_1206_3216Metric;Murata;GRM31 X5R/X7R (10–22 uF);0,15;0,15;estimativa;—
 C8, C10;2;100 nF 25 V;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,06;estimativa;—
 C9;1;180 pF;C_0603_1608Metric;Murata;GRM18 X7R/C0G;0,03;0,03;estimativa;—
 C11, C12, C13, C16, C109, C110;6;22 uF 10 V;C_1206_3216Metric;Murata;GRM31 X5R/X7R (10–22 uF);0,15;0,90;estimativa;—
