@@ -19,7 +19,7 @@ Em jlcpcb.com, "Order now", carregar `laset_gateway_gerbers.zip`. O site lê o t
 | PCB Thickness | 1,6 mm | |
 | Specify Stackup | JLC04161H-7628 | é a pilha para que a placa foi desenhada |
 | Surface Finish | ENIG | pads planos, melhor para o LQFP-144 e os QFN de passo 0,5 mm |
-| Via Covering | Epoxy Filled & Capped | 11 vias tocam em pads; cheias e tapadas não puxam a solda (tem custo extra em 4 camadas) |
+| Via Covering | Epoxy Filled & Capped | 8 vias tocam em pads; cheias e tapadas não puxam a solda (tem custo extra em 4 camadas) |
 | Outer / Inner Copper | 1 oz / 0,5 oz | valores normais da pilha |
 | Quantidade | 5 (mínimo) | |
 

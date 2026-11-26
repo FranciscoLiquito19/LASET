@@ -194,14 +194,17 @@ Disposição (Figura 5.2 do relatório):
 Estado (26/11): 212 componentes colocados (5 em B.Cu), andar de potência espelhado e ligado por
 zonas em F.Cu, encaminhamento completo, serigrafia arrumada, DRC sem violações de cobre, de
 courtyard nem de serigrafia, pilha JLC04161H-7628 definida. Comprimentos no andar de potência:
-HO1 19 mm (era 52), LO1 17, HO2 22, LO2 19, HB1 6, HB2 10. Vias: 359 de 0,6/0,3 mm e 93 de
+HO1 19 mm (era 52), LO1 17, HO2 22, LO2 19, HB1 6, HB2 10. Vias: 357 de 0,6/0,3 mm e 97 de
 0,5/0,2 mm; nenhum par de furos de redes diferentes a menos de 0,5 mm (regra da JLCPCB). Os
 pads expostos do LM5177 e do LAN8742A, o pino 3 do J2 e o pino 1 do JP6 ligam aos planos sem
 alívio térmico. Falta:
 
 1. Rever o encaminhamento, que foi todo feito por programa: comando das portas dos MOSFET e
    o seu retorno, CSA/CSB, os pares Ethernet (TXP e TXN têm vias), REF_CLK (40 mm, 4 vias)
-   e as 11 vias que ainda tocam em pads.
+   e as 8 vias que ainda tocam em pads (U7: 5, U5.19, U6.19, D4.1; a lista sai de
+   `LISTAR=1 python3 gerador/vias_pad.py`). O DRC avisa (regra "Via fora dos pads SMD")
+   e os encaminhadores já não põem vias novas em pads. Para as tirar é preciso afastar à
+   mão as peças à volta do U7 (C82 a C85, D6, R45).
 2. Na encomenda: pilha JLC04161H-7628, vias "Epoxy Filled & Capped" e montagem Standard
    (duas faces; as 5 peças de baixo). O footprint do LM5177
    confere com o desenho DCP0038 da TI (pads 1,475 × 0,3 mm a ±2,86 mm contra 1,5 × 0,3 a
