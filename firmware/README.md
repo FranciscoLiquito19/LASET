@@ -66,11 +66,12 @@ firmware (`stm32h7xx_hal_msp.c` e `placa.h`) com a tabela do esquema
 | Ligação ao PC por RS232: COBS + CRC-16, cabeçalho de 20 bytes | feito, com testes |
 | Ligação ao PC por Ethernet: UDP para operações, TCP para configuração (LwIP) | feito (esboço) |
 | Ligação ao PC por CAN FD 1 ou 2: ISO 15765-2 com tramas de 64 bytes | feito (esboço), com testes |
-| Configuração persistente na flash, com dupla cópia (RF18) | feito (esboço), com testes |
+| Configuração persistente na flash, com dupla cópia (RF18) e leitura protegida contra ECC estragado | feito (esboço), com testes |
 | RS485 (DE automático, sem o eco do que emite), RS232 em bruto | feito |
 | I2C1/I2C2: escrita e leitura com registo (início repetido), reinício do periférico se o barramento ficar preso | feito |
 | PWM: 3 canais a 50 Hz, 0,5 µs, valor seguro sem comandos, paragem por hardware (BKIN) com rearme no comando seguinte, se a falha já tiver passado | feito |
 | PPS no TIM2 (64 bits, compensação da deriva) + NMEA RMC | feito, com testes |
+| Vigilante (IWDG, 4 s) alimentado pela tarefa de menor prioridade; reinício automático se o firmware parar, avisado na consola | feito |
 
 Tudo isto compila sem avisos mas **ainda não correu numa placa**. Para a PCB, os passos
 do primeiro arranque estão em `hardware/ARRANQUE.md`. Primeiros ensaios na NUCLEO, por

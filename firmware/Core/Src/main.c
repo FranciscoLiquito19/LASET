@@ -7,11 +7,28 @@ static StaticTask_t estado_tcb;
 static StackType_t estado_pilha[512];
 
 /* LED a piscar e, a cada 5 s, o estado na consola */
+/* Vigilante independente (IWDG1, LSI de 32 kHz / 64, 2000 contagens = 4 s). É alimentado
+ * por esta tarefa, a de prioridade mais baixa: se outra tarefa ou uma interrupção
+ * prender o CPU, ou se o código cair no Error_Handler, a unidade reinicia sozinha em
+ * 4 s. Pára enquanto o depurador tem o CPU parado. */
+static void vigilante_iniciar(void)
+{
+    DBGMCU->APB4FZ1 |= DBGMCU_APB4FZ1_DBG_IWDG1;
+    IWDG1->KR = 0xCCCC;                     /* liga (não se pode desligar até ao reset) */
+    IWDG1->KR = 0x5555;                     /* permite escrever PR e RLR */
+    IWDG1->PR = 4;                          /* /64 */
+    IWDG1->RLR = 2000;
+    while (IWDG1->SR) {}
+    IWDG1->KR = 0xAAAA;
+}
+
 static void tarefa_estado(void *arg)
 {
     (void)arg;
     uint32_t n = 0;
+    vigilante_iniciar();
     for (;;) {
+        IWDG1->KR = 0xAAAA;                 /* alimenta o vigilante */
         HAL_GPIO_TogglePin(LED_PORTA, LED_PINO);
         vTaskDelay(pdMS_TO_TICKS(250));
         if (++n % 20 == 0) {
@@ -44,6 +61,8 @@ int main(void)
                    "PCB LASET",
 #endif
                    (unsigned long)HAL_RCC_GetSysClockFreq());
+    if (RCC->RSR & RCC_RSR_IWDG1RSTF) consola_printf("reinício pelo vigilante (o firmware tinha parado)\r\n");
+    RCC->RSR |= RCC_RSR_RMVF;               /* limpa as causas do reinício */
     consola_printf("configuração: %s%s\r\n", config_carregada_da_flash() ? "da flash" : "de fábrica",
                    config_houve_erro_flash() ? " (uma cópia na flash estava estragada e foi ignorada)" : "");
     can_autoteste();
