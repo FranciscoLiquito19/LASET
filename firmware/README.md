@@ -48,7 +48,9 @@ python3 ../ferramentas/laset_pc.py autoteste
 ```
 
 Um dos testes lê uma trama gerada pela ferramenta do PC, o que garante que o Python e
-o firmware usam o mesmo formato. A CI compila as duas placas e corre estes testes.
+o firmware usam o mesmo formato. `testes/pinos.py` confere os pinos configurados no
+firmware (`stm32h7xx_hal_msp.c` e `placa.h`) com a tabela do esquema
+(`hardware/gerador/folha_mcu.py`). A CI compila as duas placas e corre estes testes.
 
 ## Estado
 
@@ -66,8 +68,9 @@ o firmware usam o mesmo formato. A CI compila as duas placas e corre estes teste
 | PWM: 3 canais a 50 Hz, 0,5 µs, valor seguro sem comandos, paragem por hardware (BKIN) | feito |
 | PPS no TIM2 (64 bits, compensação da deriva) + NMEA RMC | feito, com testes |
 
-Tudo isto compila sem avisos mas **ainda não correu numa placa**. Primeiros ensaios
-na NUCLEO, por esta ordem:
+Tudo isto compila sem avisos mas **ainda não correu numa placa**. Para a PCB, os passos
+do primeiro arranque estão em `hardware/ARRANQUE.md`. Primeiros ensaios na NUCLEO, por
+esta ordem:
 
 1. Consola (VCP, 115200): autoteste do CAN FD, "configuração: de fábrica" e o
    estado a cada 5 s.

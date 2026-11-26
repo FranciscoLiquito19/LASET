@@ -213,7 +213,7 @@ alívio térmico. Falta:
    no canto inferior esquerdo); `python3 -I gerador/jlcpcb.py` escreve lá a lista de material
    com os códigos LCSC (tabela em `bom/lcsc.csv`). Os ficheiros ficam no repositório e têm
    de ser gerados de novo sempre que a placa muda. Os passos da encomenda estão em
-   `fabrico/ENCOMENDA.md`. Na montagem da JLCPCB, confirmar a
+   `fabrico/ENCOMENDA.md`; os do primeiro arranque da placa, em `ARRANQUE.md`. Na montagem da JLCPCB, confirmar a
    rotação de cada peça polarizada na pré-visualização: as bibliotecas do KiCad e da JLCPCB
    nem sempre usam a mesma orientação de referência.
 

@@ -79,6 +79,7 @@ jobs:
         run: |
           cmake -B build && cmake --build build && ./build/teste_modulos
           python3 ../ferramentas/laset_pc.py autoteste
+          python3 -I pinos.py
       - name: Compilar para a NUCLEO-H753ZI
         working-directory: firmware
         run: |
