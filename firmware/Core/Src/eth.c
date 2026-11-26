@@ -187,7 +187,7 @@ static err_t tcp_recebido(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t 
 {
     if (p == NULL) {                              /* o cliente fechou */
         if (pcb == tcp_cliente) tcp_cliente = NULL;
-        tcp_close(pcb);
+        if (tcp_close(pcb) != ERR_OK) { tcp_abort(pcb); return ERR_ABRT; }   /* sem memória para o FIN */
         return ERR_OK;
     }
     mensagem_t m;
@@ -218,7 +218,7 @@ static void enviar(const mensagem_t *m)
         uint8_t t[PC_TRAMA_MAX];
         size_t k = pc_para_trama(m, t);
         if (!tcp_cliente || tcp_sndbuf(tcp_cliente) < k) { tx_erros++; return; }
-        tcp_write(tcp_cliente, t, (u16_t)k, TCP_WRITE_FLAG_COPY);
+        if (tcp_write(tcp_cliente, t, (u16_t)k, TCP_WRITE_FLAG_COPY) != ERR_OK) { tx_erros++; return; }
         tcp_output(tcp_cliente);
     } else {                                      /* UDP */
         uint8_t b[PC_BRUTO_MAX];
