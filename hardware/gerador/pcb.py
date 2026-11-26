@@ -567,8 +567,13 @@ def zonas(b, netinfo):
     zona(b, pcbnew.In1_Cu, netinfo['GND'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+3V3'], m, m, W - m, BARREIRA[0], 0)
     zona(b, pcbnew.In2_Cu, netinfo['+5V'], m, 63.5, W - m, BARREIRA[0], 1)
-    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 71.0, 31.0, 1)   # fonte, LM5177 e saída de 5 V
-    zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 31.0, 48.0, 41.5, 1)
+    # fonte, LM5177 e saída de 5 V: uma só zona em L (duas encostadas dão zones_intersect no KiCad 9)
+    z5 = zona(b, pcbnew.In2_Cu, netinfo['+5V'], 0.5, 10.0, 71.0, 31.0, 1)
+    o = z5.Outline()
+    o.RemoveAllContours()
+    o.NewOutline()
+    for x, y in ((0.5, 10.0), (71.0, 10.0), (71.0, 31.0), (48.0, 31.0), (48.0, 41.5), (0.5, 41.5)):
+        o.Append(mm(OX + x), mm(OY + y))
     # Andar de potência em F.Cu
     for rede, pol in POTENCIA:
         z = zona(b, pcbnew.F_Cu, netinfo[rede], 0, 0, 1, 1, 3, solida=True)
