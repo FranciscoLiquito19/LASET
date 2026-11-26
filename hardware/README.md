@@ -104,14 +104,16 @@ plano de 3,3 V à volta e o cobre de B.Cu, não o plano de massa.
 Vias e pads (`vias_pad.py`, 26/11): uma via não tapada dentro de um pad, ou encostada a ele,
 puxa a solda para o furo e a junta fica fraca. Os encaminhadores deixaram 90 assim; 78 foram
 mudadas para o sítio livre mais perto (fora do pad, 0,1 mm de folga) com uma pista curta, 7
-delas com 0,5/0,2 mm para caber. Ficam 12 sem lugar (VCC do LM5177, os VISOOUT e o RS485 do
-lado isolado do U7, CANH1 no D4, RXN, VDDCR, PWM_FALHA no R86 e o +3V3 do U6): ou se mudam à
-mão, ou se pedem à JLCPCB vias cheias e tapadas (POFV, pago em 4 camadas). As vias dos pads
+delas com 0,5/0,2 mm para caber. Ficam 11 sem lugar, mesmo com pistas em L e 5 mm de busca
+(`EM_L=1 REDUZIR=1`): VCC do LM5177, os VISOOUT e o RS485 do lado isolado do U7, CANH1 no D4,
+VDDCR no C44, PWM_FALHA no R86 e o +3V3 do U6. Na encomenda, pedir vias cheias e tapadas
+("Epoxy Filled & Capped"), que resolve estas 11 sem mexer na placa. Uma via perto de um pad
+sem lhe tocar fica tapada pela máscara (é o normal no KiCad) e não conta. As vias dos pads
 térmicos (Q1 a Q4) ficam, como é normal.
 
 Desacoplamento em B.Cu (`baixo.py`, 26/11): os condensadores que estavam longe do pino
 passaram para a face de baixo, por baixo dele, com uma via de 0,6/0,3 mm ao pino e outra ao
-plano de massa: C34 e C35 (VCAP do STM32) de 8,3 e 7,2 mm para 1,2 e 1,0 mm; C61, C62 e C63
+plano de massa: C34 e C35 (VCAP do STM32) de 8,3 e 7,2 mm para 1,5 e 1,0 mm; C61, C62 e C63
 (U5) de 6,7, 9,2 e 11,5 mm para 2,5, 1,5 e 1,0 mm. São as únicas 5 peças em B.Cu, o que
 obriga à montagem Standard da JLCPCB (duas faces).
 
@@ -199,8 +201,9 @@ alívio térmico. Falta:
 
 1. Rever o encaminhamento, que foi todo feito por programa: comando das portas dos MOSFET e
    o seu retorno, CSA/CSB, os pares Ethernet (TXP e TXN têm vias), REF_CLK (40 mm, 4 vias)
-   e as 12 vias que ainda tocam em pads.
-2. Na encomenda: pilha JLC04161H-7628, montagem Standard (duas faces). O footprint do LM5177
+   e as 11 vias que ainda tocam em pads.
+2. Na encomenda: pilha JLC04161H-7628, vias "Epoxy Filled & Capped" e montagem Standard
+   (duas faces; as 5 peças de baixo). O footprint do LM5177
    confere com o desenho DCP0038 da TI (pads 1,475 × 0,3 mm a ±2,86 mm contra 1,5 × 0,3 a
    ±2,9; pad exposto 2,9 × 4,7 mm igual); a pasta no pad exposto cobre 64 % e passa por cima
    de 4 das 6 vias térmicas, que a TI pede cheias, tapadas ou com a pasta afastada.

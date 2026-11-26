@@ -3,12 +3,13 @@
 Uso:  python3 vias_pad.py          (lista e corrige)
       LISTAR=1 python3 vias_pad.py (só lista)
 
-Uma via não tapada dentro de um pad (ou encostada a ele) puxa a solda para o furo na
+Uma via dentro de um pad (o cobre da via toca no do pad) puxa a solda para o furo na
 refusão: a junta fica fraca e os passivos pequenos levantam de um lado. Cada via assim
 passa para o sítio livre mais perto, fora de todos os pads (0,1 mm de folga), e liga ao
 ponto antigo por uma pista curta em cada camada onde havia pistas ligadas a ela. Ficam
 como estão as vias dos pads grandes (pads térmicos, mais de 3 mm²), que são de
-propósito. A via é movida (não apagada e criada de novo) e as pistas são acrescentadas.
+propósito. Uma via perto de um pad sem lhe tocar fica tapada pela máscara e não conta.
+EM_L=1 deixa a pista nova fazer um L; REDUZIR=1 deixa reduzir a via para 0,5/0,2 mm. A via é movida (não apagada e criada de novo) e as pistas são acrescentadas.
 """
 import math
 import os
@@ -50,7 +51,7 @@ def em_pad(b, v, pads):
     c = pcbnew.SHAPE_CIRCLE(v.GetPosition(), v.GetWidth() // 2)
     for p in pads:
         for L in (pcbnew.F_Cu, pcbnew.B_Cu):
-            if p.IsOnLayer(L) and p.GetEffectiveShape(L).Collide(c, mm(FOLGA_PAD) - 1):
+            if p.IsOnLayer(L) and p.GetEffectiveShape(L).Collide(c, 0):
                 return p
     return None
 
@@ -144,10 +145,10 @@ def main():
 
         sucesso = None
         cands = []
-        for ix in range(-40, 41):
-            for iy in range(-40, 41):
+        for ix in range(-50, 51):
+            for iy in range(-50, 51):
                 d = math.hypot(ix, iy) * 0.1
-                if 0.3 <= d <= 4.0:
+                if 0.3 <= d <= 5.0:
                     cands.append((d, ox + ix * 0.1, oy + iy * 0.1))
         cands.sort()
         tamanhos = [(vd, fr)] + ([(0.5, 0.1)] if vd > 0.5 and os.environ.get('REDUZIR') else [])
@@ -186,11 +187,19 @@ def main():
                         continue
                     mover = [m for m in mover if m[0].GetLayer() != L]
                 for ex, ey in pontas[L]:
-                    s = pcbnew.SHAPE_SEGMENT(P(ex, ey), P(nx, ny), mm(w))
-                    if not livre(L, s, nx, ny) or any(z.Outline().Collide(s) for z in sem_pistas):
+                    # reta, ou em L (primeiro na horizontal ou na vertical)
+                    feito = False
+                    for meio in ([None] + ([(nx, ey), (ex, ny)] if os.environ.get('EM_L') else [])):
+                        pts = [(ex, ey)] + ([meio] if meio else []) + [(nx, ny)]
+                        segs = [pcbnew.SHAPE_SEGMENT(P(*a), P(*c_), mm(w)) for a, c_ in zip(pts, pts[1:])]
+                        if all(livre(L, s, nx, ny) and not any(z.Outline().Collide(s) for z in sem_pistas)
+                               for s in segs):
+                            pistas.extend((L, w, a[0], a[1], c_) for a, c_ in zip(pts, pts[1:]))
+                            feito = True
+                            break
+                    if not feito:
                         ok = False
                         break
-                    pistas.append((L, w, ex, ey))
                 if not ok:
                     break
             if not ok:
@@ -207,10 +216,10 @@ def main():
         v.SetPosition(P(nx, ny))
         v.SetWidth(mm(vd))
         v.SetDrill(mm(2 * fr))
-        for L, w, ex, ey in pistas:
+        for L, w, ex, ey, fim in pistas:
             t = pcbnew.PCB_TRACK(b)
             t.SetStart(P(ex, ey))
-            t.SetEnd(P(nx, ny))
+            t.SetEnd(P(*fim))
             t.SetWidth(mm(w))
             t.SetLayer(L)
             t.SetNet(v.GetNet())

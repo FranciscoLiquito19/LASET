@@ -13068,7 +13068,7 @@
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "B.Cu")
     (tstamp 53c669a1-2196-4a9f-8a23-e6dda178ad03)
-    (at 157.653297 96.065896 90)
+    (at 157.851537 95.922712 90)
     (descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
     (tags "capacitor")
     (property "Sheetname" "Microcontrolador")
@@ -14446,7 +14446,7 @@
   (via (at 154.85 114.95) (size 0.5) (drill 0.2) (layers "F.Cu" "B.Cu") (net 71) (tstamp a196d850-8c6e-4029-aa98-d9e23c5ffb98))
   (via (at 157.85 97.75) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 71) (tstamp beaaf71c-79e9-44d6-a13b-ab81058a6e7a))
   (segment (start 152.45 113.75) (end 153.55 114.85) (width 0.2) (layer "B.Cu") (net 71) (tstamp 236917ee-28dc-4f6c-980a-ebe57835a41b))
-  (segment (start 157.85 97.75) (end 157.653297 97.015896) (width 0.3) (layer "B.Cu") (net 71) (tstamp 782aa80f-1b7f-4b24-8dcf-f6f55fae272f))
+  (segment (start 157.85 97.75) (end 157.851537 96.872712) (width 0.3) (layer "B.Cu") (net 71) (tstamp 782aa80f-1b7f-4b24-8dcf-f6f55fae272f))
   (segment (start 153.55 114.85) (end 153.7304 115.275) (width 0.2) (layer "B.Cu") (net 71) (tstamp 79ae8153-4215-4d8f-8cd2-8aea336559cd))
   (segment (start 151.35 113.75) (end 152.45 113.75) (width 0.2) (layer "B.Cu") (net 71) (tstamp d15691f0-0256-49eb-9bd5-642abdfd7440))
   (segment (start 153.7304 115.275) (end 154.85 114.95) (width 0.2) (layer "B.Cu") (net 71) (tstamp e86b981d-579c-4dda-9bcd-3cc7c65266d0))
