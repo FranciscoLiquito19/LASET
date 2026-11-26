@@ -45,7 +45,7 @@ def main():
             fh.write(os.path.join(g, f), f)
 
     pos = os.path.join(SAIDA, 'posicoes_kicad.csv')
-    correr('pcb', 'export', 'pos', '--format', 'csv', '--units', 'mm', '--side', 'front', '--use-drill-file-origin',
+    correr('pcb', 'export', 'pos', '--format', 'csv', '--units', 'mm', '--side', 'both', '--use-drill-file-origin',
            '-o', pos, PCB)
     cpl = os.path.join(SAIDA, 'laset_gateway_posicoes.csv')
     with open(pos, encoding='utf-8') as fi, open(cpl, 'w', newline='', encoding='utf-8') as fo:

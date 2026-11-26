@@ -105,18 +105,22 @@ for f in b.GetFootprints():
     if tp is None: continue
     # caixa do corpo: camada Fab, se houver; senão o courtyard encolhido
     xs, ys = [], []
+    baixo = f.IsFlipped()
+    fab, crt = (pcbnew.B_Fab, pcbnew.B_CrtYd) if baixo else (pcbnew.F_Fab, pcbnew.F_CrtYd)
     for g in f.GraphicalItems():
-        if g.GetLayer() == pcbnew.F_Fab and g.GetClass() != 'MTEXT' and not isinstance(g, pcbnew.FP_TEXT):
+        if g.GetLayer() == fab and g.GetClass() != 'MTEXT' and not isinstance(g, pcbnew.FP_TEXT):
             bb = g.GetBoundingBox(); xs += [mm(bb.GetX()), mm(bb.GetRight())]; ys += [mm(bb.GetY()), mm(bb.GetBottom())]
     if not xs:
-        bb = f.GetCourtyard(pcbnew.F_CrtYd).BBox(); m = 0.25
+        f.BuildCourtyardCaches()
+        bb = f.GetCourtyard(crt).BBox(); m = 0.25
         xs = [mm(bb.GetX()) + m, mm(bb.GetRight()) - m]; ys = [mm(bb.GetY()) + m, mm(bb.GetBottom()) - m]
     x0, x1, y0, y1 = min(xs) - OX, max(xs) - OX, min(ys) - OY, max(ys) - OY
     pinos = []
     for p in f.Pads():
         if p.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
             q = p.GetPosition(); pinos.append([round(mm(q.x) - OX, 2), round(mm(q.y) - OY, 2)])
-    partes.append(dict(r=ref, v=val, f=fp, x0=round(x0, 2), x1=round(x1, 2), y0=round(y0, 2), y1=round(y1, 2), p=pinos, **tp))
+    partes.append(dict(r=ref, v=val, f=fp, x0=round(x0, 2), x1=round(x1, 2), y0=round(y0, 2), y1=round(y1, 2), p=pinos,
+                       **({'b': 1} if baixo else {}), **tp))
 json.dump(partes, open(os.path.join(OUT, 'parts.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
 for f in ('tmp.svg', 'tmp.png'):
     if os.path.exists(os.path.join(OUT, f)):

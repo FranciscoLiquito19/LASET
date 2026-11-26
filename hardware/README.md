@@ -63,6 +63,12 @@ python3 melhorar.py <base>               # pesquisa local (base = placa depois d
 VIA=0.5 BASE=<base> python3 interior.py  # com arranque: 12 -> 11
 # fecho por coordenadas e arrancar_e_ordenar() (ver abaixo): 11 -> 0
 python3 serigrafia.py                    # referências sem sobreposição e nome dos conectores
+# 26/11, depois da revisão:
+python3 vias_pad.py && REDUZIR=1 python3 vias_pad.py   # vias fora dos pads: 90 -> 12
+python3 baixo.py C62:U5.4 C63:U5.4 C61:U5.3            # desacoplamento do U5 para B.Cu
+# VCAP do STM32 (C34, C35) para B.Cu, arrancando e voltando a encaminhar as redes à volta
+python3 limpar.py                        # retira pistas com uma ponta solta
+python3 pilha.py                         # pilha JLC04161H-7628 no ficheiro da placa
 python3 vista3d.py                       # texturas e componentes para hardware/3d/index.html
 ```
 
@@ -78,8 +84,8 @@ vizinhas:
   (a via do TXN desceu 0,35 mm para lhe dar passagem). R32 saiu do esquema: o REGOFF tem
   pull-down interno e a flutuar o regulador de 1,2 V fica ligado (folha do LAN8742A, 3.7.3.2).
 - STM32: I2C1_SCL e GPS_TX com o vizinho (SDA, RX) arrancado e encaminhado depois.
-- ETH_REF_CLK: o único caminho é por In2 (25 mm, mais 6,7 mm em F.Cu), autorizado só para
-  esta rede com `PERMITIR_IN2=ETH_REF_CLK`; tem agora 33 Ω em série junto ao PHY (R94).
+- ETH_REF_CLK: tem 33 Ω em série junto ao PHY (R94). Ao refazer a zona do VCAP (26/11)
+  saiu de In2: passa agora por F.Cu (37 mm) e B.Cu (3 mm), com 4 vias.
 
 Área `lm5177`: área de regra sem restrições à volta do LM5177 e dos seus passivos (x 30 a
 50, y 26 a 42). Lá dentro a classe HV usa 0,15 mm em vez de 0,6 mm (`.kicad_dru`): sob
@@ -90,10 +96,24 @@ O `interior.py` usa a camada In2 (plano de 3,3 V) para sinais lentos: cada pista
 recorta o plano. Não podem ir para In2 as classes HV e P5V (nós de comutação e potência), a
 classe ETH (pares) nem o REF_CLK, a não ser por exceção explícita. As vias de saída são de
 0,5/0,2 mm (anel de 0,15 mm) com pelo menos 0,8 mm entre centros. Estão em In2: GPS_TX
-(32 mm), GPS_RX (30 mm), CAN1_TX (27 mm), ETH_REF_CLK (25 mm), I2C_OE (19 mm) e RBIAS (4 mm).
-Sem a pilha de camadas definida, In2 fica mais perto de B.Cu do que de In1 (na JLC04161H-7628,
-cerca de 0,2 mm contra 1,1 mm): a referência destas pistas é sobretudo o cobre de B.Cu e o
-plano de 3,3 V à volta, não o plano de massa.
+(35 mm), GPS_RX (27 mm), CAN1_TX (27 mm), I2C_OE (19 mm), RS485_TX (7 mm) e RBIAS (4 mm),
+todos lentos (UART, CAN a 1 Mbit/s no máximo, níveis estáticos). Com a pilha JLC04161H-7628
+(`pilha.py`), In2 fica a 0,21 mm de B.Cu e a 1,07 mm de In1: a referência destas pistas é o
+plano de 3,3 V à volta e o cobre de B.Cu, não o plano de massa.
+
+Vias e pads (`vias_pad.py`, 26/11): uma via não tapada dentro de um pad, ou encostada a ele,
+puxa a solda para o furo e a junta fica fraca. Os encaminhadores deixaram 90 assim; 78 foram
+mudadas para o sítio livre mais perto (fora do pad, 0,1 mm de folga) com uma pista curta, 7
+delas com 0,5/0,2 mm para caber. Ficam 12 sem lugar (VCC do LM5177, os VISOOUT e o RS485 do
+lado isolado do U7, CANH1 no D4, RXN, VDDCR, PWM_FALHA no R86 e o +3V3 do U6): ou se mudam à
+mão, ou se pedem à JLCPCB vias cheias e tapadas (POFV, pago em 4 camadas). As vias dos pads
+térmicos (Q1 a Q4) ficam, como é normal.
+
+Desacoplamento em B.Cu (`baixo.py`, 26/11): os condensadores que estavam longe do pino
+passaram para a face de baixo, por baixo dele, com uma via de 0,6/0,3 mm ao pino e outra ao
+plano de massa: C34 e C35 (VCAP do STM32) de 8,3 e 7,2 mm para 1,2 e 1,0 mm; C61, C62 e C63
+(U5) de 6,7, 9,2 e 11,5 mm para 2,5, 1,5 e 1,0 mm. São as únicas 5 peças em B.Cu, o que
+obriga à montagem Standard da JLCPCB (duas faces).
 
 O `serigrafia.py` corre uma vez, no fim: põe cada referência (1,0 mm de altura e 0,15 mm de
 traço, o que a JLCPCB recomenda) no sítio livre mais perto da peça, sem tocar em pads,
@@ -169,20 +189,21 @@ Disposição (Figura 5.2 do relatório):
   automaticamente o mais perto possível do pino a que ligam (o desacoplamento junto ao
   pino de alimentação do circuito integrado), sem sobreposição e no seu domínio.
 
-Estado (26/11): 212 componentes colocados, andar de potência espelhado e ligado por zonas em
-F.Cu, cerca de 200 vias de ligação aos planos, encaminhamento completo, serigrafia arrumada,
-DRC sem violações de cobre, de courtyard nem de serigrafia. Comprimentos no andar de potência:
-HO1 18 mm (era 52), LO1 17, HO2 21, LO2 19, HB1 6, HB2 8. Vias: 401 de 0,6/0,3 mm e 45 de
+Estado (26/11): 212 componentes colocados (5 em B.Cu), andar de potência espelhado e ligado por
+zonas em F.Cu, encaminhamento completo, serigrafia arrumada, DRC sem violações de cobre, de
+courtyard nem de serigrafia, pilha JLC04161H-7628 definida. Comprimentos no andar de potência:
+HO1 19 mm (era 52), LO1 17, HO2 22, LO2 19, HB1 6, HB2 10. Vias: 359 de 0,6/0,3 mm e 93 de
 0,5/0,2 mm; nenhum par de furos de redes diferentes a menos de 0,5 mm (regra da JLCPCB). Os
 pads expostos do LM5177 e do LAN8742A, o pino 3 do J2 e o pino 1 do JP6 ligam aos planos sem
 alívio térmico. Falta:
 
 1. Rever o encaminhamento, que foi todo feito por programa: comando das portas dos MOSFET e
-   o seu retorno, CSA/CSB, os pares Ethernet (TXP e TXN têm vias), o REF_CLK em In2 e os
-   condensadores de desacoplamento que ficaram a mais de 3 mm do pino (VCAP do STM32 a 7 a
-   8 mm, VIO do U5 a 9 a 11 mm).
-2. Definir a pilha de camadas (por exemplo JLC04161H-7628) e pedir à JLCPCB as vias do pad
-   do LM5177 tapadas ou cheias (a pasta de solda pode escorrer por elas).
+   o seu retorno, CSA/CSB, os pares Ethernet (TXP e TXN têm vias), REF_CLK (40 mm, 4 vias)
+   e as 12 vias que ainda tocam em pads.
+2. Na encomenda: pilha JLC04161H-7628, montagem Standard (duas faces). O footprint do LM5177
+   confere com o desenho DCP0038 da TI (pads 1,475 × 0,3 mm a ±2,86 mm contra 1,5 × 0,3 a
+   ±2,9; pad exposto 2,9 × 4,7 mm igual); a pasta no pad exposto cobre 64 % e passa por cima
+   de 4 das 6 vias térmicas, que a TI pede cheias, tapadas ou com a pasta afastada.
 3. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
    ficheiros de fabrico com `python3 -I gerador/fabrico.py`: escreve em `hardware/fabrico/`
    (fora do repositório) o zip dos Gerbers e da furação para a JLCPCB e as posições para
