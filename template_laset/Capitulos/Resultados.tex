@@ -2,6 +2,76 @@
 %   Capítulo 7 - Resultados
 %-----------------------------------------------------------
 \chapter{Resultados}
+\label{cap:resultados}
 
-Apresentação e discussão crítica os resultados de testes realizados com o sistema.
-Imagens das placas desenvolvidas e das aplicações de \textit{software}, devidamente comentadas.
+A placa ainda não foi fabricada nem o \textit{firmware} correu numa placa.
+Este capítulo apresenta, por isso, os resultados da verificação do projeto,
+que já existem, e os ensaios planeados para quando houver placa.
+
+\section{Verificação do projeto}
+
+A Tabela~\ref{tab:res-verificacao} junta as verificações que a CI corre em
+cada alteração do repositório.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Verificações automáticas do projeto (26 de novembro de 2026).}
+\label{tab:res-verificacao}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.42\textwidth}@{}}
+\toprule
+\rowcolor{LasetTint}
+Verificação & Resultado \\
+\midrule
+ERC do esquema (KiCad 9) & 1 erro aceite (pinos VCAP unidos) \\
+DRC da placa (KiCad 9) & 0 violações de cobre; 0 ligações em falta \\
+Paridade entre esquema e placa & 0 diferenças \\
+Testes dos módulos do \textit{firmware} no PC & 101 verificações, 0 falhas \\
+Pinos do \textit{firmware} contra o esquema & 35 pinos, 0 diferenças \\
+Compilação para NUCLEO e PCB & sem avisos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Algumas medidas da placa, retiradas do ficheiro do KiCad:
+
+\begin{itemize}
+  \item comando das portas dos MOSFET: 17 a 22~mm por porta, com o
+        \textit{bootstrap} a 6 e 10~mm;
+  \item condensadores do VCAP a 1,0 e 1,5~mm do pino; condensadores de
+        desacoplamento dos circuitos integrados, na maioria, a menos de 5~mm;
+  \item 452 vias (359 de 0,6/0,3~mm e 93 de 0,5/0,2~mm), nenhum par de furos
+        de redes diferentes a menos de 0,5~mm;
+  \item sinais na camada interior de 3,3~V: só sinais lentos (UART do GPS,
+        CAN1\_TX, RS485\_TX, I2C\_OE e RBIAS).
+\end{itemize}
+
+O custo das peças da placa é de 118,99~€ por unidade, e o do projeto
+completo, com a NUCLEO, o recetor GPS, o fabrico e os cabos, de 241,44~€.
+
+\section{Ensaios planeados}
+
+Os passos do primeiro arranque estão em \texttt{hardware/ARRANQUE.md}. A
+Tabela~\ref{tab:res-ensaios} liga cada ensaio ao que verifica; os valores
+medidos entram aqui depois dos ensaios.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Ensaios planeados para a placa.}
+\label{tab:res-ensaios}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
+\toprule
+\rowcolor{LasetTint}
+Ensaio & Como & Resultado \\
+\midrule
+Alimentação & 5, 12, 24 e 48~V à entrada; medir 5~V e 3,3~V, corrente em vazio & por medir \\
+Estabilidade da fonte & degrau de carga de 0,2 para 1~A a 5 e 48~V; ondulação & por medir \\
+Programação & SWD; LED a piscar a 2~Hz & por medir \\
+RS232 e Ethernet & versão pela ferramenta do PC; \textit{ping} & por medir \\
+CAN FD & tramas a 1 + 8~Mbit/s com um adaptador ou outra placa & por medir \\
+RS485, I2C, PWM, PPS & ensaio de cada interface (Tabela em \texttt{ARRANQUE.md}) & por medir \\
+Latência & GPIO de marcação e analisador lógico: média, p99 e máximo & por medir \\
+\bottomrule
+\end{tabularx}
+\end{table}

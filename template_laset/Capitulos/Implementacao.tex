@@ -2,7 +2,132 @@
 %   Capítulo 6 - Implementação
 %-----------------------------------------------------------
 \chapter{Implementação}
+\label{cap:implementacao}
 
-Descrição e explicação do trabalho realizado para as diferentes partes do trabalho com alguns detalhes de ligação ou de partes do código mais importantes.
+Este capítulo descreve como foram feitos o esquema, a placa, o \textit{firmware}
+e a ferramenta do PC. Tudo está no repositório do projeto e é gerado ou
+verificado por programas, para que cada alteração possa ser repetida e
+conferida pela integração contínua (CI). A placa ainda não foi fabricada:
+os ensaios em bancada ficam para o capítulo seguinte.
 
-No anexo \ref{anexo:EETS}, pode ser analisado o esquema completo do circuito.
+\section{Esquema elétrico}
+
+O esquema tem sete folhas (alimentação, microcontrolador, Ethernet, CAN FD,
+série, I2C e GPS, PWM), com 212 componentes. Cada folha é escrita por um
+programa em Python (\texttt{hardware/gerador/folha\_*.py}) que coloca os
+símbolos e liga os pinos por nome de rede. A atribuição de pinos do
+microcontrolador fica numa única tabela, usada também para verificar o
+\textit{firmware} (Secção~\ref{sec:impl-firmware}). A CI corre o verificador
+de regras elétricas (ERC) do KiCad~9 em cada alteração; fica um único erro,
+aceite, nos dois pinos VCAP unidos, como pede a ST. O esquema completo está
+no Anexo~\ref{anexo:EETS}.
+
+A lista de material sai do esquema em duas versões: uma com fabricantes e
+preços para o orçamento (\texttt{hardware/bom/bom.csv}) e outra no formato da
+montagem da JLCPCB, com o código de cada peça no catálogo LCSC. Ao preparar a
+segunda, três peças estavam sem stock e foram substituídas por equivalentes
+com o mesmo \textit{footprint} (a bobina de 2,2~µH, os cristais de 25~MHz e as
+resistências de 60,4~$\Omega$ da terminação CAN, que passaram a 62~$\Omega$).
+O isolador ADuM6401 e o conector DE-9 também não estão em stock e são
+soldados à mão.
+
+\section{Placa de circuito impresso}
+
+A placa (100~$\times$~100~mm, quatro camadas) é gerada por
+\texttt{hardware/gerador/pcb.py} a partir do esquema. As peças principais
+têm posição fixa; os passivos são colocados junto do pino do circuito
+integrado a que pertencem. O encaminhamento foi feito por uma sequência de
+programas, cada um a partir do resultado do anterior
+(Tabela~\ref{tab:impl-encaminhamento}).
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Etapas do encaminhamento da placa.}
+\label{tab:impl-encaminhamento}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}X>{\raggedleft\arraybackslash}p{0.13\textwidth}@{}}
+\toprule
+\rowcolor{LasetTint}
+Programa & O que faz & Em falta \\
+\midrule
+\texttt{pcb.py}, \texttt{fanout.py} & disposição, zonas de potência e vias aos planos interiores & 302 \\
+\texttt{pf.py} & encaminhamento por congestionamento negociado em F.Cu e B.Cu & 80 \\
+\texttt{encaminhar.py} & pesquisa A* das ligações em conflito, também com pistas de 0,15~mm & 21 \\
+\texttt{interior.py}, \texttt{melhorar.py} & sinais lentos pela camada de 3,3~V; arranque e novo encaminhamento das redes vizinhas & 11 \\
+fecho por coordenadas & últimas ligações, com o afastamento conferido pelo DRC & 0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Uma revisão independente da placa levou a mudanças no andar de potência: o
+fusível passou a 125~V, o limiar de arranque baixou para 4,0~V, os MOSFET
+passaram a ser de nível lógico e o andar foi espelhado para cada perna ficar
+junto dos seus pinos no LM5177, o que reduziu o comando de porta mais longo
+de 52 para 22~mm. Os nós de comutação e o relógio de 50~MHz do RMII ficaram
+fora da camada interior. Depois disso:
+
+\begin{itemize}
+  \item \texttt{vias\_pad.py} tirou de dentro dos pads 78 das 90 vias que os
+        encaminhadores lá tinham deixado (uma via aberta num pad puxa a
+        solda); as 11 restantes ficam cheias e tapadas no fabrico;
+  \item \texttt{baixo.py} passou cinco condensadores para a face de baixo, por
+        baixo do pino: os do VCAP ficaram a 1,0 e 1,5~mm (estavam a 7 e 8~mm)
+        e os do transceiver CAN~1 a 1,0 a 2,5~mm (estavam a 7 a 12~mm);
+  \item \texttt{pilha.py} escreve na placa a pilha de camadas JLC04161H-7628,
+        para a qual as larguras e afastamentos foram pensados.
+\end{itemize}
+
+A CI corre o verificador de regras de desenho (DRC) e a comparação com o
+esquema no KiCad~9. Os ficheiros de fabrico (Gerber, furação, posições e
+lista de material) saem de \texttt{fabrico.py} e \texttt{jlcpcb.py} e estão no
+repositório, com os passos da encomenda em \texttt{ENCOMENDA.md}, na pasta
+\texttt{hardware/fabrico}.
+
+\section{\textit{Firmware}}
+\label{sec:impl-firmware}
+
+O \textit{firmware} (cerca de 2100 linhas de C) segue a arquitetura da
+Secção~\ref{sec:proj-software}: as rotinas de receção colocam mensagens numa
+fila de entrada, uma tarefa de encaminhamento aplica a tabela de regras e
+cada saída tem uma fila urgente e uma normal. Usa FreeRTOS e LwIP, só com
+memória estática, e compila para a NUCLEO-H753ZI e para a placa do projeto
+com uma opção (\texttt{PLACA}). A Tabela~\ref{tab:impl-firmware} resume o
+estado de cada parte.
+
+\begin{table}[htbp]
+\centering\small\setstretch{1.05}
+\renewcommand{\arraystretch}{1.15}
+\caption{Estado do \textit{firmware}.}
+\label{tab:impl-firmware}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{0.34\textwidth}@{}}
+\toprule
+\rowcolor{LasetTint}
+Parte & Estado \\
+\midrule
+Relógios a 480~MHz; FDCAN a 80~MHz, 1 + 8~Mbit/s com BRS & feito \\
+Encaminhamento, filas urgente/normal, contadores de descarte & feito, com testes \\
+Ligação ao PC por RS232 (COBS + CRC-16) & feito, com testes \\
+Ligação ao PC por Ethernet (UDP e TCP) & esboço \\
+Ligação ao PC por CAN FD (ISO 15765-2) & esboço, com testes \\
+Configuração na \textit{flash} com dupla cópia (RF18) & esboço, com testes \\
+RS485, I2C, PWM a 50~Hz com paragem por \textit{hardware} & feito \\
+PPS no TIM2 e NMEA & feito, com testes \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Os módulos que não dependem do \textit{hardware} (encaminhamento, política de
+filas, COBS, CRC-16, NMEA, ISO-TP, configuração e formato das tramas) são
+compilados também para o PC e testados na CI. Um teste lê uma trama gerada
+pela ferramenta do PC, o que garante que os dois lados usam o mesmo formato.
+Outro teste (\texttt{firmware/testes/pinos.py}) confere cada pino configurado
+no \textit{firmware} com a tabela de pinos do esquema.
+
+\section{Ferramenta do PC}
+
+\texttt{firmware/ferramentas/laset\_pc.py} envia e recebe mensagens por RS232,
+UDP, TCP ou CAN FD, com o formato da Tabela~\ref{tab:proj-mensagem}. Serve
+para os ensaios (enviar uma trama CAN, ler um registo I2C, mudar a largura
+de um impulso PWM) e para configurar a unidade: regras de encaminhamento,
+ligação ao PC, endereço IP e velocidades das linhas série, gravadas na
+\textit{flash} com \texttt{cfg-gravar}.
