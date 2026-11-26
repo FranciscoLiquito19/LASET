@@ -77,7 +77,7 @@ jobs:
       - name: Testes no PC
         working-directory: firmware/testes
         run: |
-          cmake -B build && cmake --build build && ./build/teste_modulos
+          cmake -B build && cmake --build build && ./build/teste_modulos && ./build/teste_robustez
           python3 ../ferramentas/laset_pc.py autoteste
           python3 -I pinos.py
       - name: Compilar para a NUCLEO-H753ZI

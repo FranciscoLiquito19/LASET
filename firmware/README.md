@@ -43,11 +43,15 @@ ISO-TP, configuração e formato das tramas) têm testes que correm no PC:
 
 ```sh
 cd firmware/testes
-cmake -B build && cmake --build build && ./build/teste_modulos
+cmake -B build && cmake --build build && ./build/teste_modulos && ./build/teste_robustez
 python3 ../ferramentas/laset_pc.py autoteste
 ```
 
-Um dos testes lê uma trama gerada pela ferramenta do PC, o que garante que o Python e
+`teste_robustez` passa milhões de entradas aleatórias ou corrompidas pelos módulos que
+recebem dados de fora (COBS, tramas do PC, ISO-TP, NMEA, comandos de configuração),
+compilado com AddressSanitizer e UndefinedBehaviorSanitizer: qualquer escrita fora de um
+buffer para o programa. Confirma também que uma trama do PC com um byte trocado nunca é
+aceite. Um dos testes lê uma trama gerada pela ferramenta do PC, o que garante que o Python e
 o firmware usam o mesmo formato. `testes/pinos.py` confere os pinos configurados no
 firmware (`stm32h7xx_hal_msp.c` e `placa.h`) com a tabela do esquema
 (`hardware/gerador/folha_mcu.py`). A CI compila as duas placas e corre estes testes.
