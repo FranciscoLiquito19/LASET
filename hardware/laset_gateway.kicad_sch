@@ -991,10 +991,10 @@
       (reference "D4") (unit 1) (value "NUP2105L") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/c30de7e7-d3de-5dde-9d6b-67be41e74865"
-      (reference "R41") (unit 1) (value "60,4 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
+      (reference "R41") (unit 1) (value "62 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/78ccaf4d-e52c-5c5c-adea-4574b3235ae4"
-      (reference "R42") (unit 1) (value "60,4 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
+      (reference "R42") (unit 1) (value "62 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/310894b4-77cc-5305-8142-469d3ac749ea"
       (reference "C68") (unit 1) (value "4,7 nF") (footprint "Capacitor_SMD:C_0603_1608Metric")
@@ -1087,10 +1087,10 @@
       (reference "D5") (unit 1) (value "NUP2105L") (footprint "Package_TO_SOT_SMD:SOT-23")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/9c8bb2d6-c3fa-5673-ba10-77bec0d149f7"
-      (reference "R43") (unit 1) (value "60,4 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
+      (reference "R43") (unit 1) (value "62 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/6fa1dbb0-3b59-5596-a012-e95ef79c7757"
-      (reference "R44") (unit 1) (value "60,4 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
+      (reference "R44") (unit 1) (value "62 1%") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/c40b3429-dd9e-5138-830f-69e69ba4d75d/6ddad5a5-87db-5380-b4b3-b09d25bb5eb1"
       (reference "C78") (unit 1) (value "4,7 nF") (footprint "Capacitor_SMD:C_0603_1608Metric")

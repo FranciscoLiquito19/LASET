@@ -210,8 +210,10 @@ alívio térmico. Falta:
 3. Correr o DRC no KiCad (`Inspecionar > Verificador de regras de desenho`) e gerar os
    ficheiros de fabrico com `python3 -I gerador/fabrico.py`: escreve em `hardware/fabrico/`
    o zip dos Gerbers e da furação para a JLCPCB e as posições para a montagem (CPL, origem
-   no canto inferior esquerdo); a lista de material está em `hardware/bom/bom.csv`. Os dois
-   ficheiros ficam no repositório e têm de ser gerados de novo sempre que a placa muda. Na montagem da JLCPCB, confirmar a
+   no canto inferior esquerdo); `python3 -I gerador/jlcpcb.py` escreve lá a lista de material
+   com os códigos LCSC (tabela em `bom/lcsc.csv`). Os ficheiros ficam no repositório e têm
+   de ser gerados de novo sempre que a placa muda. Os passos da encomenda estão em
+   `fabrico/ENCOMENDA.md`. Na montagem da JLCPCB, confirmar a
    rotação de cada peça polarizada na pré-visualização: as bibliotecas do KiCad e da JLCPCB
    nem sempre usam a mesma orientação de referência.
 
@@ -286,7 +288,7 @@ centrais a 3,3 V. Blindagem para GND por 1 nF 2 kV ∥ 1 MΩ. Reset partilhado c
 Dois ADM3057E: VCC 5 V, VIO 3,3 V, RS a GND2 (alta velocidade, para os 8 Mbit/s), STBY e
 AUXIN a GND, SILENT ao MCU (escuta sem ACK). VISOOUT→VISOIN e GNDISO→GND2 por ferrite,
 como pede a folha de características. NUP2105L nas linhas, terminação dividida
-2 × 60,4 Ω + 4,7 nF ativada por jumper, borne de 3 vias (CANH, CANL, GND isolada).
+2 × 62 Ω + 4,7 nF ativada por jumper, borne de 3 vias (CANH, CANL, GND isolada).
 
 ## Folha 5: RS485 e RS232 (`serie.kicad_sch`)
 

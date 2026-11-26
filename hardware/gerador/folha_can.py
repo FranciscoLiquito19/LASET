@@ -6,7 +6,7 @@ Ligações segundo a folha de características do ADM3055E/ADM3057E (Analog Devi
   STBY e AUXIN a GND (modo normal, canal auxiliar sem uso); SILENT ao MCU, para
   escutar o barramento sem enviar ACK.
   VISOOUT liga a VISOIN e GNDISO liga a GND2, cada um por uma ferrite.
-Terminação dividida (2 x 60,4 Ohm + 4,7 nF) ativada por jumper, para a unidade poder
+Terminação dividida (2 x 62 Ohm + 4,7 nF; 124 Ohm no total, dentro dos 100 a 130 Ohm da ISO 11898-2; 60,4 Ohm sem stock na JLCPCB) ativada por jumper, para a unidade poder
 ficar no meio ou na ponta do barramento. NUP2105L protege CANH/CANL contra transitórios.
 """
 from hw import Folha
@@ -31,8 +31,8 @@ def canal(f, n, y, base):
 
     # Proteção e terminação
     f.comp(f'D{3 + n}', 'Power_Protection:NUP2105L', 'NUP2105L', 245, y - 15, {1: h, 2: l, 3: g}, SOT23)
-    f.comp(f'R{39 + 2 * n}', R, '60,4 1%', 265, y - 15, {1: h, 2: f'/MID{n}'}, R0603)
-    f.comp(f'R{40 + 2 * n}', R, '60,4 1%', 265, y + 5, {1: f'/MID{n}', 2: f'/TL{n}'}, R0603)
+    f.comp(f'R{39 + 2 * n}', R, '62 1%', 265, y - 15, {1: h, 2: f'/MID{n}'}, R0603)
+    f.comp(f'R{40 + 2 * n}', R, '62 1%', 265, y + 5, {1: f'/MID{n}', 2: f'/TL{n}'}, R0603)
     f.comp(f'C{c + 8}', C, '4,7 nF', 280, y - 5, {1: f'/MID{n}', 2: g}, C0603)
     f.comp(f'JP{n}', 'Jumper:Jumper_2_Open', 'Terminação 120 Ohm', 295, y + 10, {1: f'/TL{n}', 2: l}, JP2)
     f.comp(f'J{3 + n}', 'Connector:Screw_Terminal_01x03', f'CAN FD {n}', 330, y, {1: h, 2: l, 3: g}, BORNE3)
