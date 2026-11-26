@@ -55,6 +55,7 @@ void eth_estado(void);
 /* flash_config.c */
 void config_carregar(void);            /* antes de iniciar os periféricos */
 int  config_carregada_da_flash(void);
+int  config_houve_erro_flash(void);   /* uma das cópias na flash tinha a ECC estragada */
 void config_iniciar(void);
 void config_pedir_gravacao(void);
 

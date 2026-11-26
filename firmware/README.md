@@ -90,8 +90,11 @@ Simplificações deste esboço, a rever depois dos ensaios:
 - O LwIP corre sem sistema operativo (`NO_SYS`), numa só tarefa; as outras tarefas
   passam-lhe mensagens por uma fila.
 - O IP é fixo (192.168.1.50 de fábrica, alterável com `cfg-rede`); não há DHCP.
-- A gravação na flash não verifica erros de ECC de uma cópia meio escrita; conta
-  só com o CRC e com a outra cópia.
+- Uma cópia da configuração meio escrita (falta de alimentação durante a gravação) tem
+  o ECC errado e lê-la dá uma falha de barramento. A leitura é protegida: o
+  `BusFault_Handler` salta a instrução, a cópia fica inválida e usa-se a outra (a região
+  está sem cache na MPU). Ainda não foi provocado na placa: confirmar desligando a
+  alimentação durante um `cfg-gravar`.
 
 ## Protocolo com o PC
 

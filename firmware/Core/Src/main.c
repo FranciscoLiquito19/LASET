@@ -44,7 +44,8 @@ int main(void)
                    "PCB LASET",
 #endif
                    (unsigned long)HAL_RCC_GetSysClockFreq());
-    consola_printf("configuração: %s\r\n", config_carregada_da_flash() ? "da flash" : "de fábrica");
+    consola_printf("configuração: %s%s\r\n", config_carregada_da_flash() ? "da flash" : "de fábrica",
+                   config_houve_erro_flash() ? " (uma cópia na flash estava estragada e foi ignorada)" : "");
     can_autoteste();
 
     consola_iniciar();

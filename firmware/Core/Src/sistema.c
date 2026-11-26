@@ -79,7 +79,19 @@ static void sistema_mpu(void)
     r.IsShareable = MPU_ACCESS_SHAREABLE;
     r.IsBufferable = MPU_ACCESS_BUFFERABLE;
     HAL_MPU_ConfigRegion(&r);
+    /* setores da configuração (banco 2, 256 KB): sem cache, para a leitura ir sempre à
+     * flash e um erro de ECC chegar ao CPU como falha de barramento precisa (ver
+     * flash_config.c) */
+    r.Number = MPU_REGION_NUMBER2;
+    r.BaseAddress = 0x08100000;
+    r.Size = MPU_REGION_SIZE_256KB;
+    r.TypeExtField = MPU_TEX_LEVEL1;
+    r.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+    r.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+    r.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+    HAL_MPU_ConfigRegion(&r);
     HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+    SCB->SHCSR |= SCB_SHCSR_BUSFAULTENA_Msk;      /* falhas de barramento no seu próprio vetor */
 }
 
 void sistema_cache(void)
